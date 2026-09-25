@@ -1,3 +1,5 @@
 estratos/data.json
 *.sql
 __pycache__/
+estratos/vendor/
+estratos/composer.lock

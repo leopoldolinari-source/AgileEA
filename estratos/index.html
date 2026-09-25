@@ -120,6 +120,47 @@ kbd{font:500 11px var(--mono);padding:2px 6px;border:1px solid var(--line);borde
 .n3 .apps{font:600 9.5px var(--mono);color:var(--accent-ink);background:var(--accent);padding:1px 5px;border-radius:4px;margin-top:1px;white-space:nowrap}
 .n3.dim{opacity:.18}
 
+
+/* ——— Matriz clasificación × cadena de valor ——— */
+.domstrip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.dom{position:relative;display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;padding:12px 12px 12px 26px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;min-width:0;transition:opacity .15s,border-color .15s}
+.dom .litho{position:absolute;left:0;top:0;bottom:0;width:14px;border-radius:12px 0 0 12px}
+.dom .ab{font:600 10.5px var(--mono);color:var(--sc);letter-spacing:.06em}
+.dom b{font:700 13.5px/1.2 var(--display);text-wrap:balance}
+.dom span:last-child{font:400 11px var(--mono);color:var(--muted)}
+.dom[aria-pressed="true"]{border-color:var(--sc);box-shadow:inset 0 0 0 1px var(--sc);background:color-mix(in srgb,var(--sc) 9%,var(--surface))}
+.dom[data-off]{opacity:.42}
+.dom.all{padding-left:12px}
+.dom.all[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.mx-sum{margin:0 0 12px;color:var(--muted);font-size:13px}
+.mx-sum b{color:var(--ink)}
+.lensbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hibanner{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;margin-bottom:12px;border-radius:10px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);font-size:13px}
+.mx-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.mx{display:grid;min-width:900px;gap:0}
+.mx-corner{display:flex;flex-direction:column;justify-content:flex-end;gap:2px;padding:12px;font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--line)}
+.chev{position:relative;display:flex;flex-direction:column;gap:1px;align-items:flex-start;text-align:left;padding:12px 26px 12px 26px;margin:10px 0 10px -10px;border:0;cursor:pointer;background:color-mix(in srgb,var(--accent) 16%,var(--surface-2));color:var(--ink);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%,16px 50%);min-width:0;overflow:hidden}
+.chev.first{margin-left:0;padding-left:14px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%)}
+.chev .step{font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.chev b{font:700 13px/1.2 var(--display);text-wrap:balance}
+.chev .cnt,.mx-row .cnt{font:400 10.5px var(--mono);color:var(--muted)}
+.chev:hover b,.mx-row:hover b{color:var(--accent)}
+.chev.off{background:var(--surface-2)!important;padding:12px 8px 12px 20px}
+.chev.off>*{writing-mode:vertical-rl;white-space:nowrap}
+.chev.off .step,.chev.off .cnt{display:none}
+.mx-row{display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding:14px 12px;border:0;border-top:1px solid var(--line);background:var(--surface-2);cursor:pointer;text-align:left;position:sticky;left:0;z-index:1}
+.mx-row b{font:700 14px var(--display)}
+.mx-row.off{opacity:.55}
+.mx-cell{border-top:1px solid var(--line);border-left:1px dashed var(--line-2);padding:10px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.mx-cell.off{background:var(--surface-2);padding:0;min-height:36px}
+.mx-empty{color:var(--line);font:600 18px var(--display);align-self:center;margin:auto}
+.n2h{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.dab{font:700 10px var(--mono);letter-spacing:.05em;color:var(--sc);padding:2px 6px;border-radius:4px;background:color-mix(in srgb,var(--sc) 15%,transparent)}
+.n2.dim{opacity:.25}
+.n3.hi{border-color:var(--lc,var(--accent));box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 45%,transparent)}
+@media (max-width:1100px){.domstrip{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.domstrip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 /* ——— SVG vistas ——— */
 .scroll-x{overflow-x:auto}
 svg text{fill:var(--ink)}
@@ -181,6 +222,33 @@ svg text{fill:var(--ink)}
 .score p{margin:0;color:var(--muted);max-width:56ch}
 .actions .row{grid-template-columns:28px minmax(0,1fr) auto}
 .actions .ix{font:600 12px var(--mono);color:var(--muted)}
+
+
+/* ——— Consultar ——— */
+.ask{padding:18px;display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.askrow{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
+.askrow textarea{flex:1 1 320px;min-height:56px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:500 15px/1.4 var(--body);background:var(--surface-2);color:var(--ink)}
+.askrow textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.btn-ask{border:0;border-radius:10px;padding:0 22px;min-height:44px;background:var(--accent);color:var(--accent-ink);font:700 14px var(--display);letter-spacing:.02em;cursor:pointer}
+.btn-ask:hover{filter:brightness(1.08)}
+.sugg{display:flex;flex-wrap:wrap;gap:6px}
+.sugg .chip{text-align:left}
+.asknote{margin:0;font-size:12px;color:var(--muted)}
+.qa{display:flex;flex-direction:column;gap:14px}
+.qa-item{padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.qa-item h3{margin:0;font:700 16px/1.3 var(--display);text-wrap:balance}
+.qa-a{font-size:14px;line-height:1.65;color:var(--ink-2);max-width:78ch}
+.qa-a p{margin:0 0 8px}
+.qa-a ul{margin:0 0 8px;padding-left:20px}
+.qa-a li{margin:3px 0}
+.qa-a b{color:var(--ink)}
+.ref{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:0 7px;font:600 12.5px/1.6 var(--body);color:var(--ink);cursor:pointer;vertical-align:baseline}
+.ref i{width:7px;height:7px;border-radius:50%;background:var(--tc)}
+.ref:hover{border-color:var(--tc)}
+.thinking{color:var(--muted);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+.qa-note{margin:0;font-size:12.5px;color:var(--warn)}
+.pal-ask span{font-weight:600}
 
 /* ——— Ficha lateral ——— */
 .scrim{position:fixed;inset:0;background:rgba(5,15,20,.35);z-index:20}
@@ -270,7 +338,7 @@ svg text{fill:var(--ink)}
       </div>
       <button class="search" id="openPal" type="button">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <span>Buscar capacidad, app, contrato…</span><kbd>Ctrl K</kbd>
+        <span>Buscar o preguntar…</span><kbd>Ctrl K</kbd>
       </button>
     </header>
     <section class="pulse" id="pulse" aria-label="Pulso del portafolio"></section>
@@ -281,7 +349,7 @@ svg text{fill:var(--ink)}
 <aside class="drawer" id="drawer" hidden aria-label="Ficha"></aside>
 <div class="palette" id="palette" hidden>
   <div class="pal" role="dialog" aria-label="Buscar en el modelo">
-    <input id="palInput" type="text" placeholder="Escribí para buscar en todo el modelo…" autocomplete="off">
+    <input id="palInput" type="text" placeholder="Buscá una entidad o escribí una pregunta…" autocomplete="off">
     <ul id="palList" role="listbox"></ul>
     <div class="foot"><span>↑↓ navegar</span><span>Enter abrir ficha</span><span>Esc cerrar</span></div>
   </div>
@@ -290,8 +358,8 @@ svg text{fill:var(--ink)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
 <script>/* Respaldo on-premise: si la red corporativa bloquea el CDN, usa las copias locales. */
-if (!window.d3) document.write('<script src="vendor/d3.min.js"><\/script>');
-if (!window.d3 || !window.d3.sankey) document.write('<script src="vendor/d3-sankey.min.js"><\/script>');</script>
+if (!window.d3) document.write('<script src="lib/d3.min.js"><\/script>');
+if (!window.d3 || !window.d3.sankey) document.write('<script src="lib/d3-sankey.min.js"><\/script>');</script>
 <script>
 "use strict";
 /* ============================================================
@@ -452,6 +520,7 @@ function nextActions() {
 /* ---------- Vistas ---------- */
 const ICONS = {
   mapa:'<svg viewBox="0 0 24 24"><path d="M3 5h18M3 10h18M3 15h18M3 20h18"/><path d="M8 5v5M15 10v5M6 15v5M17 15v5"/></svg>',
+  consultar:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M9 10h6M9 13h3"/></svg>',
   red:'<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="8" r="2.5"/><circle cx="10" cy="18" r="2.5"/><path d="M8.2 7.2 15.6 8M7.3 8.2l1.8 7.5M16.5 10.2 11.8 16"/></svg>',
   portafolio:'<svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><circle cx="10" cy="14" r="2.5"/><circle cx="16" cy="8" r="3.5"/></svg>',
   flujo:'<svg viewBox="0 0 24 24"><path d="M3 6c8 0 8 12 18 12M3 6c8 0 8 4 18 4M3 14c6 0 10-8 18-8"/></svg>',
@@ -459,7 +528,8 @@ const ICONS = {
   salud:'<svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>',
 };
 const VIEWS = {
-  mapa:{nav:"Mapa", hint:"Capacidades por estrato", title:"Mapa de capacidades", sub:"Cada dominio N1 es un estrato. Elegí una lente para leer el mapa por cadena de valor, cobertura, criticidad o madurez.", render: renderMapa},
+  mapa:{nav:"Mapa", hint:"Clasificación × cadena de valor", title:"Mapa de capacidades", sub:"Clasificación en el eje vertical, etapas de la cadena de valor en el horizontal. Filtrá por dominio N1 arriba y tocá filas o etapas para ocultarlas.", render: renderMapa},
+  consultar:{nav:"Consultar", hint:"Preguntas en lenguaje natural", title:"Consultar el modelo", sub:"Preguntá en tus palabras. La respuesta usa solo los datos cargados y enlaza cada capacidad, aplicación o contrato que menciona.", render: renderConsultar},
   red:{nav:"Red", hint:"Todo conectado", title:"Red del modelo", sub:"Organizaciones, aplicaciones, proveedores, contratos, licencias y personas en un solo grafo. Tocá un nodo para aislar su vecindario.", render: renderRed},
   portafolio:{nav:"Portafolio", hint:"Matriz TIME", title:"Portafolio de aplicaciones", sub:"Ajuste funcional contra ajuste técnico. El tamaño de cada burbuja es el gasto registrado del año; el color, su ciclo de vida.", render: renderPortafolio},
   flujo:{nav:"Flujo de costos", hint:"De proveedor a centro de costo", title:"Flujo de costos", sub:"Recorrido del dinero: proveedor → aplicación → organización pagadora → centro de costo.", render: renderFlujo},
@@ -520,45 +590,104 @@ const LENSES = {
   madurez:{label:"Madurez", get: e => { const v = MATURITY.map(m => e.data[m]).filter(x => x != null).map(Number); if (!v.length) return null; return "Nivel " + Math.min(5, Math.max(1, Math.round(v.reduce((a, b) => a + b) / v.length))); }, cats:[1,2,3,4,5].map(i => ({k:"Nivel " + i, c:`var(--q${i})`}))},
   regulatorio:{label:"Impacto regulatorio", get: e => e.data.regulatory_impact, cats:["Low","Medium","High"].map((k, i) => ({k, c:`var(--w${i+2})`}))},
 };
-let lens = "cadena", lensOff = new Set();
-try { const s = localStorage.getItem("estratos.lens"); if (LENSES[s]) lens = s; } catch (e) {}
+const n1Index = key => all("n1").findIndex(e => e.key === key);
+const n1OfN3 = e => { const n2 = parentOf(e.key, "n2"); return n2 && parentOf(n2, "n1"); };
+LENSES.dominio = {label:"Dominio N1", get: e => M.E.get(n1OfN3(e))?.name,
+  get cats() { return all("n1").map((n, i) => ({k: n.name, c: `var(--s${i % 5 + 1})`})); }};
+const CHAIN = LENSES.cadena.cats.map(c => c.k);
+const CLASS = LENSES.clasif.cats.map(c => c.k);
+let mapLayout = "matriz", lens = "dominio", lensOff = new Set();
+let domOn = null, clsOff = new Set(), chainOff = new Set(), mapHi = null;
+try { const s = localStorage.getItem("estratos.lens"); if (LENSES[s]) lens = s; const l = localStorage.getItem("estratos.layout"); if (l === "estratos") mapLayout = l; } catch (e) {}
 
 function renderMapa(el) {
-  const L = LENSES[lens], n3 = all("n3");
-  const counts = {}; n3.forEach(e => { const k = L.get(e) ?? "∅"; counts[k] = (counts[k] || 0) + 1; });
+  const lensesHere = Object.entries(LENSES).filter(([k]) => mapLayout === "estratos" || !["cadena", "clasif"].includes(k));
+  if (!lensesHere.some(([k]) => k === lens)) lens = "dominio";
+  const L = LENSES[lens], n3all = all("n3");
+  const n1s = all("n1"), visibleN1 = n => !domOn || domOn.has(n.key);
+  const n3vis = n3all.filter(e => visibleN1(M.E.get(n1OfN3(e)) || {}));
+  const counts = {}; n3vis.forEach(e => { const k = L.get(e) ?? "∅"; counts[k] = (counts[k] || 0) + 1; });
   const colorOf = k => L.cats.find(c => c.k === k)?.c;
-  el.innerHTML = `
-    <div class="toolbar" style="margin-bottom:12px">
-      <div class="seg" role="group" aria-label="Lente">${Object.entries(LENSES).map(([k, v]) => `<button type="button" data-lens="${k}" aria-pressed="${k === lens}">${v.label}</button>`).join("")}</div>
-    </div>
-    <div class="toolbar" style="margin-bottom:14px">
-      <div class="legend">${L.cats.map(c => `<button type="button" class="chip" data-cat="${esc(c.k)}" aria-pressed="${!lensOff.has(c.k)}"><i style="background:${c.c}"></i>${esc(c.k)} <b class="num">${counts[c.k] || 0}</b></button>`).join("")}
-        <button type="button" class="chip" data-cat="∅" aria-pressed="${!lensOff.has("∅")}"><i class="hatch" style="border:1px dashed var(--muted)"></i>${L.nullLabel || "Sin evaluar"} <b class="num">${counts["∅"] || 0}</b></button></div>
-      ${counts["∅"] === n3.length ? `<span class="pill warn">Ninguna subcapacidad tiene este atributo cargado todavía</span>` : ""}
-    </div>
-    <div class="strata">${all("n1").map((n1, i) => {
-      const n2s = nbrs(n1.key, "n2").map(l => M.E.get(l.to));
+  const hiSet = mapHi && new Set(mapHi.keys);
+  const isHi3 = e => !hiSet || hiSet.has(e.key) || nbrs(e.key, "app").some(l => hiSet.has(l.to));
+  const tile = e => { const k = L.get(e) ?? null, c = k ? colorOf(k) : null, na = nbrs(e.key, "app");
+    const dim = lensOff.has(k ?? "∅") || !isHi3(e);
+    return `<div class="n3 ${c ? "" : "none hatch"} ${dim ? "dim" : ""} ${hiSet && !dim ? "hi" : ""}" data-open="${e.key}" style="${c ? `--lc:${c}` : ""}" title="${esc(k || L.nullLabel || "Sin evaluar")}">
+      <span class="d"></span><span class="t">${esc(e.name)}</span>${na.length ? `<span class="apps" title="${esc(na.map(l => M.E.get(l.to).name).join(", "))}">${esc(na.length === 1 ? M.E.get(na[0].to).name : na.length + " apps")}</span>` : ""}</div>`; };
+
+  const layoutSeg = `<div class="seg" role="group" aria-label="Disposición"><button type="button" data-layout="matriz" aria-pressed="${mapLayout === "matriz"}">Matriz</button><button type="button" data-layout="estratos" aria-pressed="${mapLayout === "estratos"}">Estratos</button></div>`;
+  const lensSeg = `<div class="lensbar"><span class="eyebrow">Color por</span><div class="seg" role="group" aria-label="Lente">${lensesHere.map(([k, v]) => `<button type="button" data-lens="${k}" aria-pressed="${k === lens}">${v.label}</button>`).join("")}</div></div>`;
+  const legend = `<div class="legend">${L.cats.filter(c => counts[c.k] || lens !== "dominio").map(c => `<button type="button" class="chip" data-cat="${esc(c.k)}" aria-pressed="${!lensOff.has(c.k)}"><i style="background:${c.c}"></i>${esc(c.k)} <b class="num">${counts[c.k] || 0}</b></button>`).join("")}
+      ${counts["∅"] ? `<button type="button" class="chip" data-cat="∅" aria-pressed="${!lensOff.has("∅")}"><i class="hatch" style="border:1px dashed var(--muted)"></i>${L.nullLabel || "Sin evaluar"} <b class="num">${counts["∅"]}</b></button>` : ""}</div>
+      ${n3vis.length && counts["∅"] === n3vis.length && lens !== "cobertura" ? `<span class="pill warn">Ninguna subcapacidad visible tiene este atributo cargado</span>` : ""}`;
+  const hiBanner = mapHi ? `<div class="hibanner"><span><b>Resaltando ${mapHi.keys.length} resultado${mapHi.keys.length === 1 ? "" : "s"}</b> de la consulta: “${esc(mapHi.label)}”</span><button type="button" class="chip" data-unhi>Quitar resaltado</button></div>` : "";
+
+  let body;
+  if (mapLayout === "estratos") {
+    body = `<div class="strata">${n1s.filter(visibleN1).map(n1 => {
+      const i = n1Index(n1.key), n2s = nbrs(n1.key, "n2").map(l => M.E.get(l.to));
       const n3s = n2s.flatMap(n2 => nbrs(n2.key, "n3").map(l => M.E.get(l.to)));
-      const apps = uniq(n3s.flatMap(e => nbrs(e.key, "app").map(l => l.to)));
-      const org = M.E.get(parentOf(n1.key, "org"));
+      const apps = uniq(n3s.flatMap(e => nbrs(e.key, "app").map(l => l.to))), org = M.E.get(parentOf(n1.key, "org"));
       return `<div class="stratum" style="--sc:var(--s${i % 5 + 1})">
-        <div class="s-head"><span class="litho" style="background:${LITHO[i % 5]}"></span>
-          <span class="ab">${esc(org?.abbr || "N1")}</span>
+        <div class="s-head"><span class="litho" style="background:${LITHO[i % 5]}"></span><span class="ab">${esc(org?.abbr || "N1")}</span>
           <h2><a data-open="${n1.key}" style="cursor:pointer">${esc(n1.name)}</a></h2>
-          <dl><dt>N2</dt><dd>${n2s.length}</dd><dt>N3</dt><dd>${n3s.length}</dd><dt>Apps</dt><dd>${apps.length}</dd></dl>
-        </div>
-        <div class="s-body">${n2s.map(n2 => {
-          const kids = nbrs(n2.key, "n3").map(l => M.E.get(l.to));
-          return `<div class="n2"><h3 data-open="${n2.key}">${esc(n2.name)}</h3>
-            <span class="meta">${esc(n2.data.clasificacion || "—")} · ${kids.length} N3</span>
-            ${kids.map(e => { const k = L.get(e) ?? null, c = k ? colorOf(k) : null, na = nbrs(e.key, "app");
-              const dim = lensOff.has(k ?? "∅");
-              return `<div class="n3 ${c ? "" : "none hatch"} ${dim ? "dim" : ""}" data-open="${e.key}" style="${c ? `--lc:${c}` : ""}" title="${esc(k || L.nullLabel || "Sin evaluar")}">
-                <span class="d"></span><span class="t">${esc(e.name)}</span>${na.length ? `<span class="apps" title="${esc(na.map(l => M.E.get(l.to).name).join(", "))}">${esc(na.length === 1 ? M.E.get(na[0].to).name : na.length + " apps")}</span>` : ""}</div>`; }).join("")}
-          </div>`; }).join("")}</div>
-      </div>`; }).join("")}</div>`;
-  el.querySelectorAll("[data-lens]").forEach(b => b.onclick = () => { lens = b.dataset.lens; lensOff.clear(); try { localStorage.setItem("estratos.lens", lens); } catch (e) {} renderMapa(el); });
-  el.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => { const k = b.dataset.cat; lensOff.has(k) ? lensOff.delete(k) : lensOff.add(k); renderMapa(el); });
+          <dl><dt>N2</dt><dd>${n2s.length}</dd><dt>N3</dt><dd>${n3s.length}</dd><dt>Apps</dt><dd>${apps.length}</dd></dl></div>
+        <div class="s-body">${n2s.map(n2 => { const kids = nbrs(n2.key, "n3").map(l => M.E.get(l.to));
+          return `<div class="n2"><h3 data-open="${n2.key}">${esc(n2.name)}</h3><span class="meta">${esc(n2.data.clasificacion || "—")} · ${kids.length} N3</span>${kids.map(tile).join("")}</div>`; }).join("")}</div></div>`; }).join("")}</div>`;
+  } else {
+    const n2all = all("n2").filter(n2 => visibleN1(M.E.get(parentOf(n2.key, "n1")) || {}));
+    const chains = [...CHAIN, ...uniq(n2all.map(n => n.data.cadena_de_valor || "Sin cadena")).filter(c => !CHAIN.includes(c))];
+    const classes = [...CLASS, ...uniq(n2all.map(n => n.data.clasificacion || "Sin clasificación")).filter(c => !CLASS.includes(c))]
+      .filter(c => CLASS.includes(c) || n2all.some(n => (n.data.clasificacion || "Sin clasificación") === c));
+    const inCell = (cl, ch) => n2all.filter(n => (n.data.clasificacion || "Sin clasificación") === cl && (n.data.cadena_de_valor || "Sin cadena") === ch);
+    const n3count = arr => sum(arr, n => nbrs(n.key, "n3").length);
+    const cols = chains.map(ch => chainOff.has(ch) ? "46px" : "minmax(220px,1fr)").join(" ");
+    const card = n2 => { const n1 = M.E.get(parentOf(n2.key, "n1")), i = n1Index(n1.key), kids = nbrs(n2.key, "n3").map(l => M.E.get(l.to));
+      if (hiSet && !hiSet.has(n2.key) && !kids.some(isHi3)) return "";   // con resaltado activo, solo quedan las capacidades con resultados
+      return `<div class="n2" style="--sc:var(--s${i % 5 + 1})"><div class="n2h"><span class="dab" title="${esc(n1.name)}">${esc(M.E.get(parentOf(n1.key, "org"))?.abbr || "N1")}</span><span class="meta">${kids.length} N3</span></div>
+        <h3 data-open="${n2.key}">${esc(n2.name)}</h3>${kids.map(tile).join("") || '<span class="meta">Sin subcapacidades cargadas</span>'}</div>`; };
+    body = `<div class="mx-scroll"><div class="mx" style="grid-template-columns:132px ${cols}">
+      <div class="mx-corner"><span>Clasificación ↓</span><span>Cadena de valor →</span></div>
+      ${chains.map((ch, j) => { const arr = n2all.filter(n => (n.data.cadena_de_valor || "Sin cadena") === ch);
+        return `<button type="button" class="chev ${j ? "" : "first"} ${chainOff.has(ch) ? "off" : ""}" style="background:color-mix(in srgb,var(--accent) ${12 + j * 7}%,var(--surface-2))" data-chain="${esc(ch)}" aria-pressed="${!chainOff.has(ch)}" title="${chainOff.has(ch) ? "Mostrar" : "Ocultar"} etapa">
+          <span class="step">Etapa ${j + 1}</span><b>${esc(ch)}</b><span class="cnt">${arr.length} N2 · ${n3count(arr)} N3</span></button>`; }).join("")}
+      ${classes.map(cl => { const rowOff = clsOff.has(cl), arr = n2all.filter(n => (n.data.clasificacion || "Sin clasificación") === cl);
+        return `<button type="button" class="mx-row ${rowOff ? "off" : ""}" data-cls="${esc(cl)}" aria-pressed="${!rowOff}" title="${rowOff ? "Mostrar" : "Ocultar"} clasificación">
+            <b>${esc(cl)}</b><span class="cnt">${arr.length} N2 · ${n3count(arr)} N3</span></button>
+          ${chains.map(ch => { const c = inCell(cl, ch);
+            return `<div class="mx-cell ${rowOff || chainOff.has(ch) ? "off" : ""}">${rowOff || chainOff.has(ch) ? "" : c.map(card).join("") || '<span class="mx-empty">—</span>'}</div>`; }).join("")}`; }).join("")}
+    </div></div>`;
+  }
+
+  const domStrip = `<div class="domstrip" role="group" aria-label="Dominios N1">
+      <button type="button" class="dom all" data-dom="*" aria-pressed="${!domOn}"><b>Todos los dominios</b><span>${n1s.length} N1 · ${all("n2").length} N2 · ${n3all.length} N3</span></button>
+      ${n1s.map((n1, i) => { const n2s = nbrs(n1.key, "n2"), n3 = sum(n2s, l => nbrs(l.to, "n3").length), on = !domOn || domOn.has(n1.key);
+        return `<button type="button" class="dom" data-dom="${n1.key}" aria-pressed="${!!domOn && on}" style="--sc:var(--s${i % 5 + 1})" ${!on ? 'data-off="1"' : ""}>
+          <i class="litho" style="background:${LITHO[i % 5]},var(--sc)"></i><span class="ab">${esc(M.E.get(parentOf(n1.key, "org"))?.abbr || "")}</span><b>${esc(n1.name)}</b><span>${n2s.length} N2 · ${n3} N3</span></button>`; }).join("")}
+    </div>`;
+  const sel = domOn ? n1s.filter(n => domOn.has(n.key)).map(n => n.name).join(" + ") : "Todos los dominios";
+  const n2vis = all("n2").filter(n2 => visibleN1(M.E.get(parentOf(n2.key, "n1")) || {}));
+  const byCls = d3.rollups(n2vis, v => v.length, n => n.data.clasificacion || "Sin clasificación");
+  const byCh = d3.rollups(n2vis, v => v.length, n => n.data.cadena_de_valor || "Sin cadena").sort((a, b) => CHAIN.indexOf(a[0]) - CHAIN.indexOf(b[0]));
+  const summary = `<p class="mx-sum"><b>${esc(sel)}</b> · ${n2vis.length} capacidades N2, ${n3vis.length} N3 · ${byCls.map(([k, v]) => `${v} ${k.toLowerCase()}${v === 1 ? "" : "s"}`).join(", ")} · presentes en ${byCh.length} de ${CHAIN.length} etapas de la cadena</p>`;
+
+  el.innerHTML = `${domStrip}${summary}${hiBanner}
+    <div class="toolbar" style="margin-bottom:10px">${layoutSeg}${lensSeg}</div>
+    <div class="toolbar" style="margin-bottom:14px">${legend}</div>${body}`;
+  const re = () => renderMapa(el);
+  el.querySelectorAll("[data-lens]").forEach(b => b.onclick = () => { lens = b.dataset.lens; lensOff.clear(); try { localStorage.setItem("estratos.lens", lens); } catch (e) {} re(); });
+  el.querySelectorAll("[data-layout]").forEach(b => b.onclick = () => { mapLayout = b.dataset.layout; try { localStorage.setItem("estratos.layout", mapLayout); } catch (e) {} re(); });
+  el.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => { const k = b.dataset.cat; lensOff.has(k) ? lensOff.delete(k) : lensOff.add(k); re(); });
+  el.querySelectorAll("[data-chain]").forEach(b => b.onclick = () => { const k = b.dataset.chain; chainOff.has(k) ? chainOff.delete(k) : chainOff.add(k); re(); });
+  el.querySelectorAll("[data-cls]").forEach(b => b.onclick = () => { const k = b.dataset.cls; clsOff.has(k) ? clsOff.delete(k) : clsOff.add(k); re(); });
+  el.querySelectorAll("[data-unhi]").forEach(b => b.onclick = () => { mapHi = null; re(); });
+  el.querySelectorAll("[data-dom]").forEach(b => b.onclick = () => {
+    const k = b.dataset.dom;
+    if (k === "*") domOn = null;
+    else if (!domOn) domOn = new Set([k]);                 // primer clic: aislar ese dominio
+    else { domOn.has(k) ? domOn.delete(k) : domOn.add(k); if (!domOn.size || domOn.size === n1s.length) domOn = null; }
+    re();
+  });
 }
 
 /* ---------- Vista: Red ---------- */
@@ -729,6 +858,145 @@ function renderSalud(el) {
         <span><span class="rt">${esc(a.t)}</span><br><span class="rs">${esc(a.s)}</span></span><span class="pill ${a.sev}">${a.sev === "crit" ? "alta" : "media"}</span></div>`).join("")}</div></div></div>`;
 }
 
+/* ---------- Vista: Consultar (lenguaje natural) ---------- */
+/* Dos caminos: dentro de claude.ai usa la capacidad `sample` (cuenta del visitante);
+   en el servidor propio usa ask.php (API de Claude con la clave del servidor). */
+const samplerP = window.claude?.use ? window.claude.use("sample").catch(() => null) : Promise.resolve(null);
+const QA = [];            // [{q, a, hi, state: "thinking"|"streaming"|"done"|"error", note}]
+let askCtl = null;
+
+function modelContext() {
+  const cut = (s, n) => { s = String(s ?? "").replace(/\s+/g, " ").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
+  const v = x => x == null || x === "" ? "-" : x;
+  const L = [];
+  L.push(`FECHA DE HOY: ${TODAY.toISOString().slice(0, 10)}`);
+  L.push("\n## DOMINIOS N1 (clave | nombre | área responsable)");
+  all("n1").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "org"))}`));
+  L.push("\n## CAPACIDADES N2 (clave | nombre | N1 | clasificación | cadena de valor)");
+  all("n2").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "n1"))} | ${v(e.data.clasificacion)} | ${v(e.data.cadena_de_valor)}`));
+  L.push("\n## SUBCAPACIDADES N3 (clave | nombre | N2 | criticidad | pace layering | impacto regulatorio | madurez proc/tec/datos/org/desemp 1-5 | aplicaciones | descripción)");
+  all("n3").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "n2"))} | ${v(e.data.business_criticality)} | ${v(e.data.pace_layering)} | ${v(e.data.regulatory_impact)} | ${MATURITY.map(m => v(e.data[m])).join("/")} | ${nbrs(e.key, "app").map(l => l.to).join(" ") || "-"} | ${cut(e.data.descripcion, 150)}`));
+  L.push("\n## APLICACIONES (clave | nombre | proveedor | tipo | despliegue | ciclo de vida | criticidad | ajuste funcional | ajuste técnico | disciplinas | organizaciones usuarias | personas y rol | descripción)");
+  all("app").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "vendor"))} | ${v(e.data.tipo_aplicacion)} | ${v(e.data.deployment)} | ${v(e.data.lifecycle)} | ${v(e.data.business_criticality)} | ${v(e.data.functional_fit)} | ${v(e.data.technical_fit)} | ${nbrs(e.key, "disc").map(l => M.E.get(l.to).name).join(", ") || "-"} | ${nbrs(e.key, "org").map(l => l.to).join(" ") || "-"} | ${nbrs(e.key, "person").map(l => `${l.to} (${l.note})`).join(", ") || "-"} | ${cut(e.data.descripcion, 300)}`));
+  L.push("\n## ORGANIZACIONES (clave | nombre | tipo | abreviatura | depende de | imputa costos)");
+  all("org").forEach(e => L.push(`${e.key} | ${e.name} | ${v(e.data.tipo_organizacion)} | ${v(e.abbr)} | ${e.data.parent_id ? "org:" + e.data.parent_id : "-"} | ${+e.data.habilita_imputacion ? "sí" : "no"}`));
+  L.push("\n## PROVEEDORES (clave | nombre | contactos y rol)");
+  all("vendor").forEach(e => L.push(`${e.key} | ${e.name} | ${nbrs(e.key, "person").map(l => `${l.to} (${l.note})`).join(", ") || "-"}`));
+  L.push("\n## PERSONAS (clave | nombre | tipo | cargo)");
+  all("person").forEach(e => L.push(`${e.key} | ${e.name} | ${v(e.data.tipo_persona)} | ${cut(e.data.cargo, 80) || "-"}`));
+  L.push("\n## CONTRATOS (clave | referencia | proveedor | aplicación | modelo comercial | moneda | inicio | fin | días para vencer | renovación automática | pagadores por año)");
+  all("contract").forEach(e => { const s = contractStatus(e); L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "vendor"))} | ${v(parentOf(e.key, "app"))} | ${v(e.data.modelo_comercial)} | ${v(e.data.moneda)} | ${v(e.data.fecha_inicio)} | ${v(e.data.fecha_fin)} | ${s.days ?? "-"} | ${+e.data.renovacion_automatica ? "sí" : "no"} | ${nbrs(e.key, "org").map(l => `${l.to} ${l.note}`).join("; ") || "sin pagadores"}`); });
+  L.push("\n## LICENCIAS (clave | nombre | aplicación | métrica | cantidades por contrato)");
+  all("lic").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "app"))} | ${v(e.data.metrica_licencia)} | ${nbrs(e.key, "contract").map(l => `${l.to} ${l.note}`).join("; ") || "-"}`));
+  L.push("\n## CENTROS DE COSTO (clave | código | nombre | organización)");
+  all("cc").forEach(e => L.push(`${e.key} | ${e.data.codigo} | ${e.data.nombre} | ${v(parentOf(e.key, "org"))}`));
+  L.push("\n## COSTOS REGISTRADOS (año | mes | contrato | aplicación | proveedor | organización pagadora | centro de costo | tipo | concepto | monto USD)");
+  M.costs.forEach(c => L.push(`${c.year} | ${c.month ?? "-"} | contract:${c.contract} | app:${c.app} | vendor:${c.vendor} | org:${c.org} | ${c.cc ? "cc:" + c.cc : "-"} | ${c.tipo} | ${c.concepto} | ${c.monto.toFixed(2)}`));
+  return L.join("\n");
+}
+const ASK_RULES = `Sos el asistente de arquitectura empresarial de AgileEA, un repositorio basado en el metamodelo de LeanIX con extensiones (capacidades N1/N2/N3 con clasificación y cadena de valor, contratos, costos, licencias y pagadores).
+Respondé en español, claro y breve, usando SOLO los datos del modelo que aparecen abajo. Si un dato no está cargado, decilo y nombrá qué campo habría que completar. No inventes entidades ni cifras; si sumás montos, mostrá el total.
+Formato de la respuesta:
+- Párrafos cortos o viñetas que empiecen con "- ". Podés usar **negrita**. Sin tablas ni títulos.
+- Cada vez que menciones una entidad del modelo escribí solo su clave entre dobles corchetes, por ejemplo [[app:1]] o [[n3:11]]. La interfaz la reemplaza por el nombre, así que no repitas el nombre al lado.
+- Terminá con una línea exacta "RESALTAR: " seguida de las claves (separadas por comas) de capacidades N1/N2/N3 o aplicaciones que conviene resaltar en el mapa, o "RESALTAR: -" si no aplica.
+
+MODELO:
+`;
+function askSuggestions() {
+  const n1 = all("n1"), app = all("app")[0], dc = n1.find(e => /drilling/i.test(e.name)) || n1[1] || n1[0];
+  const next = all("contract").map(e => [e, contractStatus(e)]).filter(([, s]) => s.days >= 0).sort((a, b) => a[1].days - b[1].days)[0];
+  return [
+    n1[0] && `¿Qué capacidades estratégicas de ${n1[0].name} hay en cada etapa de la cadena de valor?`,
+    dc && `¿Qué capacidades de ${dc.name} no tienen ninguna aplicación que las soporte?`,
+    app && `¿Cuánto gastamos en ${app.name} y qué organizaciones lo pagan?`,
+    next && `¿Qué contratos vencen en los próximos 6 meses y qué licencias involucran?`,
+    `¿Por dónde conviene empezar a evaluar criticidad y madurez?`,
+    `¿Qué aplicaciones no tienen responsable asignado?`,
+  ].filter(Boolean);
+}
+function renderAnswer(text) {
+  let t = text.replace(/\n?RESALTAR:[^\n]*\s*$/, "").replace(/\[\[[^\]]*$/, "");
+  const chip = k => { const e = M.E.get(k.trim()); return e ? `<button type="button" class="ref" data-open="${e.key}" style="--tc:${tvar(e.type)}"><i></i>${esc(e.name)}</button>` : esc(k); };
+  const inline = s => esc(s).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/\[\[([a-z0-9]+:[0-9]+)\]\]/g, (_, k) => chip(k));
+  const out = []; let list = null;
+  t.split("\n").forEach(line => {
+    const m = line.match(/^\s*[-•*]\s+(.*)/);
+    if (m) { (list ||= []).push(`<li>${inline(m[1])}</li>`); return; }
+    if (list) { out.push(`<ul>${list.join("")}</ul>`); list = null; }
+    if (line.trim()) out.push(`<p>${inline(line)}</p>`);
+  });
+  if (list) out.push(`<ul>${list.join("")}</ul>`);
+  return out.join("");
+}
+const parseHi = text => { const m = text.match(/RESALTAR:\s*([^\n]*)\s*$/); return m ? m[1].split(",").map(s => s.trim().replace(/^\[\[|\]\]$/g, "")).filter(k => M.E.has(k)) : []; };
+const ASK_ERR = {
+  not_granted: "No se autorizó el uso de Claude en esta página.", sampling_disabled: "Claude no está disponible para esta cuenta.",
+  rate_limited: "Demasiadas consultas seguidas. Esperá un momento y volvé a intentar.", session_expired: "La sesión venció. Volvé a iniciar sesión.",
+  refused: "Claude no respondió esta consulta. Probá reformularla.", prompt_too_large: "El modelo es demasiado grande para enviarlo entero.",
+  login: "La consulta en lenguaje natural requiere iniciar sesión en AgileEA.", sin_backend: "La consulta no está disponible acá: falta ask.php con una clave de la API de Claude configurada en el servidor.",
+};
+
+async function askQuestion(q) {
+  q = q.trim(); if (!q) return;
+  if (current !== "consultar") go("consultar");
+  askCtl?.abort(); askCtl = new AbortController();
+  const item = {q, a: "", hi: [], state: "thinking"}; QA.unshift(item); drawQA();
+  const history = QA.slice(1, 4).filter(x => x.state === "done").reverse().flatMap(x => [{role: "user", content: x.q}, {role: "assistant", content: x.a}]);
+  const ctx = ASK_RULES + modelContext();
+  const onText = ({text}) => { item.a = text; item.state = "streaming"; drawQA(true); };
+  try {
+    const sample = await samplerP;
+    if (sample) {
+      await sample([{role: "user", content: ctx}, ...history, {role: "user", content: q}], {onText, signal: askCtl.signal, cache: false});
+    } else {
+      const r = await fetch("ask.php", {method: "POST", headers: {"Content-Type": "application/json"}, signal: askCtl.signal,
+        body: JSON.stringify({system: ctx, messages: [...history, {role: "user", content: q}]})});
+      const ct = r.headers.get("content-type") || "";
+      if (!ct.includes("json")) throw {code: "sin_backend"};
+      const j = await r.json();
+      if (!r.ok || j.error) throw {code: j.error || "upstream_error", message: j.message};
+      onText({text: j.text});
+    }
+    item.state = "done"; item.hi = parseHi(item.a);
+  } catch (e) {
+    if (e?.code === "cancelled" || e?.name === "AbortError") { item.state = item.a ? "done" : "error"; item.note = "Consulta detenida."; }
+    else { item.state = "error"; if (e?.text) item.a = e.text; else if (e?.code === "refused") item.a = "";
+      item.note = ASK_ERR[e?.code] || e?.message || "No se pudo completar la consulta. Probá de nuevo."; }
+  }
+  drawQA();
+}
+
+function renderConsultar(el) {
+  el.innerHTML = `<div class="ask panel">
+      <label for="askInput" class="eyebrow">Preguntale al modelo</label>
+      <div class="askrow"><textarea id="askInput" rows="2" placeholder="Por ejemplo: ¿qué capacidades estratégicas de Exploración & Desarrollo no tienen aplicación?"></textarea>
+        <button type="button" class="btn-ask" id="askGo">Preguntar</button><button type="button" class="chip" id="askStop" hidden>Detener</button></div>
+      <div class="sugg">${askSuggestions().map(s => `<button type="button" class="chip" data-ask="${esc(s)}">${esc(s)}</button>`).join("")}</div>
+      <p class="asknote" id="askNote">Responde con los ${nf.format(M.E.size)} elementos del repositorio. Las entidades de la respuesta abren su ficha, y las capacidades se pueden resaltar en el mapa.</p>
+    </div><div id="qa" class="qa"></div>`;
+  const inp = el.querySelector("#askInput");
+  el.querySelector("#askGo").onclick = () => { const q = inp.value; inp.value = ""; askQuestion(q); };
+  el.querySelector("#askStop").onclick = () => askCtl?.abort();
+  inp.onkeydown = ev => { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); el.querySelector("#askGo").click(); } };
+  el.querySelectorAll("[data-ask]").forEach(b => b.onclick = () => askQuestion(b.dataset.ask));
+  samplerP.then(s => { const n = el.querySelector("#askNote"); if (n && s) n.textContent += " Cada consulta usa tu cuenta de Claude."; });
+  drawQA();
+  inp.focus({preventScroll: true});
+}
+function drawQA() {
+  const box = document.getElementById("qa"); if (!box) return;
+  const busy = QA.some(x => x.state === "thinking" || x.state === "streaming");
+  const stop = document.getElementById("askStop"); if (stop) stop.hidden = !busy;
+  box.innerHTML = QA.map((x, i) => `<article class="qa-item panel">
+      <h3>${esc(x.q)}</h3>
+      <div class="qa-a">${x.state === "thinking" ? '<p class="thinking">Analizando el modelo…</p>' : renderAnswer(x.a)}</div>
+      ${x.note ? `<p class="qa-note">${esc(x.note)}</p>` : ""}
+      ${x.state === "done" && x.hi.length ? `<div class="qa-act"><button type="button" class="chip" data-hi="${i}">Resaltar ${x.hi.length} en el mapa →</button></div>` : ""}
+    </article>`).join("");
+  box.querySelectorAll("[data-hi]").forEach(b => b.onclick = () => { const x = QA[+b.dataset.hi]; mapHi = {keys: x.hi, label: x.q}; domOn = null; clsOff.clear(); chainOff.clear(); lensOff.clear(); go("mapa"); });
+}
+
 /* ---------- Ficha lateral ---------- */
 const ATTRS = {
   app: [["tipo_aplicacion","Tipo"],["deployment","Despliegue"],["lifecycle","Ciclo de vida"],["business_criticality","Criticidad"]],
@@ -795,10 +1063,14 @@ function filterPal(q) {
   const nq = norm(q).trim().split(/\s+/).filter(Boolean);
   palItems = [...M.E.values()].filter(e => nq.every(w => norm(e.name + " " + TYPES[e.type].label + " " + (e.abbr || "")).includes(w)))
     .sort((a, b) => ({app: 0, n3: 1, contract: 2, vendor: 3}[a.type] ?? 5) - ({app: 0, n3: 1, contract: 2, vendor: 3}[b.type] ?? 5)).slice(0, 60);
+  const words = q.trim().split(/\s+/).filter(Boolean).length;
+  if (q.trim().endsWith("?") || words >= 4) palItems.unshift({ask: q.trim()});
   palSel = 0; drawPal();
 }
+function palPick(it) { closePal(); if (it.ask) askQuestion(it.ask); else openEntity(it.key); }
 function drawPal() {
-  document.getElementById("palList").innerHTML = palItems.map((e, i) => `<li role="option" data-i="${i}" aria-selected="${i === palSel}" style="--tc:${tvar(e.type)}"><i></i><span>${esc(e.name)}</span><small>${TYPES[e.type].label}</small></li>`).join("") || `<li><span style="color:var(--muted)">Sin resultados</span></li>`;
+  document.getElementById("palList").innerHTML = palItems.map((e, i) => e.ask ? `<li role="option" data-i="${i}" aria-selected="${i === palSel}" class="pal-ask" style="--tc:var(--accent)"><i></i><span>Preguntar al modelo: “${esc(e.ask)}”</span><small>Consultar</small></li>`
+    : `<li role="option" data-i="${i}" aria-selected="${i === palSel}" style="--tc:${tvar(e.type)}"><i></i><span>${esc(e.name)}</span><small>${TYPES[e.type].label}</small></li>`).join("") || `<li><span style="color:var(--muted)">Sin resultados</span></li>`;
   document.querySelector(`#palList [aria-selected="true"]`)?.scrollIntoView({block: "nearest"});
 }
 
@@ -823,7 +1095,7 @@ function drawPal() {
   document.getElementById("openPal").onclick = openPal;
   document.getElementById("palette").onclick = ev => { if (ev.target.id === "palette") closePal(); };
   document.getElementById("palInput").oninput = ev => filterPal(ev.target.value);
-  document.getElementById("palList").onclick = ev => { const li = ev.target.closest("[data-i]"); if (li) { closePal(); openEntity(palItems[+li.dataset.i].key); } };
+  document.getElementById("palList").onclick = ev => { const li = ev.target.closest("[data-i]"); if (li) palPick(palItems[+li.dataset.i]); };
   document.addEventListener("keydown", ev => {
     const palOpen = !document.getElementById("palette").hidden;
     if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "k" || (ev.key === "/" && !palOpen && !/INPUT|TEXTAREA/.test(document.activeElement.tagName))) { ev.preventDefault(); openPal(); return; }
@@ -831,7 +1103,7 @@ function drawPal() {
     if (!palOpen) return;
     if (ev.key === "ArrowDown") { palSel = Math.min(palItems.length - 1, palSel + 1); drawPal(); ev.preventDefault(); }
     if (ev.key === "ArrowUp") { palSel = Math.max(0, palSel - 1); drawPal(); ev.preventDefault(); }
-    if (ev.key === "Enter" && palItems[palSel]) { closePal(); openEntity(palItems[palSel].key); }
+    if (ev.key === "Enter" && palItems[palSel]) palPick(palItems[palSel]);
   });
   window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (VIEWS[v] && v !== current) go(v); });
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (["red", "flujo", "horizonte"].includes(current)) go(current); }, 250); });
