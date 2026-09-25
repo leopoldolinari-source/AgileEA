@@ -224,6 +224,8 @@ svg text{fill:var(--ink)}
 .actions .ix{font:600 12px var(--mono);color:var(--muted)}
 
 
+.srcbanner{padding:12px 16px;border-radius:12px;font-size:13.5px;background:color-mix(in srgb,var(--warn) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);color:var(--ink)}
+.srcbanner.err{background:color-mix(in srgb,var(--crit) 12%,var(--surface));border-color:color-mix(in srgb,var(--crit) 45%,transparent)}
 /* ——— Consultar ——— */
 .ask{padding:18px;display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
 .askrow{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
@@ -397,14 +399,20 @@ const tvar = t => `var(${TYPES[t].color})`;
 
 /* ---------- Carga ---------- */
 async function loadData() {
-  for (const src of ["api.php", "data.json"]) {
-    try {
-      const r = await fetch(src, {cache: "no-store"});
-      if (r.ok && (r.headers.get("content-type") || "").includes("json")) return {raw: await r.json(), src};
-      if (r.ok) { const t = await r.text(); if (t.trim().startsWith("{")) return {raw: JSON.parse(t), src}; }
-    } catch (e) { /* siguiente fuente */ }
-  }
-  return {raw: {}, src: "sin datos"};
+  // 1) Base viva vía api.php. Si api.php existe pero falla, se informa el error: nunca se cambia en silencio al backup.
+  try {
+    const r = await fetch("api.php", {cache: "no-store"});
+    const t = await r.text();
+    if (t.trim().startsWith("{")) {
+      const j = JSON.parse(t);
+      if (!r.ok || j.error) return {raw: {}, src: "api.php", error: j.error || `api.php respondió ${r.status}`};
+      return {raw: j, src: "live", meta: j._meta || {}};
+    }
+    if (r.ok && t.includes("<?php")) return {raw: {}, src: "api.php", error: "El servidor no está ejecutando PHP: abrí Estratos a través de Apache/XAMPP (http://localhost/…), no como archivo suelto."};
+  } catch (e) { /* sin api.php: modo demostración */ }
+  // 2) Sin api.php (por ejemplo, el link de claude.ai): backup exportado, marcado como demostración.
+  try { const r = await fetch("data.json", {cache: "no-store"}); if (r.ok) return {raw: await r.json(), src: "demo"}; } catch (e) {}
+  return {raw: {}, src: "sin datos", error: "No se encontró api.php ni data.json."};
 }
 
 /* ---------- Modelo en grafo ---------- */
@@ -1106,9 +1114,17 @@ function drawPal() {
 
 /* ---------- Arranque ---------- */
 (async function start() {
-  const {raw, src} = await loadData();
+  const {raw, src, meta, error} = await loadData();
   build(raw);
-  document.getElementById("src").innerHTML = `<span>Fuente: ${esc(src)}</span><span>${nf.format(M.E.size)} entidades</span><span>${nf.format(sum([...M.adj.values()], a => a.length) / 2)} relaciones</span>`;
+  const srcTxt = src === "live" ? `Base: ${meta.db || "?"} · ${meta.entorno || ""}` : src === "demo" ? "Backup de demostración (data.json)" : src;
+  document.getElementById("src").innerHTML = `<span>${esc(srcTxt)}</span><span>${nf.format(M.E.size)} entidades</span><span>${nf.format(sum([...M.adj.values()], a => a.length) / 2)} relaciones</span>`;
+  if (error || src === "demo") {
+    const b = document.createElement("div");
+    b.className = "srcbanner " + (error ? "err" : "");
+    b.innerHTML = error ? `<b>No se cargaron datos.</b> ${esc(error)}`
+      : `<b>Datos de demostración.</b> Estás viendo el backup exportado (data.json), no la base viva. Para ver tus datos, abrí Estratos desde el servidor donde corre api.php.`;
+    document.querySelector("main").insertBefore(b, document.getElementById("pulse"));
+  }
   renderPulse();
   go((location.hash || "").slice(1) || "mapa");
 

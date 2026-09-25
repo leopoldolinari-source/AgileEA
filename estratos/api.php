@@ -4,7 +4,8 @@
  * Devuelve el modelo completo de AgileEA como JSON {tabla: [filas]} para la capa visual (index.html).
  * Usa las mismas credenciales que el ABM principal; ajustá CFG si cambian.
  */
-const DEV = true;
+// Entorno: true = Desarrollo (agileea_dev) / false = Producción (AgileEA)
+const DEV = false;
 const CFG = [
     'host' => 'localhost', 'port' => 3306,
     'user' => 'root', 'password' => '',
@@ -32,7 +33,7 @@ try {
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
     );
     $existentes = $pdo->query('SHOW TABLES')->fetchAll(PDO::FETCH_COLUMN);
-    $out = [];
+    $out = ['_meta' => ['db' => CFG['db'], 'entorno' => DEV ? 'Desarrollo' : 'Producción', 'leido' => date('c')]];
     foreach (TABLAS as $t) {
         if (in_array($t, $existentes, true)) {
             $out[$t] = $pdo->query('SELECT * FROM `' . $t . '`')->fetchAll();
@@ -40,6 +41,7 @@ try {
     }
     echo json_encode($out, JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
+    error_log('Estratos api.php: ' . $e->getMessage());
     http_response_code(503);
-    echo json_encode(['error' => 'No se pudo leer la base de datos.']);
+    echo json_encode(['error' => 'No se pudo leer la base de datos ' . CFG['db'] . '. Revisá CFG en estratos/api.php.'], JSON_UNESCAPED_UNICODE);
 }

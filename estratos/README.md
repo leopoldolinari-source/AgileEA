@@ -22,8 +22,8 @@ Opcional: agregar al menú lateral del ABM `<a class="it" href="estratos/">Estra
 ## Fuentes de datos
 
 `index.html` intenta, en orden:
-1. `api.php` — base viva (solo lectura, tablas en lista blanca).
-2. `data.json` — exportado de un backup, para demo sin base:
+1. `api.php` — base viva (solo lectura, tablas en lista blanca). Por defecto lee **producción** (`AgileEA`); `DEV = true` pasa a `agileea_dev`. Si falla, la página muestra el error: no cambia sola al backup.
+2. `data.json` — solo si no hay `api.php` (por ejemplo, el link de claude.ai). Se muestra un aviso de "datos de demostración". Se genera así:
    `python3 tools/sql_to_json.py agileEA_backup.sql estratos/data.json`
    (`data.json` está en `.gitignore` porque contiene datos del negocio.)
 
