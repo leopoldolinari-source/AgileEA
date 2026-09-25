@@ -1,4 +1,4 @@
-# Estratos
+# AgileEA · Arquitectura empresarial (capa visual)
 
 Capa de consumo visual para AgileEA. No reemplaza el ABM (`index.php`): lee la misma base y la presenta en seis vistas conectadas.
 
