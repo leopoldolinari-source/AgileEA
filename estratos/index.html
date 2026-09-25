@@ -456,7 +456,7 @@ function build(T) {
     const h = cab[r.costo_cabecera], y = h && ca[h.contrato_anio], c = y && con[y.contrato];
     if (!c) return;
     M.costs.push({year: +y.anio, month: +h.mes || null, contract: c.id_contrato, app: c.aplicacion, vendor: c.proveedor,
-      org: r.organizacion_pagadora, cc: r.centro_costo, tipo: r.tipo_gasto, concepto: r.concepto, monto: +r.monto});
+      org: r.organizacion_pagadora, cc: r.centro_costo, tipo: r.tipo_gasto, moneda: c.moneda || "USD", concepto: r.concepto, monto: +r.monto});
   });
 }
 const nbrs = (key, type) => (M.adj.get(key) || []).filter(l => !type || M.E.get(l.to).type === type);
@@ -532,7 +532,7 @@ const VIEWS = {
   consultar:{nav:"Consultar", hint:"Preguntas en lenguaje natural", title:"Consultar el modelo", sub:"Preguntá en tus palabras. La respuesta usa solo los datos cargados y enlaza cada capacidad, aplicación o contrato que menciona.", render: renderConsultar},
   red:{nav:"Red", hint:"Todo conectado", title:"Red del modelo", sub:"Organizaciones, aplicaciones, proveedores, contratos, licencias y personas en un solo grafo. Tocá un nodo para aislar su vecindario.", render: renderRed},
   portafolio:{nav:"Portafolio", hint:"Matriz TIME", title:"Portafolio de aplicaciones", sub:"Ajuste funcional contra ajuste técnico. El tamaño de cada burbuja es el gasto registrado del año; el color, su ciclo de vida.", render: renderPortafolio},
-  flujo:{nav:"Flujo de costos", hint:"De proveedor a centro de costo", title:"Flujo de costos", sub:"Recorrido del dinero: proveedor → aplicación → organización pagadora → centro de costo.", render: renderFlujo},
+  flujo:{nav:"Flujo de costos", hint:"De proveedor a centro de costo", title:"Flujo de costos", sub:"Recorrido del dinero de proveedor a centro de costo, separado en CAPEX y OPEX.", render: renderFlujo},
   horizonte:{nav:"Horizonte", hint:"Contratos en el tiempo", title:"Horizonte de contratos", sub:"Vigencias, vencimientos próximos y licencias comprometidas por contrato.", render: renderHorizonte},
   salud:{nav:"Salud del modelo", hint:"Completitud y acciones", title:"Salud del modelo", sub:"Qué tan completo está el repositorio y qué conviene cargar primero para que las vistas digan más.", render: renderSalud},
 };
@@ -556,14 +556,14 @@ function go(v) {
 /* ---------- Pulso ---------- */
 function renderPulse() {
   const n3 = all("n3"), cov = n3.filter(e => nbrs(e.key, "app").length).length;
-  const spend = sum(M.costs.filter(c => c.year === YEAR));
-  const opex = sum(M.costs.filter(c => c.year === YEAR && c.tipo === "OPEX"));
+  const yr = M.costs.filter(c => c.year === YEAR && c.moneda === "USD");
+  const spend = sum(yr), capex = sum(yr.filter(c => c.tipo === "CAPEX"));
   const next = all("contract").map(e => [e, contractStatus(e)]).filter(([, s]) => s.days != null && s.days >= 0).sort((a, b) => a[1].days - b[1].days)[0];
   const hm = healthMetrics(), score = hm.reduce((s, m) => s + pct(m.n, m.d), 0) / hm.length;
   const k = [
     {l:"Subcapacidades N3", v: nf.format(n3.length), s:`${all("n2").length} capacidades N2 · ${all("n1").length} dominios`, go:"mapa"},
     {l:"Cobertura aplicativa", v: pctTxt(pct(cov, n3.length)), s:`${cov} de ${n3.length} con aplicación`, bar: pct(cov, n3.length), go:"mapa", cls: pct(cov, n3.length) < 25 ? "warn" : ""},
-    {l:`Gasto registrado ${YEAR}`, v: usdK(spend), s: spend ? `${pctTxt(pct(opex, spend))} OPEX · ${uniq(M.costs.filter(c => c.year === YEAR).map(c => c.contract)).length} contratos` : "Sin costos cargados", go:"flujo"},
+    {l:`Gasto registrado ${YEAR}`, v: usdK(spend), s: spend ? `CAPEX ${usdK(capex)} · OPEX ${usdK(spend - capex)}` : "Sin costos cargados", go:"flujo"},
     next ? {l:"Próximo vencimiento", v: `${next[1].days}<small>días</small>`, s:`${next[0].name} · ${M.E.get(parentOf(next[0].key, "vendor"))?.name || ""}`, go:"horizonte", cls: next[1].k === "good" ? "" : next[1].k}
          : {l:"Próximo vencimiento", v:"—", s:"Sin contratos vigentes", go:"horizonte"},
     {l:"Salud del modelo", v: `${Math.round(score)}<small>/100</small>`, s:`${hm.filter(m => m.n < m.d).length} indicadores incompletos`, bar: score, go:"salud", cls: score < 40 ? "crit" : score < 70 ? "warn" : ""},
@@ -775,43 +775,73 @@ function renderPortafolio(el) {
 }
 
 /* ---------- Vista: Flujo de costos (Sankey) ---------- */
-let flowYear = "todos";
+let flowYear = "todos", flowTipo = "todos", flowMoneda = "USD";
 function renderFlujo(el) {
-  const years = uniq(M.costs.map(c => c.year)).sort();
-  const rows = M.costs.filter(c => flowYear === "todos" || c.year === +flowYear);
-  const total = sum(rows);
-  const seg = `<div class="seg" role="group" aria-label="Año">${["todos", ...years].map(y => `<button type="button" data-y="${y}" aria-pressed="${String(y) === String(flowYear)}">${y === "todos" ? "Todos los años" : y}</button>`).join("")}</div>`;
-  if (!rows.length) { el.innerHTML = `<div class="toolbar" style="margin-bottom:14px">${seg}</div><div class="empty-note">No hay costos cargados para este período.</div>`; bindY(); return; }
+  const monedas = uniq(M.costs.map(c => c.moneda));
+  if (!monedas.includes(flowMoneda)) flowMoneda = monedas.includes("USD") ? "USD" : monedas[0];
+  const base = M.costs.filter(c => c.moneda === flowMoneda);
+  const years = uniq(base.map(c => c.year)).sort();
+  const rows = base.filter(c => (flowYear === "todos" || c.year === +flowYear) && (flowTipo === "todos" || c.tipo === flowTipo));
+  const total = sum(rows), money = v => `${flowMoneda} ${nf.format(v)}`, moneyK = v => usdK(v).replace(/^USD/, flowMoneda);
+  const segY = `<div class="seg" role="group" aria-label="Año">${["todos", ...years].map(y => `<button type="button" data-y="${y}" aria-pressed="${String(y) === String(flowYear)}">${y === "todos" ? "Todos los años" : y}</button>`).join("")}</div>`;
+  const perTipo = t => sum(base.filter(c => (flowYear === "todos" || c.year === +flowYear) && c.tipo === t));
+  const segT = `<div class="seg" role="group" aria-label="Tipo de gasto">${["todos", "CAPEX", "OPEX"].map(t => `<button type="button" data-t="${t}" aria-pressed="${t === flowTipo}">${t === "todos" ? "CAPEX + OPEX" : `${t} <span class="num" style="opacity:.7">${moneyK(perTipo(t))}</span>`}</button>`).join("")}</div>`;
+  const segM = monedas.length > 1 ? `<div class="seg" role="group" aria-label="Moneda">${monedas.map(m => `<button type="button" data-m="${m}" aria-pressed="${m === flowMoneda}">${m}</button>`).join("")}</div>` : "";
+  const bar = `<div class="toolbar" style="margin-bottom:14px"><div style="display:flex;gap:8px;flex-wrap:wrap">${segY}${segT}${segM}</div>
+    <div class="legend"><span class="chip" style="cursor:default"><i style="background:var(--amber)"></i>CAPEX</span><span class="chip" style="cursor:default"><i style="background:var(--accent)"></i>OPEX</span></div></div>`;
+  const bind = () => {
+    el.querySelectorAll("[data-y]").forEach(b => b.onclick = () => { flowYear = b.dataset.y; renderFlujo(el); });
+    el.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { flowTipo = b.dataset.t; renderFlujo(el); });
+    el.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { flowMoneda = b.dataset.m; flowYear = "todos"; renderFlujo(el); });
+  };
+  if (!rows.length) {
+    const tipoTxt = flowTipo === "todos" ? "" : ` de tipo ${flowTipo}`;
+    el.innerHTML = `${bar}<div class="empty-note">No hay costos${tipoTxt} cargados para ${flowYear === "todos" ? "ningún año" : flowYear}. Los costos se cargan en el detalle de costos de cada contrato-año (tipo de gasto CAPEX u OPEX).</div>`;
+    bind(); return;
+  }
+  // Nodos: una entidad del modelo o un faltante explícito ("Sin aplicación", etc.)
+  const MISSING = {vendor: "Sin proveedor", app: "Sin aplicación", org: "Sin organización pagadora", cc: "Sin centro de costo"};
+  const info = key => { const e = M.E.get(key); if (e) return {type: e.type, name: e.type === "cc" ? `${e.data.codigo} · ${e.data.nombre}` : e.name, open: key};
+    const t = key.split(":")[0]; return {type: t, name: MISSING[t] || key, open: null}; };
   const nodes = new Map(), links = new Map();
-  const addN = (key, col) => { if (!nodes.has(key)) nodes.set(key, {id: key, col, e: M.E.get(key)}); };
-  const addL = (a, b, v, vendor) => { const k = a + ">" + b; const l = links.get(k) || {source: a, target: b, value: 0, vendor}; l.value += v; links.set(k, l); };
   rows.forEach(c => {
-    const chain = [`vendor:${c.vendor}`, `app:${c.app}`, `org:${c.org}`, c.cc ? `cc:${c.cc}` : null].filter(Boolean);
-    chain.forEach((k, i) => addN(k, i));
-    for (let i = 0; i < chain.length - 1; i++) addL(chain[i], chain[i + 1], c.monto, `vendor:${c.vendor}`);
+    const chain = [`vendor:${c.vendor ?? "none"}`, `app:${c.app ?? "none"}`, `org:${c.org ?? "none"}`, `cc:${c.cc ?? "none"}`];
+    chain.forEach(k => nodes.has(k) || nodes.set(k, {id: k, ...info(k)}));
+    for (let i = 0; i < chain.length - 1; i++) { const k = `${chain[i]}>${chain[i + 1]}>${c.tipo}`;
+      const l = links.get(k) || {source: chain[i], target: chain[i + 1], value: 0, tipo: c.tipo}; l.value += c.monto; links.set(k, l); }
   });
   const W = Math.max(760, el.clientWidth - 40), H = Math.max(340, nodes.size * 38);
-  const sk = d3.sankey().nodeId(d => d.id).nodeWidth(12).nodePadding(22).nodeAlign(d3.sankeyLeft).extent([[4, 10], [W - 4, H - 10]]);
-  const G = sk({nodes: [...nodes.values()].map(d => ({...d})), links: [...links.values()].map(d => ({...d}))});
-  const byTipo = d3.rollup(rows, v => sum(v), c => c.concepto);
-  el.innerHTML = `<div class="toolbar" style="margin-bottom:14px">${seg}
-      <div class="legend">${["Proveedor","Aplicación","Organización pagadora","Centro de costo"].map((t, i) => `<span class="eyebrow">${i + 1}. ${t}</span>`).join('<span class="eyebrow">→</span>')}</div></div>
-    <div style="display:flex;flex-direction:column;gap:20px"><div class="panel card"><h2>${usd(total)}</h2><p>${rows.length} registros de costo · ${uniq(rows.map(r => r.contract)).length} contratos · montos en USD.</p>
-      <div class="scroll-x"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:720px;display:block" id="sk"></svg></div></div>
-      <div class="two" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"><div class="panel card"><h2>Por concepto</h2><p>Distribución del gasto del período.</p><div class="list">${[...byTipo].sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div class="row" style="cursor:default"><span class="pill mute">${pctTxt(pct(v, total))}</span><span class="rt">${esc(k)}</span><span class="rv">${usdK(v)}</span></div>`).join("")}</div>
-      </div><div class="panel card"><h2>Por organización pagadora</h2><p>Quién absorbe el costo.</p><div class="list">${[...d3.rollup(rows, v => sum(v), c => c.org)].sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div class="row" data-open="org:${k}"><span class="pill mute">${pctTxt(pct(v, total))}</span><span class="rt">${esc(M.E.get("org:" + k)?.name)}</span><span class="rv">${usdK(v)}</span></div>`).join("")}</div></div></div></div>`;
-  const svg = d3.select(el.querySelector("#sk"));
-  const vcol = {}; uniq(rows.map(r => `vendor:${r.vendor}`)).forEach((v, i) => vcol[v] = `var(--c${i % 5 + 1})`);
-  svg.append("g").selectAll("path").data(G.links).join("path").attr("class", "sk-link").attr("d", d3.sankeyLinkHorizontal())
-    .style("stroke", d => vcol[d.vendor]).attr("stroke-width", d => Math.max(1.5, d.width))
-    .append("title").text(d => `${d.source.e?.name} → ${d.target.e?.name}\n${usd(d.value)}`);
-  const n = svg.append("g").selectAll("g").data(G.nodes).join("g").attr("class", "sk-node").attr("data-open", d => d.id);
-  n.append("rect").attr("x", d => d.x0).attr("y", d => d.y0).attr("height", d => Math.max(2, d.y1 - d.y0)).attr("width", d => d.x1 - d.x0).attr("rx", 2).style("fill", d => tvar(d.e.type));
-  const left = d => d.x1 > W - 20;
-  n.append("text").attr("x", d => left(d) ? d.x0 - 8 : d.x1 + 8).attr("y", d => (d.y0 + d.y1) / 2 - 6).attr("dy", "0.35em").attr("text-anchor", d => left(d) ? "end" : "start").text(d => d.e.type === "cc" ? d.e.data.codigo + " · " + d.e.data.nombre : d.e.name);
-  n.append("text").attr("class", "amt").attr("x", d => left(d) ? d.x0 - 8 : d.x1 + 8).attr("y", d => (d.y0 + d.y1) / 2 + 9).attr("dy", "0.35em").attr("text-anchor", d => left(d) ? "end" : "start").text(d => usdK(d.value));
-  bindY();
-  function bindY() { el.querySelectorAll("[data-y]").forEach(b => b.onclick = () => { flowYear = b.dataset.y; renderFlujo(el); }); }
+  const rollList = (key, open) => [...d3.rollup(rows, v => sum(v), key)].sort((a, b) => b[1] - a[1]).map(([k, v]) => { const o = open(k);
+    return `<div class="row" ${o.open ? `data-open="${o.open}"` : 'style="cursor:default"'}><span class="pill mute">${pctTxt(pct(v, total))}</span><span class="rt">${esc(o.name)}</span><span class="rv">${moneyK(v)}</span></div>`; }).join("");
+  el.innerHTML = `${bar}
+    <div style="display:flex;flex-direction:column;gap:20px"><div class="panel card"><h2>${money(total)}</h2><p>${rows.length} registros de costo · ${uniq(rows.map(r => r.contract)).length} contratos · proveedor → aplicación → organización pagadora → centro de costo.</p>
+      <div class="scroll-x" id="skBox"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:720px;display:block" id="sk"></svg></div></div>
+      <div class="two" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+        <div class="panel card"><h2>Por tipo de gasto</h2><p>CAPEX: inversión (compra de licencias). OPEX: gasto recurrente.</p><div class="list">${["CAPEX", "OPEX"].map(t => { const v = sum(rows.filter(r => r.tipo === t));
+          return `<div class="row" style="cursor:default"><span class="pill ${t === "CAPEX" ? "warn" : "mute"}">${pctTxt(pct(v, total))}</span><span class="rt">${t}</span><span class="rv">${v ? moneyK(v) : "sin registros"}</span></div>`; }).join("")}</div></div>
+        <div class="panel card"><h2>Por concepto</h2><p>Distribución del gasto del período.</p><div class="list">${rollList(c => c.concepto, k => ({name: k}))}</div></div>
+        <div class="panel card"><h2>Por organización pagadora</h2><p>Quién absorbe el costo.</p><div class="list">${rollList(c => c.org, k => info(`org:${k ?? "none"}`))}</div></div>
+      </div></div>`;
+  bind();
+  if (!d3.sankey) { el.querySelector("#skBox").innerHTML = '<div class="empty-note">No se pudo cargar el componente del diagrama (d3-sankey). Los totales de abajo son correctos.</div>'; return; }
+  try {
+    const G = d3.sankey().nodeId(d => d.id).nodeWidth(12).nodePadding(22).nodeAlign(d3.sankeyLeft).extent([[4, 10], [W - 4, H - 10]])
+      ({nodes: [...nodes.values()].map(d => ({...d})), links: [...links.values()].map(d => ({...d}))});
+    const svg = d3.select(el.querySelector("#sk"));
+    svg.append("g").selectAll("path").data(G.links).join("path").attr("class", "sk-link").attr("d", d3.sankeyLinkHorizontal())
+      .style("stroke", d => d.tipo === "CAPEX" ? "var(--amber)" : "var(--accent)").attr("stroke-width", d => Math.max(1.5, d.width))
+      .append("title").text(d => `${d.source.name} → ${d.target.name}\n${d.tipo} · ${money(d.value)}`);
+    const n = svg.append("g").selectAll("g").data(G.nodes).join("g").attr("class", "sk-node").attr("data-open", d => d.open);
+    n.append("rect").attr("x", d => d.x0).attr("y", d => d.y0).attr("height", d => Math.max(2, d.y1 - d.y0)).attr("width", d => d.x1 - d.x0).attr("rx", 2)
+      .style("fill", d => d.open ? tvar(d.type) : "var(--muted)");
+      const left = d => d.x0 > W / 2;   // columnas 3 y 4: etiqueta a la izquierda del nodo
+    n.append("text").attr("x", d => left(d) ? d.x0 - 8 : d.x1 + 8).attr("y", d => (d.y0 + d.y1) / 2 - 6).attr("dy", "0.35em").attr("text-anchor", d => left(d) ? "end" : "start")
+      .style("font-style", d => d.open ? null : "italic").text(d => d.name);
+    n.append("text").attr("class", "amt").attr("x", d => left(d) ? d.x0 - 8 : d.x1 + 8).attr("y", d => (d.y0 + d.y1) / 2 + 9).attr("dy", "0.35em").attr("text-anchor", d => left(d) ? "end" : "start").text(d => moneyK(d.value));
+  } catch (err) {
+    console.error(err);
+    el.querySelector("#skBox").innerHTML = `<div class="empty-note">No se pudo dibujar el diagrama (${esc(err.message || err)}). Los totales de abajo son correctos.</div>`;
+  }
 }
 
 /* ---------- Vista: Horizonte ---------- */
