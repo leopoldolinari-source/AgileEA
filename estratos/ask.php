@@ -1,13 +1,16 @@
 <?php
 /**
- * Estratos · Consulta en lenguaje natural.
+ * AgileEA · Consulta en lenguaje natural.
  *
  * Recibe {system, messages} desde index.html (vista "Consultar") y responde {text}.
  * `system` trae las instrucciones y el modelo serializado; `messages` la conversación.
  *
- * Requisitos:
- *   composer require "anthropic-ai/sdk"        (dentro de estratos/)
- *   Variable de entorno ANTHROPIC_API_KEY en el servidor web.
+ * Requisitos (PHP 8.1 o superior):
+ *   1. SDK:   en esta carpeta, `composer install` (usa composer.json).
+ *   2. Clave: copiar config.local.example.php como config.local.php y pegar la clave,
+ *             o definir la variable de entorno ANTHROPIC_API_KEY en el servidor web.
+ *
+ * Diagnóstico: abrir ask.php?diagnostico=1 en el navegador.
  */
 
 /* Cada consulta tiene costo en la cuenta de la API: por defecto solo la usa quien inició sesión en AgileEA. */
@@ -15,8 +18,6 @@ const ASK_SOLO_ADMIN = true;
 const ASK_MODELO = 'claude-opus-5';
 const ASK_MAX_CONSULTAS_POR_HORA = 60;
 const ASK_MAX_BYTES = 200000;
-
-require __DIR__ . '/vendor/autoload.php';
 
 use Anthropic\Client;
 use Anthropic\Core\Exceptions\APIConnectionException;
@@ -32,6 +33,29 @@ function responder(int $status, array $body): void {
     http_response_code($status);
     echo json_encode($body, JSON_UNESCAPED_UNICODE);
     exit;
+}
+
+$autoload = __DIR__ . '/vendor/autoload.php';
+
+function clave_api(): string {
+    $k = getenv('ANTHROPIC_API_KEY') ?: '';
+    if ($k === '' && is_file(__DIR__ . '/config.local.php')) {
+        $cfg = require __DIR__ . '/config.local.php';
+        $k = is_array($cfg) ? trim((string)($cfg['anthropic_api_key'] ?? '')) : '';
+    }
+    return $k;
+}
+
+// Diagnóstico: qué falta para que la consulta funcione (no expone la clave).
+if (isset($_GET['diagnostico'])) {
+    responder(200, [
+        'php' => PHP_VERSION,
+        'php_ok' => version_compare(PHP_VERSION, '8.1.0', '>='),
+        'sdk_instalado' => is_file($autoload),
+        'clave_configurada' => clave_api() !== '',
+        'requiere_login' => ASK_SOLO_ADMIN,
+        'sesion_iniciada' => !empty($_SESSION['migae_admin']),
+    ]);
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -73,9 +97,16 @@ if (end($limpios)['role'] !== 'user') {
     responder(400, ['error' => 'invalid_request', 'message' => 'La conversación debe terminar en una pregunta.']);
 }
 
-$apiKey = getenv('ANTHROPIC_API_KEY');
-if (!$apiKey) {
-    responder(503, ['error' => 'sin_backend']);
+if (version_compare(PHP_VERSION, '8.1.0', '<')) {
+    responder(503, ['error' => 'php_viejo', 'message' => 'PHP ' . PHP_VERSION]);
+}
+if (!is_file($autoload)) {
+    responder(503, ['error' => 'sin_sdk']);
+}
+require $autoload;
+$apiKey = clave_api();
+if ($apiKey === '') {
+    responder(503, ['error' => 'sin_clave']);
 }
 
 try {
@@ -105,11 +136,14 @@ try {
     }
     responder(200, ['text' => $texto]);
 } catch (AuthenticationException $e) {
-    responder(503, ['error' => 'sin_backend']);
+    responder(503, ['error' => 'clave_invalida']);
 } catch (RateLimitException $e) {
     responder(429, ['error' => 'rate_limited']);
 } catch (APIStatusException $e) {
     responder(502, ['error' => 'upstream_error', 'message' => 'La API de Claude devolvió un error.']);
 } catch (APIConnectionException $e) {
     responder(502, ['error' => 'upstream_error', 'message' => 'No se pudo conectar con la API de Claude.']);
+} catch (Throwable $e) {
+    error_log('AgileEA ask.php: ' . get_class($e) . ': ' . $e->getMessage());
+    responder(500, ['error' => 'php_error', 'message' => 'Error en ask.php: ' . $e->getMessage()]);
 }

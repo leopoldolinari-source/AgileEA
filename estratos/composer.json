@@ -1,0 +1,9 @@
+{
+    "name": "agileea/estratos",
+    "description": "Capa visual de AgileEA: consulta en lenguaje natural vía API de Claude.",
+    "require": {
+        "php": ">=8.1",
+        "anthropic-ai/sdk": "^0.51",
+        "guzzlehttp/guzzle": "^7"
+    }
+}

@@ -1025,7 +1025,12 @@ const ASK_ERR = {
   not_granted: "No se autorizó el uso de Claude en esta página.", sampling_disabled: "Claude no está disponible para esta cuenta.",
   rate_limited: "Demasiadas consultas seguidas. Esperá un momento y volvé a intentar.", session_expired: "La sesión venció. Volvé a iniciar sesión.",
   refused: "Claude no respondió esta consulta. Probá reformularla.", prompt_too_large: "El modelo es demasiado grande para enviarlo entero.",
-  login: "La consulta en lenguaje natural requiere iniciar sesión en AgileEA.", sin_backend: "La consulta no está disponible acá: falta ask.php con una clave de la API de Claude configurada en el servidor.",
+  login: "La consulta requiere iniciar sesión en AgileEA (ABM → Iniciar sesión) y volver a esta página.",
+  sin_sdk: "Falta instalar el SDK de Claude en el servidor: en la carpeta estratos ejecutá «composer install».",
+  sin_clave: "Falta la clave de la API de Claude: copiá estratos/config.local.example.php como config.local.php y pegá la clave.",
+  clave_invalida: "La clave de la API de Claude configurada en el servidor no es válida.",
+  php_viejo: "El servidor tiene una versión de PHP anterior a 8.1, que el SDK de Claude no admite.",
+  sin_ask: "No se encontró ask.php junto a esta página.",
 };
 
 async function askQuestion(q) {
@@ -1043,9 +1048,12 @@ async function askQuestion(q) {
     } else {
       const r = await fetch("ask.php", {method: "POST", headers: {"Content-Type": "application/json"}, signal: askCtl.signal,
         body: JSON.stringify({system: ctx, messages: [...history, {role: "user", content: q}]})});
-      const ct = r.headers.get("content-type") || "";
-      if (!ct.includes("json")) throw {code: "sin_backend"};
-      const j = await r.json();
+      const raw = await r.text();
+      let j; try { j = JSON.parse(raw); } catch (e) {
+        if (r.status === 404) throw {code: "sin_ask"};
+        const txt = raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 220);
+        throw {code: "php_error", message: `ask.php falló (HTTP ${r.status}): ${txt || "sin detalle"}. Abrí ask.php?diagnostico=1 para ver qué falta.`};
+      }
       if (!r.ok || j.error) throw {code: j.error || "upstream_error", message: j.message};
       onText({text: j.text});
     }

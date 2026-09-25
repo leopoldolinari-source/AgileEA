@@ -3,3 +3,4 @@ estratos/data.json
 __pycache__/
 estratos/vendor/
 estratos/composer.lock
+estratos/config.local.php

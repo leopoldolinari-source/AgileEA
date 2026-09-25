@@ -34,9 +34,10 @@ D3 se carga del CDN; si la red lo bloquea, usa las copias de `lib/`.
 La vista "Consultar" envía el modelo serializado (~40 KB) y la pregunta a Claude.
 
 - Dentro de claude.ai usa la cuenta de quien mira la página.
-- En el servidor propio usa `ask.php`:
-  1. `cd estratos && composer require "anthropic-ai/sdk"`
-  2. Definir `ANTHROPIC_API_KEY` en el entorno del servidor web.
-  3. Por defecto solo responde a usuarios con sesión iniciada en AgileEA (`ASK_SOLO_ADMIN`) y hasta 60 consultas por hora por sesión. Ajustable al inicio del archivo.
+- En el servidor propio usa `ask.php` (PHP 8.1 o superior):
+  1. En la carpeta `estratos/`: `composer install` (instala el SDK de Anthropic y Guzzle según `composer.json`).
+  2. Copiar `config.local.example.php` como `config.local.php` y pegar la clave de la API (se crea en console.anthropic.com → API Keys). También sirve la variable de entorno `ANTHROPIC_API_KEY`. `config.local.php` está fuera de git.
+  3. Por defecto solo responde a usuarios con sesión iniciada en AgileEA (`ASK_SOLO_ADMIN`) y hasta 60 consultas por hora por sesión.
+  4. Para ver qué falta: abrir `estratos/ask.php?diagnostico=1` (muestra versión de PHP, SDK, clave y sesión, sin revelar la clave).
 
 Modelo: `claude-opus-5`. El modelo serializado va como system prompt cacheado, así las preguntas siguientes cuestan menos.
