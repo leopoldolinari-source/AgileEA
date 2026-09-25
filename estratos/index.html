@@ -1,0 +1,839 @@
+<meta charset="utf-8">
+<title>Estratos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#E9EFEF; --surface:#FFFFFF; --surface-2:#F3F7F7; --ink:#0E2530; --ink-2:#34505B; --muted:#61767E; --line:#D3DDDF; --line-2:#E3EAEB;
+  --accent:#1B7A9B; --accent-ink:#FFFFFF; --amber:#B06F10; --good:#2F8A5B; --warn:#B7760F; --crit:#C0413B;
+  --hatch:rgba(14,37,48,.13); --shadow:0 18px 50px -20px rgba(14,37,48,.35);
+  --s1:#2F86AE; --s2:#7A5BA6; --s3:#C07A33; --s4:#4F8F5F; --s5:#B24F62;
+  --c1:#2F86AE; --c2:#C07A33; --c3:#4F8F5F; --c4:#7A5BA6; --c5:#B24F62;
+  --q1:#CFE7EF; --q2:#9CCCDD; --q3:#5FAAC6; --q4:#2E82A5; --q5:#145E7C;
+  --w1:#E8D9B5; --w2:#DDB067; --w3:#C9772F; --w4:#A8362F;
+  --t-app:#1B7A9B; --t-org:#4F8F5F; --t-vendor:#C07A33; --t-contract:#B06F10; --t-cap:#7A5BA6; --t-disc:#3F9C94; --t-person:#8C6A5A; --t-cc:#6B7F3A; --t-lic:#B24F62;
+  --display:"Exo 2","Segoe UI",system-ui,sans-serif; --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --ground:#0A1114; --surface:#111B20; --surface-2:#15222800; --surface-2:#172429; --ink:#E2ECEC; --ink-2:#B7C7CA; --muted:#8398A0; --line:#243740; --line-2:#1B2B32;
+  --accent:#4BB4D6; --accent-ink:#06151B; --amber:#E4AA48; --good:#5CC08A; --warn:#E4AA48; --crit:#EE6A62;
+  --hatch:rgba(226,236,236,.10); --shadow:0 18px 60px -18px rgba(0,0,0,.7);
+  --s1:#4BA7D0; --s2:#9C80CC; --s3:#DC9650; --s4:#6DB27C; --s5:#D86F83;
+  --c1:#4BA7D0; --c2:#DC9650; --c3:#6DB27C; --c4:#9C80CC; --c5:#D86F83;
+  --q1:#173847; --q2:#1D5468; --q3:#2B7892; --q4:#46A2C2; --q5:#86D0E8;
+  --w1:#3F3622; --w2:#7A5A26; --w3:#B8702F; --w4:#E0544B;
+  --t-app:#4BB4D6; --t-org:#6DB27C; --t-vendor:#DC9650; --t-contract:#E4AA48; --t-cap:#9C80CC; --t-disc:#5CC2B8; --t-person:#C29A86; --t-cc:#A4BA63; --t-lic:#D86F83;
+}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --ground:#0A1114; --surface:#111B20; --surface-2:#172429; --ink:#E2ECEC; --ink-2:#B7C7CA; --muted:#8398A0; --line:#243740; --line-2:#1B2B32;
+  --accent:#4BB4D6; --accent-ink:#06151B; --amber:#E4AA48; --good:#5CC08A; --warn:#E4AA48; --crit:#EE6A62;
+  --hatch:rgba(226,236,236,.10); --shadow:0 18px 60px -18px rgba(0,0,0,.7);
+  --s1:#4BA7D0; --s2:#9C80CC; --s3:#DC9650; --s4:#6DB27C; --s5:#D86F83;
+  --c1:#4BA7D0; --c2:#DC9650; --c3:#6DB27C; --c4:#9C80CC; --c5:#D86F83;
+  --q1:#173847; --q2:#1D5468; --q3:#2B7892; --q4:#46A2C2; --q5:#86D0E8;
+  --w1:#3F3622; --w2:#7A5A26; --w3:#B8702F; --w4:#E0544B;
+  --t-app:#4BB4D6; --t-org:#6DB27C; --t-vendor:#DC9650; --t-contract:#E4AA48; --t-cap:#9C80CC; --t-disc:#5CC2B8; --t-person:#C29A86; --t-cc:#A4BA63; --t-lic:#D86F83;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font:14px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.num{font-variant-numeric:tabular-nums}
+
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100%}
+.rail{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;padding:22px 14px;display:flex;flex-direction:column;gap:22px;border-right:1px solid var(--line);background:var(--surface)}
+.brand{display:flex;align-items:center;gap:10px;padding-inline:8px}
+.brand svg{flex:none}
+.brand b{font:800 21px/1 var(--display);letter-spacing:.02em}
+.brand small{display:block;font:500 10px/1.2 var(--mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:grid;grid-template-columns:20px 1fr;align-items:center;gap:10px;padding:9px 10px;border:0;background:none;border-radius:8px;cursor:pointer;text-align:left;color:var(--ink-2);font-weight:500}
+.nav button svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+.nav button:hover{background:var(--surface-2);color:var(--ink)}
+.nav button[aria-current="true"]{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.nav .hint{grid-column:2;font-size:11.5px;color:var(--muted);font-weight:400;margin-top:-3px}
+.rail .src{margin-top:auto;font:400 11px/1.5 var(--mono);color:var(--muted);padding-inline:8px}
+.rail .src span{display:block}
+
+main{min-width:0;padding-block:22px 60px;padding-inline:clamp(16px,3vw,36px);display:flex;flex-direction:column;gap:20px}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.top h1{margin:0;font:700 clamp(24px,3.2vw,34px)/1.1 var(--display);letter-spacing:-.01em;text-wrap:balance}
+.top p{margin:6px 0 0;color:var(--muted);max-width:68ch}
+.search{display:flex;align-items:center;gap:10px;min-width:min(320px,100%);padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--muted);cursor:pointer;text-align:left}
+.search:hover{border-color:var(--accent)}
+.search svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.search span{flex:1}
+kbd{font:500 11px var(--mono);padding:2px 6px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;color:var(--muted);background:var(--surface-2)}
+
+.pulse{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.kpi{padding:14px 16px;border-left:1px solid var(--line-2);display:flex;flex-direction:column;gap:3px;min-width:0;cursor:pointer;background:none;border-top:0;border-right:0;border-bottom:0;text-align:left}
+.kpi:first-child{border-left:0}
+.kpi:hover{background:var(--surface-2)}
+.kpi .l{font:500 10.5px/1.2 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.kpi .v{font:700 26px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.kpi .v small{font:500 13px var(--body);color:var(--muted);margin-left:4px}
+.kpi .s{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .bar{height:4px;border-radius:2px;background:var(--line-2);overflow:hidden;margin-top:4px}
+.kpi .bar i{display:block;height:100%;background:var(--accent)}
+.kpi.warn .v{color:var(--warn)} .kpi.crit .v{color:var(--crit)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.seg{display:flex;flex-wrap:wrap;gap:4px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.seg button{border:0;background:none;padding:6px 11px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--ink-2);font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.eyebrow{font:500 10.5px/1.2 var(--mono);text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:4px 10px 4px 8px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:12.5px;cursor:pointer;color:var(--ink-2)}
+.chip i{width:10px;height:10px;border-radius:3px;flex:none}
+.chip b{font:500 11px var(--mono);color:var(--muted)}
+.chip[aria-pressed="false"]{opacity:.45}
+.hatch{background-image:repeating-linear-gradient(135deg,var(--hatch) 0 2px,transparent 2px 6px)}
+
+/* ——— Mapa estratigráfico ——— */
+.strata{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.stratum{display:grid;grid-template-columns:230px minmax(0,1fr);border-top:1px solid var(--line)}
+.stratum:first-child{border-top:0}
+.s-head{position:relative;padding:16px 16px 16px 30px;border-right:1px solid var(--line-2);display:flex;flex-direction:column;gap:8px}
+.s-head::before{content:"";position:absolute;left:0;top:0;bottom:0;width:16px;background-color:var(--sc);opacity:.95}
+.s-head .litho{position:absolute;left:0;top:0;bottom:0;width:16px;opacity:.55}
+.s-head .ab{font:600 11px var(--mono);color:var(--sc);letter-spacing:.06em}
+.s-head h2{margin:0;font:700 17px/1.2 var(--display);text-wrap:balance}
+.s-head dl{margin:4px 0 0;display:grid;grid-template-columns:repeat(3,auto);gap:2px 12px;justify-content:start}
+.s-head dt{font:500 10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.s-head dd{margin:0;font:600 16px var(--display);font-variant-numeric:tabular-nums;grid-row:2}
+.s-body{padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;align-content:start}
+.n2{border:1px solid var(--line-2);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px;background:var(--surface-2)}
+.n2 h3{margin:0;font:600 12.5px/1.3 var(--body);color:var(--ink);cursor:pointer}
+.n2 h3:hover{color:var(--accent)}
+.n2 .meta{font:400 10.5px var(--mono);color:var(--muted);letter-spacing:.02em}
+.n3{display:flex;align-items:flex-start;gap:7px;padding:5px 7px;border-radius:6px;font-size:12px;line-height:1.3;cursor:pointer;border:1px solid transparent;background:color-mix(in srgb,var(--lc,transparent) 20%,var(--surface));transition:opacity .2s,transform .15s}
+.n3:hover{border-color:var(--lc,var(--line));transform:translateX(2px)}
+.n3 .d{width:9px;height:9px;border-radius:2px;background:var(--lc);flex:none;margin-top:3px}
+.n3.none{background-color:var(--surface)}
+.n3.none .d{background:none;border:1px dashed var(--muted)}
+.n3 .t{flex:1;min-width:0}
+.n3 .apps{font:600 9.5px var(--mono);color:var(--accent-ink);background:var(--accent);padding:1px 5px;border-radius:4px;margin-top:1px;white-space:nowrap}
+.n3.dim{opacity:.18}
+
+/* ——— SVG vistas ——— */
+.scroll-x{overflow-x:auto}
+svg text{fill:var(--ink)}
+.axis text{font:500 11px var(--mono);fill:var(--muted)}
+.axis line,.axis path{stroke:var(--line)}
+.grid-line{stroke:var(--line-2)}
+.graph-wrap{position:relative;height:min(68vh,680px);min-height:420px;border:1px solid var(--line);border-radius:14px;background:
+  radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 0) 0 0/22px 22px,var(--surface);overflow:hidden}
+.graph-wrap svg{width:100%;height:100%;cursor:grab;display:block}
+.node circle{stroke:var(--surface);stroke-width:2;cursor:pointer}
+.node text{font:500 11px var(--body);pointer-events:none;paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
+.node.minor text{opacity:0}
+.node.minor:hover text,.node.focus text,.node.nb text{opacity:1}
+.link{stroke:var(--muted);stroke-opacity:.28;fill:none}
+.g-dim .node:not(.focus):not(.nb){opacity:.14}
+.g-dim .link:not(.hot){stroke-opacity:.05}
+.link.hot{stroke:var(--accent);stroke-opacity:.9;stroke-width:1.6}
+.overlay{position:absolute;left:12px;bottom:12px;right:12px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none}
+.overlay>*{pointer-events:auto}
+.hint-box{position:absolute;top:12px;right:12px;font:400 11.5px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+
+.two{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}
+.card{padding:18px}
+.card h2{margin:0 0 4px;font:700 17px/1.2 var(--display)}
+.card>p{margin:0 0 14px;color:var(--muted);font-size:13px;max-width:62ch}
+.bubble{cursor:pointer}
+.bubble circle{stroke:var(--surface);stroke-width:2}
+.quad-label{font:700 13px var(--display);letter-spacing:.14em;text-transform:uppercase;fill:var(--muted);opacity:.55}
+.list{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line-2);cursor:pointer}
+.row:first-child{border-top:0}
+.row:hover .rt{color:var(--accent)}
+.row .rt{font-weight:600;font-size:13.5px}
+.row .rs{font-size:12px;color:var(--muted)}
+.row .rv{font:600 13px var(--mono);text-align:right;white-space:nowrap}
+.pill{display:inline-block;font:600 10.5px/1 var(--mono);padding:4px 7px;border-radius:5px;letter-spacing:.03em;white-space:nowrap}
+.pill.good{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.pill.crit{background:color-mix(in srgb,var(--crit) 18%,transparent);color:var(--crit)}
+.pill.mute{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.sk-link{fill:none;stroke-opacity:.35;cursor:pointer;transition:stroke-opacity .2s}
+.sk-link:hover{stroke-opacity:.7}
+.sk-node rect{cursor:pointer}
+.sk-node text{font:500 12px var(--body)}
+.sk-node .amt{font:500 11px var(--mono);fill:var(--muted)}
+.tl-bar{cursor:pointer}
+.tl-bar text{font:600 11.5px var(--body)}
+
+.health{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.metric{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.metric .top2{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.metric .mt{font-weight:600;font-size:13px}
+.metric .mv{font:600 13px var(--mono);white-space:nowrap}
+.gauge{height:6px;border-radius:3px;background:var(--line-2);overflow:hidden}
+.gauge i{display:block;height:100%;border-radius:3px}
+.metric .ms{font-size:12px;color:var(--muted)}
+.score{display:flex;align-items:center;gap:22px;padding:20px}
+.score .big{font:800 56px/1 var(--display);font-variant-numeric:tabular-nums}
+.score p{margin:0;color:var(--muted);max-width:56ch}
+.actions .row{grid-template-columns:28px minmax(0,1fr) auto}
+.actions .ix{font:600 12px var(--mono);color:var(--muted)}
+
+/* ——— Ficha lateral ——— */
+.scrim{position:fixed;inset:0;background:rgba(5,15,20,.35);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(470px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:21;box-shadow:var(--shadow);display:flex;flex-direction:column;animation:slide .22s ease-out}
+@keyframes slide{from{transform:translateX(24px);opacity:.4}}
+.d-head{padding:calc(18px + env(safe-area-inset-top,0px)) 20px 16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px;position:relative}
+.d-head .x{position:absolute;right:14px;top:calc(14px + env(safe-area-inset-top,0px));border:1px solid var(--line);background:var(--surface);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;line-height:1}
+.d-head h2{margin:0;font:700 22px/1.15 var(--display);padding-right:40px;text-wrap:balance}
+.crumbs{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px}
+.crumbs a{color:var(--muted);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.crumbs a:hover{color:var(--accent)}
+.typechip{align-self:flex-start;display:inline-flex;gap:6px;align-items:center;font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--tc)}
+.typechip i{width:8px;height:8px;border-radius:50%;background:var(--tc)}
+.d-body{flex:1;overflow-y:auto;padding:18px 20px calc(30px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:22px}
+.d-body section{display:flex;flex-direction:column;gap:8px}
+.d-body .desc{margin:0;color:var(--ink-2);font-size:13.5px;line-height:1.6;white-space:pre-line}
+.attrs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line-2);border:1px solid var(--line-2);border-radius:10px;overflow:hidden;margin:0}
+.attrs div{background:var(--surface);padding:9px 11px}
+.attrs dt{font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.attrs dd{margin:2px 0 0;font-weight:600;font-size:13px}
+.attrs dd.empty{color:var(--muted);font-weight:400;font-style:italic}
+.rel{display:flex;flex-wrap:wrap;gap:6px}
+.rel button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:5px 9px;font-size:12.5px;cursor:pointer;text-align:left}
+.rel button:hover{border-color:var(--tc)}
+.rel button i{width:7px;height:7px;border-radius:50%;background:var(--tc);flex:none}
+.rel button small{color:var(--muted);font:400 11px var(--mono)}
+.fit{display:grid;grid-template-columns:110px 1fr 28px;gap:8px;align-items:center;font-size:12.5px}
+.fit .dots{display:flex;gap:4px}
+.fit .dots i{flex:1;height:8px;border-radius:2px;background:var(--line-2)}
+.fit .dots i.on{background:var(--accent)}
+.empty-note{padding:12px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px}
+
+/* ——— Paleta de comandos ——— */
+.palette{position:fixed;inset:0;z-index:30;display:flex;justify-content:center;align-items:flex-start;padding:12vh 16px 16px;background:rgba(5,15,20,.45)}
+.pal{width:min(620px,100%);background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;max-height:70vh}
+.pal input{border:0;border-bottom:1px solid var(--line);padding:16px 18px;font:500 16px var(--body);background:none;color:var(--ink);outline:none}
+.pal ul{list-style:none;margin:0;padding:6px;overflow-y:auto}
+.pal li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;cursor:pointer}
+.pal li[aria-selected="true"]{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.pal li i{width:8px;height:8px;border-radius:50%;background:var(--tc)}
+.pal li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pal li small{font:500 10.5px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.pal .foot{padding:8px 14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);display:flex;gap:14px}
+
+@media (max-width:1100px){
+  .pulse{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi:nth-child(4){border-left:0}
+  .kpi:nth-child(n+4){border-top:1px solid var(--line-2)}
+  .two{grid-template-columns:1fr}
+}
+@media (max-width:820px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;height:auto;flex-direction:row;align-items:center;padding:10px 16px;gap:12px;border-right:0;border-bottom:1px solid var(--line);overflow-x:auto}
+  .brand small,.rail .src,.nav .hint{display:none}
+  .nav{flex-direction:row}
+  .nav button{grid-template-columns:18px auto;white-space:nowrap}
+  .stratum{grid-template-columns:1fr}
+  .s-head{border-right:0;border-bottom:1px solid var(--line-2)}
+  .pulse{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi:nth-child(n){border-left:0;border-top:1px solid var(--line-2)}
+  .kpi:nth-child(-n+2){border-top:0}
+  .kpi:nth-child(even){border-left:1px solid var(--line-2)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+        <rect x="2" y="3" width="26" height="5" rx="1.5" style="fill:var(--s1)"/>
+        <rect x="2" y="9.5" width="26" height="4" rx="1.5" style="fill:var(--s2)"/>
+        <rect x="2" y="15" width="26" height="6" rx="1.5" style="fill:var(--s3)"/>
+        <rect x="2" y="22.5" width="26" height="4.5" rx="1.5" style="fill:var(--s4)"/>
+        <path d="M9 2 L12 28" style="stroke:var(--surface);stroke-width:1.6"/>
+      </svg>
+      <div><b>Estratos</b><small>AgileEA · Arquitectura</small></div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="src" id="src"></div>
+  </aside>
+  <main>
+    <header class="top">
+      <div>
+        <h1 id="vTitle"></h1>
+        <p id="vSub"></p>
+      </div>
+      <button class="search" id="openPal" type="button">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span>Buscar capacidad, app, contrato…</span><kbd>Ctrl K</kbd>
+      </button>
+    </header>
+    <section class="pulse" id="pulse" aria-label="Pulso del portafolio"></section>
+    <section id="view"></section>
+  </main>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Ficha"></aside>
+<div class="palette" id="palette" hidden>
+  <div class="pal" role="dialog" aria-label="Buscar en el modelo">
+    <input id="palInput" type="text" placeholder="Escribí para buscar en todo el modelo…" autocomplete="off">
+    <ul id="palList" role="listbox"></ul>
+    <div class="foot"><span>↑↓ navegar</span><span>Enter abrir ficha</span><span>Esc cerrar</span></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+<script>/* Respaldo on-premise: si la red corporativa bloquea el CDN, usa las copias locales. */
+if (!window.d3) document.write('<script src="vendor/d3.min.js"><\/script>');
+if (!window.d3 || !window.d3.sankey) document.write('<script src="vendor/d3-sankey.min.js"><\/script>');</script>
+<script>
+"use strict";
+/* ============================================================
+   Estratos — capa de consumo visual para AgileEA.
+   Fuente de datos: api.php (base viva) → data.json (exportado del backup).
+   ============================================================ */
+
+const TODAY = new Date();
+const YEAR = TODAY.getFullYear();
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const nf = new Intl.NumberFormat("es-AR", {maximumFractionDigits: 0});
+const usd = v => "USD " + nf.format(v);
+const usdK = v => v >= 1e6 ? "USD " + (v/1e6).toLocaleString("es-AR",{maximumFractionDigits:2}) + " M" : v >= 1000 ? "USD " + (v/1000).toLocaleString("es-AR",{maximumFractionDigits:1}) + " k" : usd(v);
+const pct = (a, b) => b ? (a / b * 100) : 0;
+const pctTxt = v => v.toLocaleString("es-AR", {maximumFractionDigits: 1}) + " %";
+const DAY = 864e5;
+const parseDate = s => s ? new Date(s + "T00:00:00") : null;
+const fmtDate = d => d ? d.toLocaleDateString("es-AR", {day:"2-digit", month:"short", year:"numeric"}) : "—";
+
+const TYPES = {
+  n1:{label:"Dominio N1", plural:"Dominios", color:"--t-cap"},
+  n2:{label:"Capacidad N2", plural:"Capacidades N2", color:"--t-cap"},
+  n3:{label:"Subcapacidad N3", plural:"Subcapacidades N3", color:"--t-cap"},
+  app:{label:"Aplicación", plural:"Aplicaciones", color:"--t-app"},
+  org:{label:"Organización", plural:"Organizaciones", color:"--t-org"},
+  vendor:{label:"Proveedor", plural:"Proveedores", color:"--t-vendor"},
+  contract:{label:"Contrato", plural:"Contratos", color:"--t-contract"},
+  lic:{label:"Licencia", plural:"Licencias", color:"--t-lic"},
+  disc:{label:"Disciplina", plural:"Disciplinas", color:"--t-disc"},
+  person:{label:"Persona", plural:"Personas", color:"--t-person"},
+  cc:{label:"Centro de costo", plural:"Centros de costo", color:"--t-cc"},
+};
+const tvar = t => `var(${TYPES[t].color})`;
+
+/* ---------- Carga ---------- */
+async function loadData() {
+  for (const src of ["api.php", "data.json"]) {
+    try {
+      const r = await fetch(src, {cache: "no-store"});
+      if (r.ok && (r.headers.get("content-type") || "").includes("json")) return {raw: await r.json(), src};
+      if (r.ok) { const t = await r.text(); if (t.trim().startsWith("{")) return {raw: JSON.parse(t), src}; }
+    } catch (e) { /* siguiente fuente */ }
+  }
+  return {raw: {}, src: "sin datos"};
+}
+
+/* ---------- Modelo en grafo ---------- */
+const M = {E: new Map(), adj: new Map(), costs: [], raw: {}};
+function node(type, id, name, data, extra = {}) {
+  const key = `${type}:${id}`;
+  M.E.set(key, {key, type, id: String(id), name, data, ...extra});
+  M.adj.set(key, []);
+  return key;
+}
+function link(a, b, noteA = "", noteB = "") {
+  if (!M.E.has(a) || !M.E.has(b)) return;
+  M.adj.get(a).push({to: b, note: noteA});
+  M.adj.get(b).push({to: a, note: noteB});
+}
+function build(T) {
+  M.raw = T;
+  const t = n => T[n] || [];
+  t("organizacion").forEach(r => node("org", r.id_organizacion, r.nombre, r, {abbr: r.abreviatura}));
+  t("organizacion").forEach(r => r.parent_id && link(`org:${r.id_organizacion}`, `org:${r.parent_id}`, "depende de", "incluye"));
+  t("capacidad_n1").forEach(r => node("n1", r.id_capacidad_n1, r.nombre, r));
+  t("capacidad_n1").forEach(r => r.organizacion && link(`n1:${r.id_capacidad_n1}`, `org:${r.organizacion}`, "área responsable", "dominio a cargo"));
+  t("capacidad_n2").forEach(r => { node("n2", r.id_capacidad_n2, r.nombre, r); link(`n2:${r.id_capacidad_n2}`, `n1:${r.capacidad_n1}`, "", ""); });
+  t("capacidad_n3").forEach(r => { node("n3", r.id_capacidad_n3, r.nombre, r); link(`n3:${r.id_capacidad_n3}`, `n2:${r.capacidad_n2}`, "", ""); });
+  t("proveedor").forEach(r => node("vendor", r.id_proveedor, r.nombre, r));
+  t("aplicacion").forEach(r => { node("app", r.id_aplicacion, r.nombre, r); r.proveedor && link(`app:${r.id_aplicacion}`, `vendor:${r.proveedor}`); });
+  t("aplicacion_capacidad_n3").forEach(r => link(`app:${r.aplicacion}`, `n3:${r.capacidad_n3}`));
+  t("disciplina").forEach(r => node("disc", r.id_disciplina, r.nombre, r));
+  t("aplicacion_disciplina").forEach(r => link(`app:${r.aplicacion}`, `disc:${r.disciplina}`));
+  t("aplicacion_organizacion").forEach(r => link(`app:${r.aplicacion}`, `org:${r.organizacion}`, "usada por", "usa"));
+  t("persona").forEach(r => node("person", r.id_persona, [r.nombre, r.apellido].filter(Boolean).join(" "), r));
+  t("aplicacion_persona").forEach(r => link(`app:${r.aplicacion}`, `person:${r.persona}`, r.rol_aplicacion, r.rol_aplicacion));
+  t("proveedor_persona").forEach(r => link(`vendor:${r.proveedor}`, `person:${r.persona}`, r.rol_proveedor, r.rol_proveedor));
+  t("persona_organizacion").forEach(r => link(`person:${r.persona}`, `org:${r.organizacion}`, r.cargo || "", r.cargo || ""));
+  t("centro_costo").forEach(r => { node("cc", r.id_centro_costo, `${r.codigo} · ${r.nombre}`, r); r.organizacion && link(`cc:${r.id_centro_costo}`, `org:${r.organizacion}`); });
+  t("licencia").forEach(r => { node("lic", r.id_licencia, r.nombre, r); link(`lic:${r.id_licencia}`, `app:${r.aplicacion}`); });
+  t("contrato").forEach(r => {
+    node("contract", r.id_contrato, r.numero_referencia || `Contrato ${r.id_contrato}`, r, {start: parseDate(r.fecha_inicio), end: parseDate(r.fecha_fin)});
+    link(`contract:${r.id_contrato}`, `vendor:${r.proveedor}`);
+    r.aplicacion && link(`contract:${r.id_contrato}`, `app:${r.aplicacion}`);
+  });
+  t("contrato_licencia").forEach(r => link(`contract:${r.contrato}`, `lic:${r.licencia}`, `${r.cantidad} u.`, `${r.cantidad} u.`));
+  const ca = Object.fromEntries(t("contrato_anio").map(r => [r.id_contrato_anio, r]));
+  t("licencia_anual").forEach(r => { const y = ca[r.contrato_anio]; y && link(`contract:${y.contrato}`, `lic:${r.licencia}`, `${y.anio}: ${r.cantidad} u.`, `${y.anio}: ${r.cantidad} u.`); });
+  t("contrato_anio_pagador").forEach(r => { const y = ca[r.contrato_anio]; y && link(`contract:${y.contrato}`, `org:${r.organizacion}`, `paga ${r.porcentaje_distribucion}% · ${y.anio}`, `paga ${r.porcentaje_distribucion}% · ${y.anio}`); });
+  const cab = Object.fromEntries(t("contrato_costo_cabecera").map(r => [r.id_costo_cabecera, r]));
+  const con = Object.fromEntries(t("contrato").map(r => [r.id_contrato, r]));
+  t("contrato_costo_detalle").forEach(r => {
+    const h = cab[r.costo_cabecera], y = h && ca[h.contrato_anio], c = y && con[y.contrato];
+    if (!c) return;
+    M.costs.push({year: +y.anio, month: +h.mes || null, contract: c.id_contrato, app: c.aplicacion, vendor: c.proveedor,
+      org: r.organizacion_pagadora, cc: r.centro_costo, tipo: r.tipo_gasto, concepto: r.concepto, monto: +r.monto});
+  });
+}
+const nbrs = (key, type) => (M.adj.get(key) || []).filter(l => !type || M.E.get(l.to).type === type);
+const uniq = a => [...new Set(a)];
+const parentOf = (key, type) => nbrs(key, type)[0]?.to;
+const all = type => [...M.E.values()].filter(e => e.type === type);
+function pathOf(e) {
+  if (e.type === "n3") { const n2 = parentOf(e.key, "n2"), n1 = n2 && parentOf(n2, "n1"); return [n1, n2].filter(Boolean); }
+  if (e.type === "n2") return [parentOf(e.key, "n1")].filter(Boolean);
+  if (e.type === "org") { const p = []; let k = e.key, guard = 0; while (guard++ < 12) { const par = M.E.get(k).data.parent_id; if (!par) break; k = `org:${par}`; p.unshift(k); } return p; }
+  return [];
+}
+const costsFor = e => M.costs.filter(c => ({app: c.app, vendor: c.vendor, contract: c.contract, org: c.org, cc: c.cc})[e.type] === e.id);
+const sum = (a, f = x => x.monto) => a.reduce((s, x) => s + f(x), 0);
+
+/* ---------- Métricas derivadas ---------- */
+function contractStatus(c) {
+  if (!c.end) return {k: "mute", t: "sin fecha", days: null};
+  const days = Math.ceil((c.end - TODAY) / DAY);
+  if (days < 0) return {k: "mute", t: "vencido", days};
+  if (days <= 120) return {k: "crit", t: `vence en ${days} d`, days};
+  if (days <= 240) return {k: "warn", t: `vence en ${days} d`, days};
+  return {k: "good", t: "vigente", days};
+}
+const MATURITY = ["process", "technology", "data", "organization", "performance"];
+const MAT_LBL = {process:"Procesos", technology:"Tecnología", data:"Datos", organization:"Organización", performance:"Desempeño"};
+
+function healthMetrics() {
+  const T = M.raw, n3 = all("n3"), apps = all("app"), cons = all("contract");
+  const ca = T.contrato_anio || [], pay = T.contrato_anio_pagador || [];
+  const payOk = ca.filter(y => sum(pay.filter(p => p.contrato_anio === y.id_contrato_anio), p => +p.porcentaje_distribucion) === 100);
+  const internals = all("person").filter(p => p.data.tipo_persona === "Interno");
+  return [
+    {g:"Capacidades", t:"Subcapacidades con criticidad", n: n3.filter(e => e.data.business_criticality).length, d: n3.length, s:"Base para priorizar inversión y riesgo"},
+    {g:"Capacidades", t:"Subcapacidades con pace layering", n: n3.filter(e => e.data.pace_layering).length, d: n3.length, s:"Commodity · Differentiation · Innovation"},
+    {g:"Capacidades", t:"Subcapacidades con madurez evaluada", n: n3.filter(e => MATURITY.every(m => e.data[m] != null)).length, d: n3.length, s:"Procesos, tecnología, datos, organización y desempeño"},
+    {g:"Capacidades", t:"Subcapacidades con aplicación", n: n3.filter(e => nbrs(e.key, "app").length).length, d: n3.length, s:"Cobertura aplicativa del mapa"},
+    {g:"Aplicaciones", t:"Aplicaciones con criticidad", n: apps.filter(e => e.data.business_criticality).length, d: apps.length, s:"Business criticality según LeanIX"},
+    {g:"Aplicaciones", t:"Aplicaciones con responsable", n: apps.filter(e => nbrs(e.key, "person").length).length, d: apps.length, s:"Business owner, technology owner o product owner"},
+    {g:"Aplicaciones", t:"Aplicaciones mapeadas a capacidades", n: apps.filter(e => nbrs(e.key, "n3").length).length, d: apps.length, s:"Vínculo aplicación ↔ subcapacidad N3"},
+    {g:"Aplicaciones", t:"Aplicaciones con organización usuaria", n: apps.filter(e => nbrs(e.key, "org").length).length, d: apps.length, s:"Quién usa cada aplicación"},
+    {g:"Contratos", t:"Contratos con costos cargados", n: cons.filter(e => costsFor(e).length).length, d: cons.length, s:"Detalle de costos por organización y centro de costo"},
+    {g:"Contratos", t:"Años de contrato con pagadores al 100 %", n: payOk.length, d: ca.length, s:"Distribución completa del costo anual"},
+    {g:"Personas", t:"Personas internas con organización", n: internals.filter(e => nbrs(e.key, "org").length).length, d: internals.length, s:"Ubicación de cada persona en el organigrama"},
+  ];
+}
+function nextActions() {
+  const acts = [], apps = all("app"), n3 = all("n3");
+  const withApp = n3.filter(e => nbrs(e.key, "app").length);
+  const unassessed = n3.filter(e => !e.data.business_criticality);
+  if (unassessed.length) acts.push({t:`Evaluar ${unassessed.length} subcapacidades N3`, s: withApp.length ? `Empezar por las ${withApp.length} que ya tienen aplicación: ${withApp.map(e => e.name).join(", ")}` : "Criticidad, pace layering y madurez", key: withApp[0]?.key, sev:"warn"});
+  apps.filter(e => !e.data.business_criticality).forEach(e => acts.push({t:`Asignar criticidad a ${e.name}`, s:"Sin business criticality cargada", key:e.key, sev:"crit"}));
+  apps.filter(e => !nbrs(e.key, "n3").length).forEach(e => acts.push({t:`Mapear ${e.name} a capacidades`, s:`${nbrs(e.key, "disc").length} disciplinas vinculadas, ninguna subcapacidad`, key:e.key, sev:"warn"}));
+  apps.filter(e => !nbrs(e.key, "person").length).forEach(e => acts.push({t:`Designar responsable de ${e.name}`, s:"Sin owner ni key users", key:e.key, sev:"warn"}));
+  all("contract").filter(e => !costsFor(e).length).forEach(e => acts.push({t:`Cargar costos de ${e.name}`, s:`${M.E.get(parentOf(e.key, "vendor"))?.name || ""} · ${fmtDate(e.start)} – ${fmtDate(e.end)}`, key:e.key, sev:"crit"}));
+  all("contract").map(e => [e, contractStatus(e)]).filter(([, s]) => s.k === "crit" || s.k === "warn").sort((a, b) => a[1].days - b[1].days)
+    .forEach(([e, s]) => acts.push({t:`Preparar renovación de ${e.name}`, s:`${s.t} · ${fmtDate(e.end)}`, key:e.key, sev:s.k}));
+  return acts;
+}
+
+/* ---------- Vistas ---------- */
+const ICONS = {
+  mapa:'<svg viewBox="0 0 24 24"><path d="M3 5h18M3 10h18M3 15h18M3 20h18"/><path d="M8 5v5M15 10v5M6 15v5M17 15v5"/></svg>',
+  red:'<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="8" r="2.5"/><circle cx="10" cy="18" r="2.5"/><path d="M8.2 7.2 15.6 8M7.3 8.2l1.8 7.5M16.5 10.2 11.8 16"/></svg>',
+  portafolio:'<svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><circle cx="10" cy="14" r="2.5"/><circle cx="16" cy="8" r="3.5"/></svg>',
+  flujo:'<svg viewBox="0 0 24 24"><path d="M3 6c8 0 8 12 18 12M3 6c8 0 8 4 18 4M3 14c6 0 10-8 18-8"/></svg>',
+  horizonte:'<svg viewBox="0 0 24 24"><path d="M3 20h18M7 4v16"/><rect x="5" y="7" width="10" height="3" rx="1"/><rect x="9" y="13" width="10" height="3" rx="1"/></svg>',
+  salud:'<svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>',
+};
+const VIEWS = {
+  mapa:{nav:"Mapa", hint:"Capacidades por estrato", title:"Mapa de capacidades", sub:"Cada dominio N1 es un estrato. Elegí una lente para leer el mapa por cadena de valor, cobertura, criticidad o madurez.", render: renderMapa},
+  red:{nav:"Red", hint:"Todo conectado", title:"Red del modelo", sub:"Organizaciones, aplicaciones, proveedores, contratos, licencias y personas en un solo grafo. Tocá un nodo para aislar su vecindario.", render: renderRed},
+  portafolio:{nav:"Portafolio", hint:"Matriz TIME", title:"Portafolio de aplicaciones", sub:"Ajuste funcional contra ajuste técnico. El tamaño de cada burbuja es el gasto registrado del año; el color, su ciclo de vida.", render: renderPortafolio},
+  flujo:{nav:"Flujo de costos", hint:"De proveedor a centro de costo", title:"Flujo de costos", sub:"Recorrido del dinero: proveedor → aplicación → organización pagadora → centro de costo.", render: renderFlujo},
+  horizonte:{nav:"Horizonte", hint:"Contratos en el tiempo", title:"Horizonte de contratos", sub:"Vigencias, vencimientos próximos y licencias comprometidas por contrato.", render: renderHorizonte},
+  salud:{nav:"Salud del modelo", hint:"Completitud y acciones", title:"Salud del modelo", sub:"Qué tan completo está el repositorio y qué conviene cargar primero para que las vistas digan más.", render: renderSalud},
+};
+let current = "mapa";
+
+function renderNav() {
+  document.getElementById("nav").innerHTML = Object.entries(VIEWS).map(([k, v]) =>
+    `<button type="button" data-v="${k}" aria-current="${k === current}">${ICONS[k]}<span>${v.nav}</span><span class="hint">${v.hint}</span></button>`).join("");
+}
+function go(v) {
+  if (!VIEWS[v]) v = "mapa";
+  current = v;
+  try { history.replaceState(null, "", "#" + v); } catch (e) {}
+  renderNav();
+  document.getElementById("vTitle").textContent = VIEWS[v].title;
+  document.getElementById("vSub").textContent = VIEWS[v].sub;
+  const el = document.getElementById("view"); el.innerHTML = "";
+  VIEWS[v].render(el);
+}
+
+/* ---------- Pulso ---------- */
+function renderPulse() {
+  const n3 = all("n3"), cov = n3.filter(e => nbrs(e.key, "app").length).length;
+  const spend = sum(M.costs.filter(c => c.year === YEAR));
+  const opex = sum(M.costs.filter(c => c.year === YEAR && c.tipo === "OPEX"));
+  const next = all("contract").map(e => [e, contractStatus(e)]).filter(([, s]) => s.days != null && s.days >= 0).sort((a, b) => a[1].days - b[1].days)[0];
+  const hm = healthMetrics(), score = hm.reduce((s, m) => s + pct(m.n, m.d), 0) / hm.length;
+  const k = [
+    {l:"Subcapacidades N3", v: nf.format(n3.length), s:`${all("n2").length} capacidades N2 · ${all("n1").length} dominios`, go:"mapa"},
+    {l:"Cobertura aplicativa", v: pctTxt(pct(cov, n3.length)), s:`${cov} de ${n3.length} con aplicación`, bar: pct(cov, n3.length), go:"mapa", cls: pct(cov, n3.length) < 25 ? "warn" : ""},
+    {l:`Gasto registrado ${YEAR}`, v: usdK(spend), s: spend ? `${pctTxt(pct(opex, spend))} OPEX · ${uniq(M.costs.filter(c => c.year === YEAR).map(c => c.contract)).length} contratos` : "Sin costos cargados", go:"flujo"},
+    next ? {l:"Próximo vencimiento", v: `${next[1].days}<small>días</small>`, s:`${next[0].name} · ${M.E.get(parentOf(next[0].key, "vendor"))?.name || ""}`, go:"horizonte", cls: next[1].k === "good" ? "" : next[1].k}
+         : {l:"Próximo vencimiento", v:"—", s:"Sin contratos vigentes", go:"horizonte"},
+    {l:"Salud del modelo", v: `${Math.round(score)}<small>/100</small>`, s:`${hm.filter(m => m.n < m.d).length} indicadores incompletos`, bar: score, go:"salud", cls: score < 40 ? "crit" : score < 70 ? "warn" : ""},
+  ];
+  document.getElementById("pulse").innerHTML = k.map(x => `<button class="kpi ${x.cls || ""}" type="button" data-go="${x.go}">
+    <span class="l">${x.l}</span><span class="v">${x.v}</span><span class="s">${esc(x.s)}</span>${x.bar != null ? `<span class="bar"><i style="width:${Math.max(2, x.bar)}%"></i></span>` : ""}</button>`).join("");
+}
+
+/* ---------- Vista: Mapa estratigráfico ---------- */
+const LITHO = [
+  "radial-gradient(circle,rgba(255,255,255,.7) 1px,transparent 1.4px) 0 0/5px 5px",
+  "repeating-linear-gradient(0deg,rgba(255,255,255,.6) 0 1px,transparent 1px 5px)",
+  "repeating-linear-gradient(90deg,rgba(255,255,255,.55) 0 1px,transparent 1px 8px),repeating-linear-gradient(0deg,rgba(255,255,255,.55) 0 1px,transparent 1px 6px)",
+  "repeating-linear-gradient(45deg,rgba(255,255,255,.55) 0 1px,transparent 1px 6px)",
+  "repeating-linear-gradient(0deg,rgba(255,255,255,.6) 0 2px,transparent 2px 4px,rgba(255,255,255,.6) 4px 5px,transparent 5px 10px)",
+];
+const n2Of = e => M.E.get(parentOf(e.key, "n2"))?.data || {};
+const LENSES = {
+  cadena:{label:"Cadena de valor", get: e => n2Of(e).cadena_de_valor, cats: ["Exploración & Evaluación de Activos","Planificación del Desarrollo de Activos","Desarrollo de Activos","Producción & Transporte"].map((k, i) => ({k, c:`var(--c${i+1})`}))},
+  clasif:{label:"Clasificación", get: e => n2Of(e).clasificacion, cats: ["Estratégica","Operativa","Transversal"].map((k, i) => ({k, c:`var(--c${[5,1,3][i]})`}))},
+  cobertura:{label:"Cobertura aplicativa", get: e => { const n = nbrs(e.key, "app").length; return n === 0 ? null : n === 1 ? "1 aplicación" : "2 o más"; }, cats:[{k:"1 aplicación", c:"var(--q3)"}, {k:"2 o más", c:"var(--q5)"}], nullLabel:"Sin aplicación"},
+  criticidad:{label:"Criticidad", get: e => e.data.business_criticality, cats: ["Administrative Service","Business Operational","Business Critical","Mission Critical"].map((k, i) => ({k, c:`var(--w${i+1})`}))},
+  pace:{label:"Pace layering", get: e => e.data.pace_layering, cats: ["Commodity","Differentiation","Innovation"].map((k, i) => ({k, c:`var(--q${[2,3,5][i]})`}))},
+  madurez:{label:"Madurez", get: e => { const v = MATURITY.map(m => e.data[m]).filter(x => x != null).map(Number); if (!v.length) return null; return "Nivel " + Math.min(5, Math.max(1, Math.round(v.reduce((a, b) => a + b) / v.length))); }, cats:[1,2,3,4,5].map(i => ({k:"Nivel " + i, c:`var(--q${i})`}))},
+  regulatorio:{label:"Impacto regulatorio", get: e => e.data.regulatory_impact, cats:["Low","Medium","High"].map((k, i) => ({k, c:`var(--w${i+2})`}))},
+};
+let lens = "cadena", lensOff = new Set();
+try { const s = localStorage.getItem("estratos.lens"); if (LENSES[s]) lens = s; } catch (e) {}
+
+function renderMapa(el) {
+  const L = LENSES[lens], n3 = all("n3");
+  const counts = {}; n3.forEach(e => { const k = L.get(e) ?? "∅"; counts[k] = (counts[k] || 0) + 1; });
+  const colorOf = k => L.cats.find(c => c.k === k)?.c;
+  el.innerHTML = `
+    <div class="toolbar" style="margin-bottom:12px">
+      <div class="seg" role="group" aria-label="Lente">${Object.entries(LENSES).map(([k, v]) => `<button type="button" data-lens="${k}" aria-pressed="${k === lens}">${v.label}</button>`).join("")}</div>
+    </div>
+    <div class="toolbar" style="margin-bottom:14px">
+      <div class="legend">${L.cats.map(c => `<button type="button" class="chip" data-cat="${esc(c.k)}" aria-pressed="${!lensOff.has(c.k)}"><i style="background:${c.c}"></i>${esc(c.k)} <b class="num">${counts[c.k] || 0}</b></button>`).join("")}
+        <button type="button" class="chip" data-cat="∅" aria-pressed="${!lensOff.has("∅")}"><i class="hatch" style="border:1px dashed var(--muted)"></i>${L.nullLabel || "Sin evaluar"} <b class="num">${counts["∅"] || 0}</b></button></div>
+      ${counts["∅"] === n3.length ? `<span class="pill warn">Ninguna subcapacidad tiene este atributo cargado todavía</span>` : ""}
+    </div>
+    <div class="strata">${all("n1").map((n1, i) => {
+      const n2s = nbrs(n1.key, "n2").map(l => M.E.get(l.to));
+      const n3s = n2s.flatMap(n2 => nbrs(n2.key, "n3").map(l => M.E.get(l.to)));
+      const apps = uniq(n3s.flatMap(e => nbrs(e.key, "app").map(l => l.to)));
+      const org = M.E.get(parentOf(n1.key, "org"));
+      return `<div class="stratum" style="--sc:var(--s${i % 5 + 1})">
+        <div class="s-head"><span class="litho" style="background:${LITHO[i % 5]}"></span>
+          <span class="ab">${esc(org?.abbr || "N1")}</span>
+          <h2><a data-open="${n1.key}" style="cursor:pointer">${esc(n1.name)}</a></h2>
+          <dl><dt>N2</dt><dd>${n2s.length}</dd><dt>N3</dt><dd>${n3s.length}</dd><dt>Apps</dt><dd>${apps.length}</dd></dl>
+        </div>
+        <div class="s-body">${n2s.map(n2 => {
+          const kids = nbrs(n2.key, "n3").map(l => M.E.get(l.to));
+          return `<div class="n2"><h3 data-open="${n2.key}">${esc(n2.name)}</h3>
+            <span class="meta">${esc(n2.data.clasificacion || "—")} · ${kids.length} N3</span>
+            ${kids.map(e => { const k = L.get(e) ?? null, c = k ? colorOf(k) : null, na = nbrs(e.key, "app");
+              const dim = lensOff.has(k ?? "∅");
+              return `<div class="n3 ${c ? "" : "none hatch"} ${dim ? "dim" : ""}" data-open="${e.key}" style="${c ? `--lc:${c}` : ""}" title="${esc(k || L.nullLabel || "Sin evaluar")}">
+                <span class="d"></span><span class="t">${esc(e.name)}</span>${na.length ? `<span class="apps" title="${esc(na.map(l => M.E.get(l.to).name).join(", "))}">${esc(na.length === 1 ? M.E.get(na[0].to).name : na.length + " apps")}</span>` : ""}</div>`; }).join("")}
+          </div>`; }).join("")}</div>
+      </div>`; }).join("")}</div>`;
+  el.querySelectorAll("[data-lens]").forEach(b => b.onclick = () => { lens = b.dataset.lens; lensOff.clear(); try { localStorage.setItem("estratos.lens", lens); } catch (e) {} renderMapa(el); });
+  el.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => { const k = b.dataset.cat; lensOff.has(k) ? lensOff.delete(k) : lensOff.add(k); renderMapa(el); });
+}
+
+/* ---------- Vista: Red ---------- */
+let graphTypesOff = new Set();
+function renderRed(el) {
+  const linked = all("n3").filter(e => nbrs(e.key, "app").length);
+  const keep = new Set([...linked.map(e => e.key), ...linked.flatMap(pathOf), ...all("n1").map(e => e.key)]);
+  for (const e of M.E.values()) if (!["n1","n2","n3"].includes(e.type)) keep.add(e.key);
+  const ns = [...keep].map(k => M.E.get(k)).filter(e => !graphTypesOff.has(e.type)).map(e => ({id: e.key, e, deg: M.adj.get(e.key).filter(l => keep.has(l.to)).length}));
+  const ids = new Set(ns.map(n => n.id)), seen = new Set(), ls = [];
+  ns.forEach(n => M.adj.get(n.id).forEach(l => { const a = n.id, b = l.to, k = a < b ? a + "|" + b : b + "|" + a; if (ids.has(b) && !seen.has(k)) { seen.add(k); ls.push({source: a, target: b}); } }));
+  const typesPresent = uniq([...keep].map(k => M.E.get(k).type));
+  el.innerHTML = `<div class="graph-wrap" id="gw"><svg id="gsvg"></svg>
+    <div class="hint-box">Arrastrá · rueda para zoom · tocá un nodo</div>
+    <div class="overlay">${typesPresent.map(t => `<button type="button" class="chip" data-gt="${t}" aria-pressed="${!graphTypesOff.has(t)}"><i style="background:${tvar(t)};border-radius:50%"></i>${TYPES[t].plural}</button>`).join("")}</div></div>`;
+  el.querySelectorAll("[data-gt]").forEach(b => b.onclick = () => { const t = b.dataset.gt; graphTypesOff.has(t) ? graphTypesOff.delete(t) : graphTypesOff.add(t); renderRed(el); });
+  const wrap = el.querySelector("#gw"), W = wrap.clientWidth, H = wrap.clientHeight;
+  const r = n => ({app: 13, vendor: 11, n1: 10, contract: 9}[n.e.type] || 5) + Math.min(6, n.deg * .6);
+  const sim = d3.forceSimulation(ns).force("link", d3.forceLink(ls).id(d => d.id).distance(l => (l.source.e.type === "org" && l.target.e.type === "org") ? 38 : 58).strength(.7))
+    .force("charge", d3.forceManyBody().strength(-170)).force("center", d3.forceCenter(W / 2, H / 2))
+    .force("x", d3.forceX(W / 2).strength(.04)).force("y", d3.forceY(H / 2).strength(.06)).force("collide", d3.forceCollide(d => r(d) + 4)).stop();
+  for (let i = 0; i < 320; i++) sim.tick();
+  const svg = d3.select(el.querySelector("#gsvg")), g = svg.append("g");
+  svg.call(d3.zoom().scaleExtent([.3, 4]).on("zoom", ev => g.attr("transform", ev.transform)));
+  const link = g.append("g").selectAll("line").data(ls).join("line").attr("class", "link");
+  const major = new Set(["app", "vendor", "contract", "n1"]);
+  const nodeG = g.append("g").selectAll("g").data(ns).join("g").attr("class", d => "node " + (major.has(d.e.type) || (d.e.type === "org" && d.deg > 3) ? "" : "minor"));
+  nodeG.append("circle").attr("r", r).style("fill", d => tvar(d.e.type));
+  nodeG.append("text").attr("x", d => r(d) + 5).attr("dy", "0.35em").text(d => d.e.type === "cc" ? d.e.data.codigo : d.e.name.length > 34 ? d.e.name.slice(0, 32) + "…" : d.e.name);
+  const draw = () => { link.attr("x1", d => d.source.x).attr("y1", d => d.source.y).attr("x2", d => d.target.x).attr("y2", d => d.target.y); nodeG.attr("transform", d => `translate(${d.x},${d.y})`); };
+  draw();
+  sim.on("tick", draw);
+  nodeG.call(d3.drag().on("start", (ev, d) => { if (!ev.active) sim.alphaTarget(.2).restart(); d.fx = d.x; d.fy = d.y; })
+    .on("drag", (ev, d) => { d.fx = ev.x; d.fy = ev.y; }).on("end", (ev, d) => { if (!ev.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }));
+  const focus = id => {
+    const nb = new Set(ls.filter(l => l.source.id === id || l.target.id === id).flatMap(l => [l.source.id, l.target.id]));
+    g.classed("g-dim", !!id);
+    nodeG.classed("focus", d => d.id === id).classed("nb", d => id && nb.has(d.id) && d.id !== id);
+    link.classed("hot", l => l.source.id === id || l.target.id === id);
+  };
+  nodeG.on("click", (ev, d) => { ev.stopPropagation(); focus(d.id); openEntity(d.id); });
+  svg.on("click", () => focus(null));
+}
+
+/* ---------- Vista: Portafolio TIME ---------- */
+function renderPortafolio(el) {
+  const apps = all("app");
+  const years = uniq(M.costs.map(c => c.year)).sort();
+  const yr = years.includes(YEAR) ? YEAR : years.at(-1);
+  const pts = apps.map(e => ({e, f: +e.data.functional_fit || null, t: +e.data.technical_fit || null, cost: sum(costsFor(e).filter(c => c.year === yr))}));
+  const W = 600, H = 460, m = {l: 58, r: 20, t: 20, b: 50};
+  const x = d3.scaleLinear([.5, 4.5], [m.l, W - m.r]), y = d3.scaleLinear([.5, 4.5], [H - m.b, m.t]);
+  const rs = d3.scaleSqrt([0, d3.max(pts, p => p.cost) || 1], [14, 46]);
+  const groups = d3.group(pts.filter(p => p.f && p.t), p => p.f + "," + p.t);
+  groups.forEach(arr => { const d = arr.length > 1 ? d3.max(arr, p => rs(p.cost)) * 1.05 : 0;
+    arr.sort((a, b) => b.cost - a.cost).forEach((p, i) => { const a = Math.PI * (0.75 + i * 2 / arr.length); p.x = x(p.f) + Math.cos(a) * d; p.y = y(p.t) - Math.sin(a) * d; }); });
+  const LC = {"Plan":"var(--q2)", "Phase In":"var(--q3)", "Active":"var(--good)", "Phase Out":"var(--warn)", "End of Life":"var(--crit)"};
+  const quad = [["Tolerar", 1.5, 4.2], ["Invertir", 3.5, 4.2], ["Eliminar", 1.5, .8], ["Migrar", 3.5, .8]];
+  const unplaced = pts.filter(p => !(p.f && p.t));
+  el.innerHTML = `<div class="two">
+    <div class="panel card"><h2>Matriz TIME</h2><p>Tolerar, Invertir, Migrar o Eliminar según ajuste funcional (eje X) y técnico (eje Y), escala 1 a 4.</p>
+      <div class="scroll-x"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:420px;display:block">
+        <rect x="${x(2.5)}" y="${m.t}" width="${x(4.5) - x(2.5)}" height="${y(2.5) - m.t}" style="fill:var(--good);opacity:.07"/>
+        <rect x="${m.l}" y="${y(2.5)}" width="${x(2.5) - m.l}" height="${H - m.b - y(2.5)}" style="fill:var(--crit);opacity:.06"/>
+        ${[1,2,3,4].map(v => `<line class="grid-line" x1="${x(v)}" x2="${x(v)}" y1="${m.t}" y2="${H - m.b}"/><line class="grid-line" y1="${y(v)}" y2="${y(v)}" x1="${m.l}" x2="${W - m.r}"/>
+          <g class="axis"><text x="${x(v)}" y="${H - m.b + 18}" text-anchor="middle">${v}</text><text x="${m.l - 12}" y="${y(v) + 4}" text-anchor="end">${v}</text></g>`).join("")}
+        <line x1="${x(2.5)}" x2="${x(2.5)}" y1="${m.t}" y2="${H - m.b}" style="stroke:var(--muted);stroke-dasharray:4 4"/>
+        <line y1="${y(2.5)}" y2="${y(2.5)}" x1="${m.l}" x2="${W - m.r}" style="stroke:var(--muted);stroke-dasharray:4 4"/>
+        ${quad.map(([t, qx, qy]) => `<text class="quad-label" x="${x(qx)}" y="${y(qy)}" text-anchor="middle">${t}</text>`).join("")}
+        <g class="axis"><text x="${(m.l + W - m.r) / 2}" y="${H - 8}" text-anchor="middle">AJUSTE FUNCIONAL →</text>
+        <text transform="translate(16,${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle">AJUSTE TÉCNICO →</text></g>
+        ${pts.filter(p => p.x).map(p => `<g class="bubble" data-open="${p.e.key}" transform="translate(${p.x},${p.y})">
+          <circle r="${rs(p.cost)}" style="fill:${LC[p.e.data.lifecycle] || "var(--accent)"};fill-opacity:.8"/>
+          ${rs(p.cost) > 26 ? `<text text-anchor="middle" dy="0.35em" style="font:700 13px var(--display);fill:var(--surface)">${esc(p.e.name)}</text>`
+            : `<text text-anchor="middle" y="${rs(p.cost) + 15}" style="font:700 12px var(--display);paint-order:stroke;stroke:var(--surface);stroke-width:3px">${esc(p.e.name)}</text>`}</g>`).join("")}
+      </svg></div>
+      ${unplaced.length ? `<p style="margin:10px 0 0">Sin ajuste cargado: ${unplaced.map(p => `<a data-open="${p.e.key}" style="cursor:pointer;color:var(--accent)">${esc(p.e.name)}</a>`).join(", ")}</p>` : ""}
+    </div>
+    <div class="panel card"><h2>Aplicaciones</h2><p>Gasto ${yr ?? ""}, criticidad y ciclo de vida.</p>
+      <div class="list">${pts.sort((a, b) => b.cost - a.cost).map(p => `<div class="row" data-open="${p.e.key}">
+        <span class="pill" style="background:color-mix(in srgb,${LC[p.e.data.lifecycle] || "var(--muted)"} 20%,transparent);color:${LC[p.e.data.lifecycle] || "var(--muted)"}">${esc(p.e.data.lifecycle || "—")}</span>
+        <span><span class="rt">${esc(p.e.name)}</span><br><span class="rs">${esc(p.e.data.business_criticality || "Sin criticidad")} · ${esc(p.e.data.deployment || "")} · ${esc(M.E.get(parentOf(p.e.key, "vendor"))?.name || "")}</span></span>
+        <span class="rv">${p.cost ? usdK(p.cost) : '<span class="pill mute">sin costo</span>'}</span></div>`).join("")}</div>
+    </div></div>`;
+}
+
+/* ---------- Vista: Flujo de costos (Sankey) ---------- */
+let flowYear = "todos";
+function renderFlujo(el) {
+  const years = uniq(M.costs.map(c => c.year)).sort();
+  const rows = M.costs.filter(c => flowYear === "todos" || c.year === +flowYear);
+  const total = sum(rows);
+  const seg = `<div class="seg" role="group" aria-label="Año">${["todos", ...years].map(y => `<button type="button" data-y="${y}" aria-pressed="${String(y) === String(flowYear)}">${y === "todos" ? "Todos los años" : y}</button>`).join("")}</div>`;
+  if (!rows.length) { el.innerHTML = `<div class="toolbar" style="margin-bottom:14px">${seg}</div><div class="empty-note">No hay costos cargados para este período.</div>`; bindY(); return; }
+  const nodes = new Map(), links = new Map();
+  const addN = (key, col) => { if (!nodes.has(key)) nodes.set(key, {id: key, col, e: M.E.get(key)}); };
+  const addL = (a, b, v, vendor) => { const k = a + ">" + b; const l = links.get(k) || {source: a, target: b, value: 0, vendor}; l.value += v; links.set(k, l); };
+  rows.forEach(c => {
+    const chain = [`vendor:${c.vendor}`, `app:${c.app}`, `org:${c.org}`, c.cc ? `cc:${c.cc}` : null].filter(Boolean);
+    chain.forEach((k, i) => addN(k, i));
+    for (let i = 0; i < chain.length - 1; i++) addL(chain[i], chain[i + 1], c.monto, `vendor:${c.vendor}`);
+  });
+  const W = Math.max(760, el.clientWidth - 40), H = Math.max(340, nodes.size * 38);
+  const sk = d3.sankey().nodeId(d => d.id).nodeWidth(12).nodePadding(22).nodeAlign(d3.sankeyLeft).extent([[4, 10], [W - 4, H - 10]]);
+  const G = sk({nodes: [...nodes.values()].map(d => ({...d})), links: [...links.values()].map(d => ({...d}))});
+  const byTipo = d3.rollup(rows, v => sum(v), c => c.concepto);
+  el.innerHTML = `<div class="toolbar" style="margin-bottom:14px">${seg}
+      <div class="legend">${["Proveedor","Aplicación","Organización pagadora","Centro de costo"].map((t, i) => `<span class="eyebrow">${i + 1}. ${t}</span>`).join('<span class="eyebrow">→</span>')}</div></div>
+    <div style="display:flex;flex-direction:column;gap:20px"><div class="panel card"><h2>${usd(total)}</h2><p>${rows.length} registros de costo · ${uniq(rows.map(r => r.contract)).length} contratos · montos en USD.</p>
+      <div class="scroll-x"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:720px;display:block" id="sk"></svg></div></div>
+      <div class="two" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"><div class="panel card"><h2>Por concepto</h2><p>Distribución del gasto del período.</p><div class="list">${[...byTipo].sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div class="row" style="cursor:default"><span class="pill mute">${pctTxt(pct(v, total))}</span><span class="rt">${esc(k)}</span><span class="rv">${usdK(v)}</span></div>`).join("")}</div>
+      </div><div class="panel card"><h2>Por organización pagadora</h2><p>Quién absorbe el costo.</p><div class="list">${[...d3.rollup(rows, v => sum(v), c => c.org)].sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div class="row" data-open="org:${k}"><span class="pill mute">${pctTxt(pct(v, total))}</span><span class="rt">${esc(M.E.get("org:" + k)?.name)}</span><span class="rv">${usdK(v)}</span></div>`).join("")}</div></div></div></div>`;
+  const svg = d3.select(el.querySelector("#sk"));
+  const vcol = {}; uniq(rows.map(r => `vendor:${r.vendor}`)).forEach((v, i) => vcol[v] = `var(--c${i % 5 + 1})`);
+  svg.append("g").selectAll("path").data(G.links).join("path").attr("class", "sk-link").attr("d", d3.sankeyLinkHorizontal())
+    .style("stroke", d => vcol[d.vendor]).attr("stroke-width", d => Math.max(1.5, d.width))
+    .append("title").text(d => `${d.source.e?.name} → ${d.target.e?.name}\n${usd(d.value)}`);
+  const n = svg.append("g").selectAll("g").data(G.nodes).join("g").attr("class", "sk-node").attr("data-open", d => d.id);
+  n.append("rect").attr("x", d => d.x0).attr("y", d => d.y0).attr("height", d => Math.max(2, d.y1 - d.y0)).attr("width", d => d.x1 - d.x0).attr("rx", 2).style("fill", d => tvar(d.e.type));
+  const left = d => d.x1 > W - 20;
+  n.append("text").attr("x", d => left(d) ? d.x0 - 8 : d.x1 + 8).attr("y", d => (d.y0 + d.y1) / 2 - 6).attr("dy", "0.35em").attr("text-anchor", d => left(d) ? "end" : "start").text(d => d.e.type === "cc" ? d.e.data.codigo + " · " + d.e.data.nombre : d.e.name);
+  n.append("text").attr("class", "amt").attr("x", d => left(d) ? d.x0 - 8 : d.x1 + 8).attr("y", d => (d.y0 + d.y1) / 2 + 9).attr("dy", "0.35em").attr("text-anchor", d => left(d) ? "end" : "start").text(d => usdK(d.value));
+  bindY();
+  function bindY() { el.querySelectorAll("[data-y]").forEach(b => b.onclick = () => { flowYear = b.dataset.y; renderFlujo(el); }); }
+}
+
+/* ---------- Vista: Horizonte ---------- */
+function renderHorizonte(el) {
+  const cons = all("contract").filter(c => c.start && c.end).sort((a, b) => (a.data.proveedor - b.data.proveedor) || (a.start - b.start));
+  const minY = Math.min(YEAR - 1, ...cons.map(c => c.start.getFullYear())), maxY = Math.max(YEAR + 2, ...cons.map(c => c.end.getFullYear()));
+  const W = Math.max(760, el.clientWidth - 40), rowH = 46, m = {l: 16, r: 16, t: 34, b: 16}, H = m.t + cons.length * rowH + m.b;
+  const x = d3.scaleTime([new Date(minY, 0, 1), new Date(maxY + 1, 0, 1)], [m.l, W - m.r]);
+  const col = {good:"var(--accent)", warn:"var(--warn)", crit:"var(--crit)", mute:"var(--muted)"};
+  const alerts = cons.map(c => [c, contractStatus(c)]).filter(([, s]) => s.days >= 0).sort((a, b) => a[1].days - b[1].days);
+  const licCount = c => sum(nbrs(c.key, "lic").filter(l => /u\.$/.test(l.note) && !l.note.includes(":")), l => parseInt(l.note)) ||
+                         sum(nbrs(c.key, "lic").filter(l => l.note.startsWith(String(YEAR))), l => parseInt(l.note.split(":")[1]));
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:20px"><div class="panel card"><h2>Línea de tiempo</h2><p>La línea vertical marca hoy, ${fmtDate(TODAY)}.</p>
+    <div class="scroll-x"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:720px;display:block">
+      ${d3.range(minY, maxY + 2).map(yv => `<line class="grid-line" x1="${x(new Date(yv, 0, 1))}" x2="${x(new Date(yv, 0, 1))}" y1="${m.t - 8}" y2="${H - m.b}"/>
+        ${yv <= maxY ? `<g class="axis"><text x="${(x(new Date(yv, 0, 1)) + x(new Date(yv + 1, 0, 1))) / 2}" y="${m.t - 14}" text-anchor="middle">${yv}</text></g>` : ""}`).join("")}
+      ${cons.map((c, i) => { const s = contractStatus(c), y0 = m.t + i * rowH + 8, x0 = x(c.start), x1 = x(c.end), w = Math.max(4, x1 - x0);
+        const v = M.E.get(parentOf(c.key, "vendor")), a = M.E.get(parentOf(c.key, "app")), lbl = `${c.name} · ${a?.name || v?.name || ""}`;
+        const inside = w > lbl.length * 6.6 + 16;
+        return `<g class="tl-bar" data-open="${c.key}"><rect x="${x0}" y="${y0}" width="${w}" height="28" rx="6" style="fill:${col[s.k]};fill-opacity:${s.k === "mute" ? .3 : .85}"/>
+          <text x="${inside ? x0 + 10 : x1 + 8}" y="${y0 + 14}" dy="0.35em" style="fill:${inside && s.k !== "mute" ? "var(--surface)" : "var(--ink)"}">${esc(lbl)}</text></g>`; }).join("")}
+      <line x1="${x(TODAY)}" x2="${x(TODAY)}" y1="${m.t - 8}" y2="${H - 4}" style="stroke:var(--crit);stroke-width:2"/>
+      <text x="${x(TODAY) + 5}" y="${m.t - 1}" style="font:600 10.5px var(--mono);fill:var(--crit)">HOY</text>
+    </svg></div></div>
+    <div class="panel card"><h2>Próximos vencimientos</h2><p>Ordenados por días restantes. Rojo: 120 días o menos; ámbar: 240 o menos.</p>
+      <div class="list">${alerts.length ? alerts.map(([c, s]) => `<div class="row" data-open="${c.key}"><span class="pill ${s.k}">${s.days} d</span>
+        <span><span class="rt">${esc(c.name)}</span><br><span class="rs">${esc(M.E.get(parentOf(c.key, "vendor"))?.name || "")} · ${esc(c.data.modelo_comercial || "")} · vence ${fmtDate(c.end)}${+c.data.renovacion_automatica ? " · renovación automática" : ""}</span></span>
+        <span class="rv">${licCount(c) ? licCount(c) + " lic." : ""}</span></div>`).join("") : '<div class="empty-note">No hay contratos vigentes.</div>'}</div></div></div>`;
+}
+
+/* ---------- Vista: Salud ---------- */
+function renderSalud(el) {
+  const hm = healthMetrics(), score = hm.reduce((s, m) => s + pct(m.n, m.d), 0) / hm.length, acts = nextActions();
+  const gc = v => v >= 80 ? "var(--good)" : v >= 40 ? "var(--warn)" : "var(--crit)";
+  el.innerHTML = `<div class="panel score"><span class="big" style="color:${gc(score)}">${Math.round(score)}</span>
+      <p><b style="color:var(--ink)">Índice de completitud del repositorio, sobre 100.</b> Promedia ${hm.length} indicadores de capacidades, aplicaciones, contratos y personas. Cada acción de la lista de abajo lo sube y hace más útiles las demás vistas.</p></div>
+    <div class="two" style="margin-top:20px"><div>
+      ${uniq(hm.map(m => m.g)).map(g => `<div class="eyebrow" style="margin:6px 0 10px">${g}</div><div class="health" style="margin-bottom:16px">${hm.filter(m => m.g === g).map(m => { const v = pct(m.n, m.d); return `<div class="panel metric">
+        <div class="top2"><span class="mt">${m.t}</span><span class="mv num">${m.n}/${m.d}</span></div>
+        <div class="gauge"><i style="width:${Math.max(1.5, v)}%;background:${gc(v)}"></i></div><span class="ms">${m.s}</span></div>`; }).join("")}</div>`).join("")}
+    </div>
+    <div class="panel card actions"><h2>Siguientes acciones</h2><p>Ordenadas por impacto en las vistas. Tocá una para abrir la ficha.</p>
+      <div class="list">${acts.map((a, i) => `<div class="row" ${a.key ? `data-open="${a.key}"` : ""}><span class="ix">${String(i + 1).padStart(2, "0")}</span>
+        <span><span class="rt">${esc(a.t)}</span><br><span class="rs">${esc(a.s)}</span></span><span class="pill ${a.sev}">${a.sev === "crit" ? "alta" : "media"}</span></div>`).join("")}</div></div></div>`;
+}
+
+/* ---------- Ficha lateral ---------- */
+const ATTRS = {
+  app: [["tipo_aplicacion","Tipo"],["deployment","Despliegue"],["lifecycle","Ciclo de vida"],["business_criticality","Criticidad"]],
+  n3: [["business_criticality","Criticidad"],["pace_layering","Pace layering"],["regulatory_impact","Impacto regulatorio"]],
+  n2: [["clasificacion","Clasificación"],["cadena_de_valor","Cadena de valor"]],
+  org: [["tipo_organizacion","Tipo"],["abreviatura","Abreviatura"],["habilita_imputacion","Imputa costos", v => +v ? "Sí" : "No"]],
+  contract: [["modelo_comercial","Modelo comercial"],["moneda","Moneda"],["fecha_inicio","Inicio", v => fmtDate(parseDate(v))],["fecha_fin","Fin", v => fmtDate(parseDate(v))],["renovacion_automatica","Renovación automática", v => +v ? "Sí" : "No"]],
+  lic: [["metrica_licencia","Métrica"]],
+  person: [["tipo_persona","Tipo"],["cargo","Cargo"],["email","Email"],["telefono","Teléfono"]],
+  vendor: [["sitio_web","Sitio web"]],
+  cc: [["codigo","Código"],["nombre","Nombre"]],
+};
+const history_ = [];
+function openEntity(key, push = true) {
+  const e = M.E.get(key); if (!e) return;
+  if (push) history_.push(key);
+  const d = document.getElementById("drawer"), path = pathOf(e);
+  const attrs = (ATTRS[e.type] || []).map(([k, l, f]) => { const v = e.data[k]; return `<div><dt>${l}</dt><dd class="${v == null || v === "" ? "empty" : ""}">${v == null || v === "" ? "sin dato" : esc(f ? f(v) : v)}</dd></div>`; }).join("");
+  const groups = d3.group(M.adj.get(key).filter(l => !(e.type === "n1" && M.E.get(l.to).type === "n2" && false)), l => M.E.get(l.to).type);
+  const order = ["n1","n2","n3","app","vendor","contract","lic","org","cc","disc","person"];
+  const rel = order.filter(t => groups.has(t)).map(t => { const ls = groups.get(t); const u = new Map(); ls.forEach(l => { const p = u.get(l.to); u.set(l.to, p ? (l.note && !p.includes(l.note) ? p + " · " + l.note : p) : l.note); });
+    return `<section><div class="eyebrow">${TYPES[t].plural} · ${u.size}</div><div class="rel">${[...u].map(([k, note]) => `<button type="button" data-open="${k}" style="--tc:${tvar(t)}"><i></i>${esc(M.E.get(k).name)}${note ? ` <small>${esc(note)}</small>` : ""}</button>`).join("")}</div></section>`; }).join("");
+  let extra = "";
+  if (e.type === "app") extra += `<section><div class="eyebrow">Ajuste</div>${[["Funcional", e.data.functional_fit], ["Técnico", e.data.technical_fit]].map(([l, v]) => `<div class="fit"><span>${l}</span><span class="dots">${[1,2,3,4].map(i => `<i class="${v && i <= +v ? "on" : ""}"></i>`).join("")}</span><b class="num">${v ?? "—"}</b></div>`).join("")}</section>`;
+  if (e.type === "n3") {
+    const vals = MATURITY.map(m => e.data[m]);
+    extra += `<section><div class="eyebrow">Madurez</div>${vals.some(v => v != null) ? radar(vals) + MATURITY.filter(m => e.data[m + "_justification"]).map(m => `<p class="desc"><b>${MAT_LBL[m]}:</b> ${esc(e.data[m + "_justification"])}</p>`).join("")
+      : `<div class="empty-note hatch">Sin evaluación de madurez. Cargá procesos, tecnología, datos, organización y desempeño (1 a 5) para ver el radar.</div>`}</section>`;
+  }
+  const cs = costsFor(e);
+  if (cs.length) { const by = d3.rollups(cs, v => sum(v), c => c.year).sort((a, b) => a[0] - b[0]), mx = d3.max(by, b => b[1]);
+    extra += `<section><div class="eyebrow">Costos registrados · ${usd(sum(cs))}</div>${by.map(([y, v]) => `<div class="fit" style="grid-template-columns:48px 1fr auto"><span class="num">${y}</span><span class="gauge"><i style="width:${v / mx * 100}%;background:var(--amber)"></i></span><b class="num" style="white-space:nowrap">${usdK(v)}</b></div>`).join("")}</section>`; }
+  if (["n1","n2"].includes(e.type)) { const kids = e.type === "n1" ? nbrs(key, "n2").flatMap(l => nbrs(l.to, "n3")) : nbrs(key, "n3"); const cov = kids.filter(l => nbrs(l.to, "app").length).length;
+    extra += `<section><div class="eyebrow">Cobertura aplicativa</div><div class="fit" style="grid-template-columns:auto 1fr auto"><span>${cov} de ${kids.length} N3</span><span class="gauge"><i style="width:${Math.max(1.5, pct(cov, kids.length))}%;background:var(--accent)"></i></span><b class="num">${Math.round(pct(cov, kids.length))}%</b></div></section>`; }
+  d.innerHTML = `<div class="d-head" style="--tc:${tvar(e.type)}">
+      <button class="x" type="button" data-close aria-label="Cerrar">×</button>
+      ${history_.length > 1 ? `<button type="button" data-back class="chip" style="align-self:flex-start">← ${esc(M.E.get(history_[history_.length - 2]).name.slice(0, 40))}</button>` : ""}
+      <span class="typechip"><i></i>${TYPES[e.type].label}</span>
+      <h2>${esc(e.name)}</h2>
+      ${path.length ? `<div class="crumbs">${path.map(k => `<a data-open="${k}">${esc(M.E.get(k).name)}</a>`).join("<span>›</span>")}</div>` : ""}
+    </div>
+    <div class="d-body">
+      ${e.data.descripcion ? `<p class="desc">${esc(e.data.descripcion)}</p>` : ""}
+      ${attrs ? `<dl class="attrs">${attrs}</dl>` : ""}
+      ${extra}${rel}
+    </div>`;
+  d.hidden = false; document.getElementById("scrim").hidden = false;
+  d.querySelector("[data-close]").focus({preventScroll: true});
+}
+function closeDrawer() { document.getElementById("drawer").hidden = true; document.getElementById("scrim").hidden = true; history_.length = 0; }
+function radar(vals) {
+  const S = 220, c = S / 2, R = 78, n = vals.length, pt = (i, v) => { const a = -Math.PI / 2 + i * 2 * Math.PI / n; return [c + Math.cos(a) * R * v / 5, c + Math.sin(a) * R * v / 5]; };
+  return `<svg viewBox="0 0 ${S} ${S}" style="width:220px;max-width:100%;align-self:center">
+    ${[1,2,3,4,5].map(l => `<polygon points="${vals.map((_, i) => pt(i, l).join(",")).join(" ")}" style="fill:none;stroke:var(--line)"/>`).join("")}
+    <polygon points="${vals.map((v, i) => pt(i, +v || 0).join(",")).join(" ")}" style="fill:var(--accent);fill-opacity:.25;stroke:var(--accent);stroke-width:2"/>
+    ${MATURITY.map((m, i) => { const [x, y] = pt(i, 6.3); return `<text x="${x}" y="${y}" text-anchor="middle" dy="0.35em" style="font:500 10px var(--mono);fill:var(--muted)">${MAT_LBL[m]} ${vals[i] ?? "–"}</text>`; }).join("")}</svg>`;
+}
+
+/* ---------- Paleta ---------- */
+let palSel = 0, palItems = [];
+function openPal() { const p = document.getElementById("palette"); p.hidden = false; const i = document.getElementById("palInput"); i.value = ""; filterPal(""); i.focus(); }
+function closePal() { document.getElementById("palette").hidden = true; }
+function filterPal(q) {
+  const nq = norm(q).trim().split(/\s+/).filter(Boolean);
+  palItems = [...M.E.values()].filter(e => nq.every(w => norm(e.name + " " + TYPES[e.type].label + " " + (e.abbr || "")).includes(w)))
+    .sort((a, b) => ({app: 0, n3: 1, contract: 2, vendor: 3}[a.type] ?? 5) - ({app: 0, n3: 1, contract: 2, vendor: 3}[b.type] ?? 5)).slice(0, 60);
+  palSel = 0; drawPal();
+}
+function drawPal() {
+  document.getElementById("palList").innerHTML = palItems.map((e, i) => `<li role="option" data-i="${i}" aria-selected="${i === palSel}" style="--tc:${tvar(e.type)}"><i></i><span>${esc(e.name)}</span><small>${TYPES[e.type].label}</small></li>`).join("") || `<li><span style="color:var(--muted)">Sin resultados</span></li>`;
+  document.querySelector(`#palList [aria-selected="true"]`)?.scrollIntoView({block: "nearest"});
+}
+
+/* ---------- Arranque ---------- */
+(async function start() {
+  const {raw, src} = await loadData();
+  build(raw);
+  document.getElementById("src").innerHTML = `<span>Fuente: ${esc(src)}</span><span>${nf.format(M.E.size)} entidades</span><span>${nf.format(sum([...M.adj.values()], a => a.length) / 2)} relaciones</span>`;
+  renderPulse();
+  go((location.hash || "").slice(1) || "mapa");
+
+  document.addEventListener("click", ev => {
+    const t = ev.target.closest("[data-open],[data-go],[data-v],[data-close],[data-back]");
+    if (!t) return;
+    if (t.dataset.v) go(t.dataset.v);
+    else if (t.dataset.go) go(t.dataset.go);
+    else if (t.hasAttribute("data-close")) closeDrawer();
+    else if (t.hasAttribute("data-back")) { history_.pop(); openEntity(history_[history_.length - 1], false); }
+    else if (t.dataset.open && !t.closest("#gsvg")) openEntity(t.dataset.open);
+  });
+  document.getElementById("scrim").onclick = closeDrawer;
+  document.getElementById("openPal").onclick = openPal;
+  document.getElementById("palette").onclick = ev => { if (ev.target.id === "palette") closePal(); };
+  document.getElementById("palInput").oninput = ev => filterPal(ev.target.value);
+  document.getElementById("palList").onclick = ev => { const li = ev.target.closest("[data-i]"); if (li) { closePal(); openEntity(palItems[+li.dataset.i].key); } };
+  document.addEventListener("keydown", ev => {
+    const palOpen = !document.getElementById("palette").hidden;
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "k" || (ev.key === "/" && !palOpen && !/INPUT|TEXTAREA/.test(document.activeElement.tagName))) { ev.preventDefault(); openPal(); return; }
+    if (ev.key === "Escape") { palOpen ? closePal() : closeDrawer(); return; }
+    if (!palOpen) return;
+    if (ev.key === "ArrowDown") { palSel = Math.min(palItems.length - 1, palSel + 1); drawPal(); ev.preventDefault(); }
+    if (ev.key === "ArrowUp") { palSel = Math.max(0, palSel - 1); drawPal(); ev.preventDefault(); }
+    if (ev.key === "Enter" && palItems[palSel]) { closePal(); openEntity(palItems[palSel].key); }
+  });
+  window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (VIEWS[v] && v !== current) go(v); });
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (["red", "flujo", "horizonte"].includes(current)) go(current); }, 250); });
+})();
+</script>

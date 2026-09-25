@@ -1,0 +1,3 @@
+estratos/data.json
+*.sql
+__pycache__/
