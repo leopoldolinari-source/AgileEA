@@ -233,6 +233,15 @@ svg text{fill:var(--ink)}
 .askrow textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
 .btn-ask{border:0;border-radius:10px;padding:0 22px;min-height:44px;background:var(--accent);color:var(--accent-ink);font:700 14px var(--display);letter-spacing:.02em;cursor:pointer}
 .btn-ask:hover{filter:brightness(1.08)}
+.btn-mic{position:relative;width:52px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink-2);cursor:pointer;display:grid;place-items:center}
+.btn-mic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.btn-mic:hover{border-color:var(--accent);color:var(--accent)}
+.btn-mic.on{background:var(--crit);border-color:var(--crit);color:#fff}
+.btn-mic.on::after{content:"";position:absolute;inset:-5px;border-radius:14px;border:2px solid var(--crit);animation:micring 1.2s ease-out infinite}
+@keyframes micring{from{opacity:.8;transform:scale(.92)}to{opacity:0;transform:scale(1.12)}}
+.micstatus{margin:0;font-size:12.5px;color:var(--ink-2)}
+.micstatus.live{color:var(--crit);font-weight:600}
+.micstatus.err{color:var(--crit)}
 .sugg{display:flex;flex-wrap:wrap;gap:6px}
 .sugg .chip{text-align:left}
 .asknote{margin:0;font-size:12px;color:var(--muted)}
@@ -552,6 +561,7 @@ function renderNav() {
 }
 function go(v) {
   if (!VIEWS[v]) v = "mapa";
+  if (micRec && v !== "consultar") micRec.abort();
   current = v;
   try { history.replaceState(null, "", "#" + v); } catch (e) {}
   renderNav();
@@ -1008,19 +1018,60 @@ async function askQuestion(q) {
 function renderConsultar(el) {
   el.innerHTML = `<div class="ask panel">
       <label for="askInput" class="eyebrow">Preguntale al modelo</label>
-      <div class="askrow"><textarea id="askInput" rows="2" placeholder="Por ejemplo: ¿qué capacidades estratégicas de Exploración & Desarrollo no tienen aplicación?"></textarea>
+      <div class="askrow"><textarea id="askInput" rows="2" placeholder="Escribí o dictá tu pregunta. Por ejemplo: ¿qué capacidades estratégicas de Exploración & Desarrollo no tienen aplicación?"></textarea>
+        <button type="button" class="btn-mic" id="askMic" hidden aria-label="Dictar la pregunta" title="Dictar la pregunta"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>
         <button type="button" class="btn-ask" id="askGo">Preguntar</button><button type="button" class="chip" id="askStop" hidden>Detener</button></div>
       <div class="sugg">${askSuggestions().map(s => `<button type="button" class="chip" data-ask="${esc(s)}">${esc(s)}</button>`).join("")}</div>
-      <p class="asknote" id="askNote">Responde con los ${nf.format(M.E.size)} elementos del repositorio. Las entidades de la respuesta abren su ficha, y las capacidades se pueden resaltar en el mapa.</p>
+      <p class="micstatus" id="micStatus" hidden></p><p class="asknote" id="askNote">Responde con los ${nf.format(M.E.size)} elementos del repositorio. Las entidades de la respuesta abren su ficha, y las capacidades se pueden resaltar en el mapa.</p>
     </div><div id="qa" class="qa"></div>`;
   const inp = el.querySelector("#askInput");
   el.querySelector("#askGo").onclick = () => { const q = inp.value; inp.value = ""; askQuestion(q); };
   el.querySelector("#askStop").onclick = () => askCtl?.abort();
+  setupMic(el, inp);
   inp.onkeydown = ev => { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); el.querySelector("#askGo").click(); } };
   el.querySelectorAll("[data-ask]").forEach(b => b.onclick = () => askQuestion(b.dataset.ask));
   samplerP.then(s => { const n = el.querySelector("#askNote"); if (n && s) n.textContent += " Cada consulta usa tu cuenta de Claude."; });
   drawQA();
   inp.focus({preventScroll: true});
+}
+/* Dictado por voz: Web Speech API del navegador (Chrome, Edge, Safari). Completa la caja; la pregunta se envía con "Preguntar". */
+let micRec = null;
+function setupMic(el, inp) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = el.querySelector("#askMic"), status = el.querySelector("#micStatus");
+  if (!SR) return;                                   // Firefox y otros: sin botón
+  btn.hidden = false;
+  const say = (msg, kind = "") => { status.hidden = !msg; status.textContent = msg || ""; status.className = "micstatus " + kind; };
+  const MIC_ERR = {
+    "not-allowed": "El micrófono no está permitido en esta página. Habilitalo en el candado de la barra de direcciones, o dictá con Win + H (Windows).",
+    "service-not-allowed": "El navegador no permite el dictado en esta página. En Windows podés dictar con Win + H.",
+    "no-speech": "No se escuchó nada. Tocá el micrófono y probá de nuevo.",
+    "audio-capture": "No se encontró un micrófono conectado.",
+    "network": "El dictado necesita conexión a internet.",
+  };
+  btn.onclick = () => {
+    if (micRec) { micRec.stop(); return; }
+    if (!window.isSecureContext) { say("El micrófono solo funciona con HTTPS o en localhost.", "err"); return; }
+    const rec = new SR(), base = inp.value.trim() ? inp.value.trim() + " " : "";
+    rec.lang = "es-AR"; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
+    let finalTxt = "", failed = false;
+    rec.onstart = () => { micRec = rec; btn.classList.add("on"); btn.setAttribute("aria-label", "Detener dictado"); say("Escuchando… hablá y hacé una pausa al terminar.", "live"); };
+    rec.onresult = ev => {
+      let interim = "";
+      for (let i = ev.resultIndex; i < ev.results.length; i++) {
+        const t = ev.results[i][0].transcript;
+        ev.results[i].isFinal ? finalTxt += t : interim += t;
+      }
+      inp.value = base + finalTxt + interim;
+    };
+    rec.onerror = ev => { failed = true; if (ev.error !== "aborted") say(MIC_ERR[ev.error] || "No se pudo usar el micrófono.", "err"); };
+    rec.onend = () => {
+      micRec = null; btn.classList.remove("on"); btn.setAttribute("aria-label", "Dictar la pregunta");
+      if (!failed) say(finalTxt.trim() ? "Listo. Revisá el texto y tocá Preguntar." : "");
+      inp.focus({preventScroll: true});
+    };
+    try { rec.start(); } catch (e) { say("No se pudo iniciar el dictado.", "err"); }
+  };
 }
 function drawQA() {
   const box = document.getElementById("qa"); if (!box) return;
