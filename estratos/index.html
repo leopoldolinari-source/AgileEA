@@ -14,7 +14,7 @@
   --c1:#2F86AE; --c2:#C07A33; --c3:#4F8F5F; --c4:#7A5BA6; --c5:#B24F62;
   --q1:#CFE7EF; --q2:#9CCCDD; --q3:#5FAAC6; --q4:#2E82A5; --q5:#145E7C;
   --w1:#E8D9B5; --w2:#DDB067; --w3:#C9772F; --w4:#A8362F;
-  --t-app:#1B7A9B; --t-org:#4F8F5F; --t-vendor:#C07A33; --t-contract:#B06F10; --t-cap:#7A5BA6; --t-disc:#3F9C94; --t-person:#8C6A5A; --t-cc:#6B7F3A; --t-lic:#B24F62;
+  --t-app:#2F91BD; --t-org:#4E9BF3; --t-vendor:#FF9E1B; --t-contract:#0B7F79; --t-cap:#123E9B; --t-disc:#5B7F2A; --t-person:#A84E72; --t-cc:#8A6A2F; --t-lic:#7459B8; --lx-ink:#FFFFFF;
   --brand-a:#0A2E6E; --brand-b:#12A89A;
   --display:"Exo 2","Segoe UI",system-ui,sans-serif; --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
 }
@@ -27,7 +27,7 @@
   --c1:#4BA7D0; --c2:#DC9650; --c3:#6DB27C; --c4:#9C80CC; --c5:#D86F83;
   --q1:#173847; --q2:#1D5468; --q3:#2B7892; --q4:#46A2C2; --q5:#86D0E8;
   --w1:#3F3622; --w2:#7A5A26; --w3:#B8702F; --w4:#E0544B;
-  --t-app:#4BB4D6; --t-org:#6DB27C; --t-vendor:#DC9650; --t-contract:#E4AA48; --t-cap:#9C80CC; --t-disc:#5CC2B8; --t-person:#C29A86; --t-cc:#A4BA63; --t-lic:#D86F83;
+  --t-app:#4FAEDA; --t-org:#6FB0F7; --t-vendor:#FFB14D; --t-contract:#2DB3AC; --t-cap:#6F8FE6; --t-disc:#8DB85A; --t-person:#CF7098; --t-cc:#C49A4F; --t-lic:#9B82D6; --lx-ink:#0A1114;
 }}
 :root[data-theme="dark"]{color-scheme:dark;
   --brand-a:#E2ECEC; --brand-b:#2CC7B6;
@@ -38,7 +38,7 @@
   --c1:#4BA7D0; --c2:#DC9650; --c3:#6DB27C; --c4:#9C80CC; --c5:#D86F83;
   --q1:#173847; --q2:#1D5468; --q3:#2B7892; --q4:#46A2C2; --q5:#86D0E8;
   --w1:#3F3622; --w2:#7A5A26; --w3:#B8702F; --w4:#E0544B;
-  --t-app:#4BB4D6; --t-org:#6DB27C; --t-vendor:#DC9650; --t-contract:#E4AA48; --t-cap:#9C80CC; --t-disc:#5CC2B8; --t-person:#C29A86; --t-cc:#A4BA63; --t-lic:#D86F83;
+  --t-app:#4FAEDA; --t-org:#6FB0F7; --t-vendor:#FFB14D; --t-contract:#2DB3AC; --t-cap:#6F8FE6; --t-disc:#8DB85A; --t-person:#CF7098; --t-cc:#C49A4F; --t-lic:#9B82D6; --lx-ink:#0A1114;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -185,6 +185,12 @@ kbd{font:500 11px var(--mono);padding:2px 6px;border:1px solid var(--line);borde
 @media (max-width:1100px){.domstrip{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:560px){.domstrip{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+
+/* ——— Iconografía de objetos ——— */
+.lx{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:4px;background:var(--tc);color:var(--lx-ink);font:800 11px/1 var(--display);flex:none;letter-spacing:0}
+.lx.md{width:22px;height:22px;font-size:13px;border-radius:5px}
+.lx.lg{width:46px;height:46px;font-size:24px;border-radius:8px}
+.node text.nl{font:800 11px var(--display);fill:var(--lx-ink);stroke:none;opacity:1!important}
 /* ——— SVG vistas ——— */
 .scroll-x{overflow-x:auto}
 svg text{fill:var(--ink)}
@@ -250,6 +256,87 @@ svg text{fill:var(--ink)}
 
 .srcbanner{padding:12px 16px;border-radius:12px;font-size:13.5px;background:color-mix(in srgb,var(--warn) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);color:var(--ink)}
 .srcbanner.err{background:color-mix(in srgb,var(--crit) 12%,var(--surface));border-color:color-mix(in srgb,var(--crit) 45%,transparent)}
+
+/* ——— Perspectivas ——— */
+.persp{display:flex;flex-direction:column;gap:3px;padding:5px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.persp button{display:grid;grid-template-columns:18px 1fr;gap:9px;align-items:center;padding:7px 9px;border:0;border-radius:8px;background:none;cursor:pointer;text-align:left;font:600 12.5px var(--body);color:var(--ink-2)}
+.persp button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7}
+.persp button:hover{color:var(--ink);background:var(--surface)}
+.persp button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.persp-sel{display:none}
+.persp-sel select{font:600 13px var(--body);padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.kpis .kpi{cursor:default;border-left:1px solid var(--line-2)}
+.kpis .kpi:hover{background:none}
+/* ——— Ficha 360° ——— */
+.a360{display:grid;grid-template-columns:270px minmax(0,1fr);gap:18px;align-items:start}
+.alist{position:sticky;top:12px;max-height:calc(100vh - 32px);overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.alist input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink);font:500 13px var(--body)}
+.aitems,.otree{display:flex;flex-direction:column;gap:2px}
+.aitem,.onode{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:center;padding:8px;border:0;border-radius:8px;background:none;cursor:pointer;text-align:left;color:var(--ink)}
+.aitem b{display:block;font-size:13px}.aitem small{display:block;color:var(--muted);font-size:11.5px}
+.aitem:hover,.onode:hover{background:var(--surface-2)}
+.aitem[aria-current="true"],.onode[aria-current="true"]{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.onode span{font-size:13px}.onode .paytag .lx{width:16px;height:16px;font-size:10px}
+.a360body{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ahead{display:flex;gap:16px;align-items:flex-start;padding:18px}
+.ahtext{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.ahtext h2{margin:0;font:800 26px/1.1 var(--display)}
+.adesc{margin:2px 0 0;color:var(--ink-2);font-size:13.5px;line-height:1.55;max-width:80ch;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pills{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.relstrip{display:flex;flex-wrap:wrap;gap:6px}
+.relstrip button{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer;font-size:12.5px;color:var(--ink-2)}
+.relstrip button b{font:600 12px var(--mono);color:var(--ink)}
+.relstrip button.zero{opacity:.5}
+.relstrip button:hover{border-color:var(--accent)}
+.agrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.agrid .wide{grid-column:1/-1}
+.sech{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.sech h2{margin:0;font:700 16px/1.2 var(--display)}
+.sech p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+.capgrp{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.capn1{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.capn2{padding-left:14px;border-left:2px solid var(--line-2);display:flex;flex-direction:column;gap:4px}
+.twocol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.people{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.prow{display:flex;gap:9px;align-items:flex-start}
+.prow b a{cursor:pointer;color:var(--ink)}.prow b a:hover{color:var(--accent)}
+.contact{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
+.copy{border:1px dashed var(--line);background:none;border-radius:6px;padding:1px 7px;font:500 11.5px var(--mono);color:var(--ink-2);cursor:copy;user-select:all}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+.copy.done{border-style:solid;border-color:var(--good);color:var(--good)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font:500 10.5px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl .cur{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.tbl tr.tot td{font-weight:700;border-bottom:0;border-top:1px solid var(--line)}
+.tbl tr.grp td{background:var(--surface-2);padding-top:10px}
+.tbl td.ind{padding-left:24px}
+.tbl.heat td.num{font-size:12px}
+.tbl .ref{text-align:left;margin:1px 0}
+.up{color:var(--good)}.down{color:var(--crit)}
+.payrow{font-size:12px;white-space:nowrap}
+.rbucket{margin-top:18px}
+.bh{display:flex;align-items:center;gap:8px;margin:0 0 10px;font:700 15px var(--display)}
+.dot{width:10px;height:10px;border-radius:50%}.dot.crit{background:var(--crit)}.dot.warn{background:var(--warn)}.dot.good{background:var(--good)}
+.rgrid,.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.rcard{padding:14px;display:flex;flex-direction:column;gap:10px}
+.rtop{display:flex;gap:10px;align-items:flex-start}
+.rtop>div{flex:1;min-width:0}.rtop h2{margin:0;font:700 16px var(--display)}
+.rtop a{cursor:pointer;color:var(--ink)}.rtop a:hover{color:var(--accent)}
+.rmeta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
+.rmeta span{display:inline-flex;gap:6px;align-items:center}
+.rcontact{border-top:1px solid var(--line-2);padding-top:8px}
+.vcard{display:flex;flex-direction:column;gap:8px}
+.appcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.appcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:12px;text-align:left;cursor:pointer;color:var(--ink)}
+.appcard b{display:block}.appcard small{display:block;color:var(--muted);font-size:12px}
+.appcard .pills{grid-column:2}
+.appcard:hover{border-color:var(--accent)}
+@media (max-width:980px){.a360{grid-template-columns:1fr}.alist{position:static;max-height:260px}.agrid,.twocol{grid-template-columns:1fr}}
+@media (max-width:820px){.persp{display:none}.persp-sel{display:block}}
 /* ——— Consultar ——— */
 .ask{padding:18px;display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
 .askrow{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
@@ -356,6 +443,8 @@ svg text{fill:var(--ink)}
       <img class="brand-icon" src="data:image/png;base64,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" alt="" width="34" height="34">
       <div><b class="wordmark">Agile<span>EA</span></b><small>Arquitectura empresarial</small></div>
     </div>
+    <div class="persp" id="persp" role="group" aria-label="Perspectiva"></div>
+    <label class="persp-sel"><span class="sr">Perspectiva</span><select id="perspSel" aria-label="Perspectiva"></select></label>
     <nav class="nav" id="nav"></nav>
     <div class="src" id="src"></div>
   </aside>
@@ -410,19 +499,21 @@ const parseDate = s => s ? new Date(s + "T00:00:00") : null;
 const fmtDate = d => d ? d.toLocaleDateString("es-AR", {day:"2-digit", month:"short", year:"numeric"}) : "—";
 
 const TYPES = {
-  n1:{label:"Dominio N1", plural:"Dominios", color:"--t-cap"},
-  n2:{label:"Capacidad N2", plural:"Capacidades N2", color:"--t-cap"},
-  n3:{label:"Subcapacidad N3", plural:"Subcapacidades N3", color:"--t-cap"},
-  app:{label:"Aplicación", plural:"Aplicaciones", color:"--t-app"},
-  org:{label:"Organización", plural:"Organizaciones", color:"--t-org"},
-  vendor:{label:"Proveedor", plural:"Proveedores", color:"--t-vendor"},
-  contract:{label:"Contrato", plural:"Contratos", color:"--t-contract"},
-  lic:{label:"Licencia", plural:"Licencias", color:"--t-lic"},
-  disc:{label:"Disciplina", plural:"Disciplinas", color:"--t-disc"},
-  person:{label:"Persona", plural:"Personas", color:"--t-person"},
-  cc:{label:"Centro de costo", plural:"Centros de costo", color:"--t-cc"},
+  n1:{label:"Dominio N1", plural:"Dominios", color:"--t-cap", letter:"B"},
+  n2:{label:"Capacidad N2", plural:"Capacidades N2", color:"--t-cap", letter:"B"},
+  n3:{label:"Subcapacidad N3", plural:"Subcapacidades N3", color:"--t-cap", letter:"B"},
+  app:{label:"Aplicación", plural:"Aplicaciones", color:"--t-app", letter:"A"},
+  org:{label:"Organización", plural:"Organizaciones", color:"--t-org", letter:"O"},
+  vendor:{label:"Proveedor", plural:"Proveedores", color:"--t-vendor", letter:"P"},
+  contract:{label:"Contrato", plural:"Contratos", color:"--t-contract", letter:"C"},
+  lic:{label:"Licencia", plural:"Licencias", color:"--t-lic", letter:"L"},
+  disc:{label:"Disciplina", plural:"Disciplinas", color:"--t-disc", letter:"D"},
+  person:{label:"Persona", plural:"Personas", color:"--t-person", letter:"R"},
+  cc:{label:"Centro de costo", plural:"Centros de costo", color:"--t-cc", letter:"$"},
 };
 const tvar = t => `var(${TYPES[t].color})`;
+/* Iconografía de objetos (estilo LeanIX, letras del ABM): A Aplicación · B Capacidad · O Organización · P Proveedor · R Ownership/personas · L Licencia · C Contrato · D Disciplina · $ Centro de costo */
+const lx = (t, size = "") => `<span class="lx ${size}" style="--tc:${tvar(t)}" aria-hidden="true">${TYPES[t].letter}</span>`;
 
 /* ---------- Carga ---------- */
 async function loadData() {
@@ -443,7 +534,7 @@ async function loadData() {
 }
 
 /* ---------- Modelo en grafo ---------- */
-const M = {E: new Map(), adj: new Map(), costs: [], raw: {}};
+const M = {E: new Map(), adj: new Map(), costs: [], raw: {}, cyears: [], payers: [], licYears: []};
 function node(type, id, name, data, extra = {}) {
   const key = `${type}:${id}`;
   M.E.set(key, {key, type, id: String(id), name, data, ...extra});
@@ -485,6 +576,10 @@ function build(T) {
   const ca = Object.fromEntries(t("contrato_anio").map(r => [r.id_contrato_anio, r]));
   t("licencia_anual").forEach(r => { const y = ca[r.contrato_anio]; y && link(`contract:${y.contrato}`, `lic:${r.licencia}`, `${y.anio}: ${r.cantidad} u.`, `${y.anio}: ${r.cantidad} u.`); });
   t("contrato_anio_pagador").forEach(r => { const y = ca[r.contrato_anio]; y && link(`contract:${y.contrato}`, `org:${r.organizacion}`, `paga ${r.porcentaje_distribucion}% · ${y.anio}`, `paga ${r.porcentaje_distribucion}% · ${y.anio}`); });
+  // Años de contrato, pagadores (% de referencia) y licencias por año (fuente de verdad de cantidades)
+  t("contrato_anio").forEach(r => M.cyears.push({id: r.id_contrato_anio, contract: r.contrato, year: +r.anio}));
+  t("contrato_anio_pagador").forEach(r => { const y = ca[r.contrato_anio]; y && M.payers.push({cy: r.contrato_anio, contract: y.contrato, year: +y.anio, org: r.organizacion, pct: +r.porcentaje_distribucion}); });
+  t("licencia_anual").forEach(r => { const y = ca[r.contrato_anio]; y && M.licYears.push({lic: r.licencia, contract: y.contrato, year: +y.anio, qty: +r.cantidad}); });
   const cab = Object.fromEntries(t("contrato_costo_cabecera").map(r => [r.id_costo_cabecera, r]));
   const con = Object.fromEntries(t("contrato").map(r => [r.id_contrato, r]));
   t("contrato_costo_detalle").forEach(r => {
@@ -573,20 +668,365 @@ const VIEWS = {
 };
 let current = "mapa";
 
+/* ============================================================
+   Perspectivas: cada consumidor ve su propio menú sobre el mismo modelo.
+   ============================================================ */
+const PERSP = {
+  arq:     {label:"Arquitectura", hint:"Evolución, estrategia y roadmap", views:["mapa", "aplicaciones", "portafolio", "red", "flujo", "horizonte", "salud", "consultar"]},
+  soporte: {label:"Soporte", hint:"Software, proveedores y renovaciones", views:["aplicaciones", "renovaciones", "licencias", "proveedores", "consultar"]},
+  finanzas:{label:"Planning financiero", hint:"Budget, forecast y pagos", views:["presupuesto", "compromisos", "flujo", "consultar"]},
+  negocio: {label:"Negocio", hint:"Mis aplicaciones, costos y capacidades", views:["miarea", "aplicaciones", "consultar"]},
+};
+let persp = "arq";
+try { const p = localStorage.getItem("agileea.persp"); if (PERSP[p]) persp = p; } catch (e) {}
+const PICONS = {
+  arq:'<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/><path d="M9 3v6M15 9v6M7 15v6"/></svg>',
+  soporte:'<svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M19 19c0 1.5-2 2-5 2"/></svg>',
+  finanzas:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  negocio:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.8-3.6 3.2-5.5 6-5.5s5.2 1.9 6 5.5"/><circle cx="17.5" cy="9" r="2.4"/><path d="M16.5 14.3c2.4.2 4 1.9 4.6 4.7"/></svg>',
+};
+Object.assign(ICONS, {
+  aplicaciones:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>',
+  renovaciones:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg>',
+  licencias:'<svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/></svg>',
+  proveedores:'<svg viewBox="0 0 24 24"><path d="M3 21V9l6-4v4l6-4v4l6-4v16z"/><path d="M7 21v-4h3v4M14 21v-4h3v4"/></svg>',
+  presupuesto:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 13h3M8 17h3M14 13h3M14 17h3"/></svg>',
+  compromisos:'<svg viewBox="0 0 24 24"><path d="M4 19h16M6 16V9M11 16V6M16 16v-4"/><path d="M16 8l4-4M20 8V4h-4" /></svg>',
+  miarea:'<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/></svg>',
+});
+Object.assign(VIEWS, {
+  aplicaciones:{nav:"Aplicaciones", hint:"Ficha 360° por software", title:"Aplicaciones", sub:"Elegí una aplicación: capacidades, uso, personas, contratos, licencias y costos en una sola ficha.", render: renderApps},
+  renovaciones:{nav:"Renovaciones", hint:"Qué vence y cuándo", title:"Renovaciones", sub:"Contratos agrupados por días al vencimiento, con licencias y el contacto del proveedor para gestionar la renovación.", render: renderRenovaciones},
+  licencias:{nav:"Licencias", hint:"Cuántas hay, por año", title:"Licencias", sub:"Cantidad de licencias por tipo y año. Fuente: licencias por año de cada contrato.", render: renderLicencias},
+  proveedores:{nav:"Proveedores", hint:"Contactos y contratos", title:"Proveedores", sub:"A quién llamar para cada software: contactos por rol, aplicaciones y contratos.", render: renderProveedores},
+  presupuesto:{nav:"Presupuesto", hint:"Gasto por mes y pagador", title:"Presupuesto anual", sub:"Montos certificados por mes (el pago lo ejecuta Tesorería), CAPEX / OPEX y reparto entre pagadores.", render: renderPresupuesto},
+  compromisos:{nav:"Compromisos", hint:"Años sin monto y renovaciones", title:"Compromisos y forecast", sub:"Años de contrato vigentes sin montos cargados y renovaciones que impactan el próximo presupuesto.", render: renderCompromisos},
+  miarea:{nav:"Mi área", hint:"Apps, costos y capacidades", title:"Mi área", sub:"Elegí tu área en el árbol: lo que usa, lo que paga, lo que vence y sus capacidades. Incluye las áreas que dependen de ella.", render: renderMiArea},
+});
+
 function renderNav() {
-  document.getElementById("nav").innerHTML = Object.entries(VIEWS).map(([k, v]) =>
-    `<button type="button" data-v="${k}" aria-current="${k === current}">${ICONS[k]}<span>${v.nav}</span><span class="hint">${v.hint}</span></button>`).join("");
+  document.getElementById("persp").innerHTML = Object.entries(PERSP).map(([k, p]) =>
+    `<button type="button" data-persp="${k}" aria-pressed="${k === persp}" title="${esc(p.hint)}">${PICONS[k]}<span>${esc(p.label)}</span></button>`).join("");
+  const sel = document.getElementById("perspSel");
+  sel.innerHTML = Object.entries(PERSP).map(([k, p]) => `<option value="${k}" ${k === persp ? "selected" : ""}>${esc(p.label)}</option>`).join("");
+  document.getElementById("nav").innerHTML = PERSP[persp].views.map(k => { const v = VIEWS[k];
+    return `<button type="button" data-v="${k}" aria-current="${k === current}">${ICONS[k]}<span>${v.nav}</span><span class="hint">${v.hint}</span></button>`; }).join("");
+}
+function setPersp(p, view) {
+  if (!PERSP[p]) return;
+  persp = p; try { localStorage.setItem("agileea.persp", p); } catch (e) {}
+  go(view && PERSP[p].views.includes(view) ? view : PERSP[p].views.includes(current) ? current : PERSP[p].views[0]);
 }
 function go(v) {
-  if (!VIEWS[v]) v = "mapa";
+  if (!PERSP[persp].views.includes(v)) {
+    const owner = Object.keys(PERSP).find(p => PERSP[p].views.includes(v));
+    if (owner && VIEWS[v]) persp = owner; else v = PERSP[persp].views[0];
+  }
   if (micRec && v !== "consultar") micRec.abort();
   current = v;
-  try { history.replaceState(null, "", "#" + v); } catch (e) {}
+  try { history.replaceState(null, "", `#${persp}.${v}`); } catch (e) {}
   renderNav();
+  document.getElementById("pulse").hidden = persp !== "arq";
   document.getElementById("vTitle").textContent = VIEWS[v].title;
   document.getElementById("vSub").textContent = VIEWS[v].sub;
   const el = document.getElementById("view"); el.innerHTML = "";
   VIEWS[v].render(el);
+  window.scrollTo({top: 0});
+}
+function goHash(h) {
+  const [p, v] = (h || "").split(".");
+  if (PERSP[p]) { persp = p; go(VIEWS[v] ? v : PERSP[p].views[0]); }
+  else go(VIEWS[p] ? p : PERSP[persp].views[0]);      // enlaces viejos (#mapa)
+}
+
+/* ---------- Utilidades compartidas ---------- */
+const MES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+const money = (v, mon = "USD") => `${mon} ${nf.format(v)}`;
+const moneyShort = (v, mon = "USD") => usdK(v).replace(/^USD/, mon);
+const byMoneda = rows => [...d3.rollup(rows, v => sum(v), r => r.moneda)].map(([m, v]) => moneyShort(v, m)).join(" · ") || "—";
+const lifeColor = l => ({"Plan":"var(--q3)", "Phase In":"var(--q4)", "Active":"var(--good)", "Phase Out":"var(--warn)", "End of Life":"var(--crit)"})[l] || "var(--muted)";
+const pill = (txt, color) => `<span class="pill" style="background:color-mix(in srgb,${color} 18%,transparent);color:${color}">${esc(txt)}</span>`;
+const chipOf = key => { const e = M.E.get(key); return e ? `<button type="button" class="ref" data-open="${e.key}" style="--tc:${tvar(e.type)}">${lx(e.type)}${esc(e.name)}</button>` : ""; };
+const copyBtn = (txt, label = "Copiar") => txt ? `<button type="button" class="copy" data-copy="${esc(txt)}" title="${label}">${esc(txt)}</button>` : "";
+const kpis = items => `<div class="kpis">${items.map(k => `<div class="kpi ${k.cls || ""}"><span class="l">${k.l}</span><span class="v">${k.v}</span>${k.s ? `<span class="s">${esc(k.s)}</span>` : ""}</div>`).join("")}</div>`;
+const secHead = (t, title, sub = "") => `<div class="sech">${t ? lx(t, "md") : ""}<div><h2>${esc(title)}</h2>${sub ? `<p>${sub}</p>` : ""}</div></div>`;
+const licYearsOfApp = appId => M.licYears.filter(r => M.E.get(`lic:${r.lic}`)?.data.aplicacion === String(appId));
+const vendorContacts = vKey => nbrs(vKey, "person").map(l => ({p: M.E.get(l.to), rol: l.note}));
+const ROLE_ORDER = ["Licenciamiento", "Comercial", "Soporte técnico", "Otro"];
+const bestContact = (vKey, roles = ROLE_ORDER) => { const cs = vendorContacts(vKey); for (const r of roles) { const c = cs.find(x => x.rol === r); if (c) return c; } return cs[0]; };
+const orgChildren = id => all("org").filter(o => o.data.parent_id === String(id));
+const orgSubtree = id => { const out = new Set([String(id)]); const walk = x => orgChildren(x).forEach(c => { out.add(c.id); walk(c.id); }); walk(id); return out; };
+const yearsOf = () => uniq([...M.cyears.map(y => y.year), ...M.costs.map(c => c.year)]).sort((a, b) => a - b);
+
+/* ---------- Ficha 360° de aplicación ---------- */
+let appSel = null, appFilter = "";
+function renderApps(el) {
+  const apps = all("app").sort((a, b) => a.name.localeCompare(b.name));
+  if (!apps.length) { el.innerHTML = '<div class="empty-note">No hay aplicaciones cargadas.</div>'; return; }
+  if (!M.E.has(appSel)) appSel = apps[0].key;
+  const nq = norm(appFilter);
+  const list = apps.filter(a => !nq || norm(a.name + " " + (M.E.get(parentOf(a.key, "vendor"))?.name || "")).includes(nq));
+  el.innerHTML = `<div class="a360">
+    <aside class="alist panel">
+      <label class="eyebrow" for="appQ">Aplicaciones · ${apps.length}</label>
+      <input id="appQ" type="search" placeholder="Buscar por nombre o proveedor" value="${esc(appFilter)}" autocomplete="off">
+      <div class="aitems">${list.map(a => { const next = nbrs(a.key, "contract").map(l => contractStatus(M.E.get(l.to))).filter(s => s.days >= 0).sort((x, y) => x.days - y.days)[0];
+        return `<button type="button" class="aitem" data-app="${a.key}" aria-current="${a.key === appSel}">${lx("app")}<span><b>${esc(a.name)}</b><small>${esc(M.E.get(parentOf(a.key, "vendor"))?.name || "Sin proveedor")}</small></span>
+          ${next && next.k !== "good" ? `<span class="pill ${next.k}">${next.days} d</span>` : ""}</button>`; }).join("") || '<p class="meta" style="padding:8px">Sin resultados.</p>'}</div>
+    </aside>
+    <div id="a360body" class="a360body"></div></div>`;
+  el.querySelector("#appQ").oninput = ev => { appFilter = ev.target.value; const pos = ev.target.selectionStart; renderApps(el); const i = el.querySelector("#appQ"); i.focus(); i.setSelectionRange(pos, pos); };
+  el.querySelectorAll("[data-app]").forEach(b => b.onclick = () => { appSel = b.dataset.app; renderApps(el); });
+  renderApp360(el.querySelector("#a360body"), M.E.get(appSel));
+}
+function renderApp360(box, a) {
+  const d = a.data, vKey = parentOf(a.key, "vendor"), vendor = M.E.get(vKey);
+  const cons = nbrs(a.key, "contract").map(l => M.E.get(l.to)).sort((x, y) => (y.end || 0) - (x.end || 0));
+  const costs = costsFor(a), n3 = nbrs(a.key, "n3").map(l => M.E.get(l.to));
+  const orgs = nbrs(a.key, "org").map(l => l.to), discs = nbrs(a.key, "disc").map(l => l.to);
+  const owners = nbrs(a.key, "person").map(l => ({p: M.E.get(l.to), rol: l.note}));
+  const ext = vKey ? vendorContacts(vKey) : [];
+  const ly = licYearsOfApp(a.id), licTypes = nbrs(a.key, "lic").map(l => M.E.get(l.to));
+  const licNow = sum(ly.filter(r => r.year === YEAR), r => r.qty);
+  const next = cons.map(c => [c, contractStatus(c)]).filter(([, s]) => s.days >= 0).sort((x, y) => x[1].days - y[1].days)[0];
+  const checks = [["Criticidad", !!d.business_criticality], ["Ajuste funcional y técnico", d.functional_fit != null && d.technical_fit != null], ["Capacidades", n3.length > 0],
+    ["Organizaciones usuarias", orgs.length > 0], ["Responsables", owners.length > 0], ["Contratos", cons.length > 0], ["Licencias por año", ly.length > 0], ["Costos", costs.length > 0]];
+  const done = checks.filter(c => c[1]).length;
+  const years = uniq(ly.map(r => r.year)).sort((x, y) => x - y);
+  // capacidades agrupadas N1 › N2
+  const capGroups = d3.groups(n3, e => pathOf(e)[0], e => pathOf(e)[1]);
+  const relStrip = [["n3", "Capacidades", n3.length, "s-cap"], ["org", "Organizaciones", orgs.length, "s-uso"], ["disc", "Disciplinas", discs.length, "s-uso"], ["person", "Personas", owners.length + ext.length, "s-per"],
+    ["vendor", "Proveedor", vendor ? 1 : 0, "s-per"], ["contract", "Contratos", cons.length, "s-con"], ["lic", "Tipos de licencia", licTypes.length, "s-lic"], ["cc", "Costos", costs.length, "s-cos"]];
+  box.innerHTML = `
+    <section class="panel ahead">
+      ${lx("app", "lg")}
+      <div class="ahtext">
+        <div class="eyebrow">Aplicación${vendor ? ` · ${esc(vendor.name)}` : ""}</div>
+        <h2>${esc(a.name)}</h2>
+        <div class="pills">${pill(d.lifecycle || "Sin ciclo de vida", lifeColor(d.lifecycle))}${d.business_criticality ? pill(d.business_criticality, "var(--warn)") : '<span class="pill mute">Sin criticidad</span>'}
+          ${d.tipo_aplicacion ? `<span class="pill mute">${esc(d.tipo_aplicacion)}</span>` : ""}${d.deployment ? `<span class="pill mute">${esc(d.deployment)}</span>` : ""}</div>
+        ${d.descripcion ? `<p class="adesc">${esc(d.descripcion)}</p>` : ""}
+      </div>
+      <button type="button" class="chip" data-open="${a.key}">Ficha rápida</button>
+    </section>
+    ${kpis([
+      {l:`Gasto ${YEAR}`, v: byMoneda(costs.filter(c => c.year === YEAR))},
+      {l:`Licencias ${YEAR}`, v: nf.format(licNow), s: `${licTypes.length} tipos de licencia`},
+      {l:"Contratos", v: `${cons.filter(c => contractStatus(c).days >= 0).length}<small>/${cons.length}</small>`, s: "vigentes / total"},
+      next ? {l:"Próximo vencimiento", v: `${next[1].days}<small>días</small>`, s: next[0].name, cls: next[1].k === "good" ? "" : next[1].k} : {l:"Próximo vencimiento", v: "—", s: "Sin contratos vigentes"},
+      {l:"Ficha completa", v: `${done}<small>/${checks.length}</small>`, s: checks.filter(c => !c[1]).map(c => c[0]).join(", ") || "Completa", cls: done < checks.length / 2 ? "warn" : ""},
+    ])}
+    <nav class="relstrip" aria-label="Relaciones">${relStrip.map(([t, l, n, id]) => `<button type="button" data-scroll="${id}" class="${n ? "" : "zero"}">${lx(t)}<span>${l}</span><b class="num">${n}</b></button>`).join("")}</nav>
+    <div class="agrid">
+      <section class="panel card" id="s-cap">${secHead("n3", "Capacidades que soporta", "Business capabilities N1 › N2 › N3.")}
+        ${capGroups.length ? capGroups.map(([n1, g2]) => `<div class="capgrp"><div class="capn1">${chipOf(n1)}</div>${g2.map(([n2, items]) => `<div class="capn2"><span class="meta">${esc(M.E.get(n2)?.name || "")}</span><div class="rel">${items.map(e => chipOf(e.key)).join("")}</div></div>`).join("")}</div>`).join("")
+          : '<div class="empty-note hatch">No está mapeada a ninguna subcapacidad N3.</div>'}</section>
+      <section class="panel card" id="s-uso">${secHead("org", "Uso", "Organizaciones usuarias y disciplinas.")}
+        <div class="eyebrow">Organizaciones · ${orgs.length}</div><div class="rel">${orgs.map(chipOf).join("") || '<span class="meta">Sin organizaciones</span>'}</div>
+        <div class="eyebrow" style="margin-top:12px">Disciplinas · ${discs.length}</div><div class="rel">${discs.map(chipOf).join("") || '<span class="meta">Sin disciplinas</span>'}</div></section>
+      <section class="panel card wide" id="s-per">${secHead("person", "Personas", "Responsables internos y contactos del proveedor.")}
+        <div class="twocol"><div><div class="eyebrow">Internos · ${owners.length}</div>${owners.length ? `<div class="people">${owners.map(o => personRow(o.p, o.rol)).join("")}</div>` : '<div class="empty-note">Sin responsables. Falta Business Owner, Technology Owner o Key Users.</div>'}</div>
+        <div><div class="eyebrow">Externos · ${vendor ? `${lx("vendor")} ${esc(vendor.name)}` : "sin proveedor"}</div>${ext.length ? `<div class="people">${ext.map(o => personRow(o.p, o.rol)).join("")}</div>` : '<div class="empty-note">Sin contactos del proveedor.</div>'}</div></div></section>
+      <section class="panel card wide" id="s-con">${secHead("contract", "Contratos", "Vigencia, modelo comercial y pagadores por año (% de referencia).")}
+        ${cons.length ? `<div class="scroll-x"><table class="tbl"><thead><tr><th>Contrato</th><th>Modelo</th><th>Vigencia</th><th>Estado</th><th>Pagadores por año</th></tr></thead><tbody>${cons.map(c => { const s = contractStatus(c);
+          const pays = d3.groups(M.payers.filter(p => p.contract === c.id), p => p.year).sort((x, y) => x[0] - y[0]);
+          return `<tr><td>${chipOf(c.key)}</td><td>${esc(c.data.modelo_comercial || "—")} · ${esc(c.data.moneda || "")}${+c.data.renovacion_automatica ? '<br><span class="meta">renovación automática</span>' : ""}</td>
+            <td class="num">${fmtDate(c.start)} – ${fmtDate(c.end)}</td><td><span class="pill ${s.k}">${esc(s.t)}</span></td>
+            <td>${pays.length ? pays.map(([y, ps]) => `<div class="payrow"><span class="num">${y}</span> ${ps.map(p => `${esc(M.E.get("org:" + p.org)?.abbr || M.E.get("org:" + p.org)?.name)} ${p.pct}%`).join(" · ")}</div>`).join("") : '<span class="meta">Sin pagadores</span>'}</td></tr>`; }).join("")}</tbody></table></div>`
+          : '<div class="empty-note">Sin contratos cargados.</div>'}</section>
+      <section class="panel card wide" id="s-lic">${secHead("lic", "Licencias por año", "Cantidad por tipo de licencia. Entre paréntesis, la variación contra el año anterior.")}
+        ${licTypes.length ? `<div class="scroll-x"><table class="tbl"><thead><tr><th>Tipo de licencia</th><th>Métrica</th>${years.map(y => `<th class="num ${y === YEAR ? "cur" : ""}">${y}</th>`).join("")}</tr></thead><tbody>
+          ${licTypes.map(l => `<tr><td>${chipOf(l.key)}</td><td class="meta">${esc(l.data.metrica_licencia || "—")}</td>${years.map((y, i) => { const q = sum(ly.filter(r => r.lic === l.id && r.year === y), r => r.qty), prev = i ? sum(ly.filter(r => r.lic === l.id && r.year === years[i - 1]), r => r.qty) : null, dlt = prev == null ? 0 : q - prev;
+            return `<td class="num ${y === YEAR ? "cur" : ""}">${q || '<span class="meta">—</span>'}${dlt ? ` <small class="${dlt > 0 ? "up" : "down"}">(${dlt > 0 ? "+" : ""}${dlt})</small>` : ""}</td>`; }).join("")}</tr>`).join("")}
+          <tr class="tot"><td>Total</td><td></td>${years.map(y => `<td class="num ${y === YEAR ? "cur" : ""}">${sum(ly.filter(r => r.year === y), r => r.qty)}</td>`).join("")}</tr></tbody></table></div>`
+          : '<div class="empty-note">Sin tipos de licencia.</div>'}</section>
+      <section class="panel card wide" id="s-cos">${secHead("cc", "Costos", "Montos certificados por año, tipo de gasto y pagador.")}
+        ${costs.length ? `<div class="scroll-x"><table class="tbl"><thead><tr><th>Año</th><th>Mes</th><th>Contrato</th><th>Tipo</th><th>Concepto</th><th>Pagador</th><th>Centro de costo</th><th class="num">Monto</th></tr></thead><tbody>
+          ${costs.slice().sort((x, y) => y.year - x.year || (x.month || 0) - (y.month || 0)).map(c => `<tr><td class="num">${c.year}</td><td>${c.month ? MES[c.month - 1] : "—"}</td><td>${chipOf("contract:" + c.contract)}</td>
+            <td><span class="pill ${c.tipo === "CAPEX" ? "warn" : "mute"}">${c.tipo}</span></td><td>${esc(c.concepto)}</td><td>${chipOf("org:" + c.org)}</td><td>${c.cc ? chipOf("cc:" + c.cc) : '<span class="meta">—</span>'}</td><td class="num">${money(c.monto, c.moneda)}</td></tr>`).join("")}
+          </tbody></table></div>` : '<div class="empty-note">Sin costos cargados.</div>'}</section>
+    </div>`;
+  box.querySelectorAll("[data-scroll]").forEach(b => b.onclick = () => box.querySelector("#" + b.dataset.scroll)?.scrollIntoView({behavior: "smooth", block: "start"}));
+}
+function personRow(p, rol) {
+  if (!p) return "";
+  return `<div class="prow">${lx("person")}<div><b><a data-open="${p.key}">${esc(p.name)}</a></b>${rol ? ` <span class="pill mute">${esc(rol)}</span>` : ""}
+    ${p.data.cargo ? `<div class="meta">${esc(p.data.cargo)}</div>` : ""}<div class="contact">${copyBtn(p.data.email, "Copiar email")}${copyBtn(p.data.telefono, "Copiar teléfono")}</div></div></div>`;
+}
+
+/* ---------- Soporte: renovaciones ---------- */
+function renderRenovaciones(el) {
+  const cons = all("contract").filter(c => c.end).map(c => ({c, s: contractStatus(c)}));
+  const B = [["Vencidos (últimos 90 días)", x => x.s.days < 0 && x.s.days >= -90, "crit"], ["30 días o menos", x => x.s.days >= 0 && x.s.days <= 30, "crit"], ["31 a 60 días", x => x.s.days > 30 && x.s.days <= 60, "crit"],
+    ["61 a 90 días", x => x.s.days > 60 && x.s.days <= 90, "warn"], ["91 a 180 días", x => x.s.days > 90 && x.s.days <= 180, "warn"], ["Más de 180 días", x => x.s.days > 180, "good"]];
+  const card = ({c, s}) => { const app = parentOf(c.key, "app"), vKey = parentOf(c.key, "vendor"), ct = vKey && bestContact(vKey);
+    const qty = sum(M.licYears.filter(r => r.contract === c.id && r.year === Math.min(YEAR, c.end.getFullYear())), r => r.qty);
+    return `<div class="rcard panel"><div class="rtop">${lx("contract", "md")}<div><b><a data-open="${c.key}">${esc(c.name)}</a></b><div class="meta">${esc(c.data.modelo_comercial || "")} · vence ${fmtDate(c.end)}</div></div>
+      <span class="pill ${s.k}">${s.days < 0 ? `hace ${-s.days} d` : `${s.days} d`}</span></div>
+      <div class="rel">${app ? chipOf(app) : ""}${vKey ? chipOf(vKey) : ""}</div>
+      <div class="rmeta"><span>${lx("lic")} ${qty ? `${qty} licencias` : "sin licencias por año"}</span>${+c.data.renovacion_automatica ? '<span class="pill good">renovación automática</span>' : ""}</div>
+      ${ct ? `<div class="rcontact"><span class="eyebrow">Contacto · ${esc(ct.rol)}</span>${personRow(ct.p, "")}</div>` : '<div class="meta">Sin contacto del proveedor cargado.</div>'}</div>`; };
+  el.innerHTML = `${kpis(B.slice(1, 5).map(([l, f, k]) => ({l, v: String(cons.filter(f).length), s: "contratos", cls: cons.filter(f).length ? k : ""})))}
+    ${B.map(([l, f, k]) => { const xs = cons.filter(f).sort((a, b) => a.s.days - b.s.days); return xs.length ? `<section class="rbucket"><h2 class="bh"><span class="dot ${k}"></span>${l} <span class="meta">${xs.length}</span></h2><div class="rgrid">${xs.map(card).join("")}</div></section>` : ""; }).join("")}`;
+}
+
+/* ---------- Soporte: licencias ---------- */
+function renderLicencias(el) {
+  const years = uniq(M.licYears.map(r => r.year)).sort((a, b) => a - b);
+  const apps = all("app").filter(a => nbrs(a.key, "lic").length).sort((a, b) => a.name.localeCompare(b.name));
+  el.innerHTML = `${kpis([{l:`Licencias ${YEAR}`, v: nf.format(sum(M.licYears.filter(r => r.year === YEAR), r => r.qty))}, {l:"Tipos de licencia", v: String(all("lic").length)}, {l:"Aplicaciones con licencias", v: String(apps.length)},
+      {l:"Tipos sin cantidades por año", v: String(all("lic").filter(l => !M.licYears.some(r => r.lic === l.id)).length), cls: all("lic").some(l => !M.licYears.some(r => r.lic === l.id)) ? "warn" : ""}])}
+    <section class="panel card" style="margin-top:16px"><div class="scroll-x"><table class="tbl"><thead><tr><th>Aplicación / tipo de licencia</th><th>Métrica</th><th>Contratos</th>${years.map(y => `<th class="num ${y === YEAR ? "cur" : ""}">${y}</th>`).join("")}</tr></thead><tbody>
+    ${apps.map(a => { const lics = nbrs(a.key, "lic").map(l => M.E.get(l.to));
+      return `<tr class="grp"><td colspan="${3 + years.length}">${chipOf(a.key)} <span class="meta">${esc(M.E.get(parentOf(a.key, "vendor"))?.name || "")}</span></td></tr>` + lics.map(l => { const rows = M.licYears.filter(r => r.lic === l.id);
+        return `<tr><td class="ind">${lx("lic")} ${esc(l.name)}</td><td class="meta">${esc(l.data.metrica_licencia || "—")}</td><td>${uniq(rows.map(r => r.contract)).map(c => chipOf("contract:" + c)).join("") || '<span class="meta">—</span>'}</td>
+          ${years.map(y => { const q = sum(rows.filter(r => r.year === y), r => r.qty); return `<td class="num ${y === YEAR ? "cur" : ""}">${q || '<span class="meta">—</span>'}</td>`; }).join("")}</tr>`; }).join(""); }).join("")}
+    </tbody></table></div></section>`;
+}
+
+/* ---------- Soporte: proveedores ---------- */
+function renderProveedores(el) {
+  const vs = all("vendor").sort((a, b) => a.name.localeCompare(b.name));
+  el.innerHTML = `<div class="vgrid">${vs.map(v => { const apps = nbrs(v.key, "app").map(l => l.to), cons = nbrs(v.key, "contract").map(l => M.E.get(l.to));
+    const next = cons.map(c => [c, contractStatus(c)]).filter(([, s]) => s.days >= 0).sort((a, b) => a[1].days - b[1].days)[0];
+    const byRol = d3.groups(vendorContacts(v.key), c => c.rol).sort((a, b) => ROLE_ORDER.indexOf(a[0]) - ROLE_ORDER.indexOf(b[0]));
+    return `<section class="panel card vcard"><div class="rtop">${lx("vendor", "md")}<div><h2><a data-open="${v.key}">${esc(v.name)}</a></h2>${v.data.sitio_web ? `<a class="meta" href="${esc(v.data.sitio_web)}" target="_blank" rel="noopener">${esc(v.data.sitio_web)}</a>` : ""}</div>
+      ${next ? `<span class="pill ${next[1].k}">${next[1].days} d</span>` : ""}</div>
+      <div class="rel">${apps.map(chipOf).join("")}${cons.map(c => chipOf(c.key)).join("")}</div>
+      ${byRol.length ? byRol.map(([rol, cs]) => `<div class="eyebrow" style="margin-top:10px">${esc(rol)}</div><div class="people">${cs.map(c => personRow(c.p, "")).join("")}</div>`).join("") : '<div class="empty-note">Sin contactos cargados.</div>'}
+    </section>`; }).join("")}</div>`;
+}
+
+/* ---------- Planning financiero ---------- */
+let finYear = YEAR, finTipo = "todos", finMoneda = "USD";
+function finRows() { return M.costs.filter(c => c.year === finYear && c.moneda === finMoneda && (finTipo === "todos" || c.tipo === finTipo)); }
+function finBar(el, rerender, years) {
+  const monedas = uniq(M.costs.map(c => c.moneda)); if (!monedas.includes(finMoneda)) finMoneda = monedas[0] || "USD";
+  el.insertAdjacentHTML("afterbegin", `<div class="toolbar" style="margin-bottom:14px"><div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div class="seg" role="group" aria-label="Año">${years.map(y => `<button type="button" data-fy="${y}" aria-pressed="${y === finYear}">${y}</button>`).join("")}</div>
+    ${rerender === renderPresupuesto ? `<div class="seg" role="group" aria-label="Tipo de gasto">${["todos", "CAPEX", "OPEX"].map(t => `<button type="button" data-ft="${t}" aria-pressed="${t === finTipo}">${t === "todos" ? "CAPEX + OPEX" : t}</button>`).join("")}</div>` : ""}
+    ${monedas.length > 1 ? `<div class="seg" role="group" aria-label="Moneda">${monedas.map(m => `<button type="button" data-fm="${m}" aria-pressed="${m === finMoneda}">${m}</button>`).join("")}</div>` : ""}</div></div>`);
+  el.querySelectorAll("[data-fy]").forEach(b => b.onclick = () => { finYear = +b.dataset.fy; rerender(el); });
+  el.querySelectorAll("[data-ft]").forEach(b => b.onclick = () => { finTipo = b.dataset.ft; rerender(el); });
+  el.querySelectorAll("[data-fm]").forEach(b => b.onclick = () => { finMoneda = b.dataset.fm; rerender(el); });
+}
+function renderPresupuesto(el) {
+  const years = yearsOf(); if (!years.includes(finYear)) finYear = years.includes(YEAR) ? YEAR : years.at(-1);
+  const rows = finRows(), total = sum(rows);
+  const cyNow = M.cyears.filter(y => y.year === finYear && M.E.get("contract:" + y.contract)?.data.moneda === finMoneda);
+  const sinMonto = cyNow.filter(y => !M.costs.some(c => c.contract === y.contract && c.year === finYear));
+  const byMonth = d3.range(12).map(m => ({m, capex: sum(rows.filter(r => r.month === m + 1 && r.tipo === "CAPEX")), opex: sum(rows.filter(r => r.month === m + 1 && r.tipo === "OPEX"))}));
+  const noMonth = sum(rows.filter(r => !r.month)), mx = d3.max(byMonth, b => b.capex + b.opex) || 1;
+  const W = 760, H = 190, L0 = 64, bw = (W - L0) / 12;
+  const contracts = uniq(rows.map(r => r.contract));
+  const cellMax = d3.max(contracts.flatMap(c => d3.range(12).map(m => sum(rows.filter(r => r.contract === c && r.month === m + 1))))) || 1;
+  el.innerHTML = `${kpis([{l:`Total ${finYear}`, v: moneyShort(total, finMoneda), s: `${rows.length} registros`}, {l:"CAPEX", v: moneyShort(sum(rows.filter(r => r.tipo === "CAPEX")), finMoneda)},
+      {l:"OPEX", v: moneyShort(sum(rows.filter(r => r.tipo === "OPEX")), finMoneda)}, {l:"Contratos del año sin monto", v: String(sinMonto.length), s: sinMonto.map(y => M.E.get("contract:" + y.contract)?.name).join(", ") || "Todos cargados", cls: sinMonto.length ? "warn" : ""}])}
+    <section class="panel card" style="margin-top:16px">${secHead("cc", `Certificación por mes · ${finYear}`, "Mes en que se certifica el gasto. El pago lo ejecuta Tesorería (≈45 días después de presentada la factura).")}
+      <div class="scroll-x"><svg viewBox="0 0 ${W} ${H + 24}" style="width:100%;min-width:560px;display:block">
+        ${[0, .5, 1].map(f => `<line class="grid-line" x1="${L0 - 4}" x2="${W}" y1="${H - f * (H - 20)}" y2="${H - f * (H - 20)}"/><text x="${L0 - 8}" y="${H - f * (H - 20) + 4}" text-anchor="end" style="font:500 10px var(--mono);fill:var(--muted)">${f ? moneyShort(mx * f, "").trim() : "0"}</text>`).join("")}
+        ${byMonth.map(b => { const x = L0 + b.m * bw, ho = (b.opex / mx) * (H - 20), hc = (b.capex / mx) * (H - 20);
+          return `<rect x="${x}" y="${H - ho}" width="${bw - 8}" height="${ho}" rx="2" style="fill:var(--accent)"><title>${MES[b.m]} OPEX ${money(b.opex, finMoneda)}</title></rect>
+            <rect x="${x}" y="${H - ho - hc}" width="${bw - 8}" height="${hc}" rx="2" style="fill:var(--amber)"><title>${MES[b.m]} CAPEX ${money(b.capex, finMoneda)}</title></rect>
+            <text x="${x + (bw - 8) / 2}" y="${H + 16}" text-anchor="middle" style="font:500 10.5px var(--mono);fill:var(--muted)">${MES[b.m]}</text>`; }).join("")}
+      </svg></div>
+      <div class="legend" style="margin-top:6px"><span class="chip" style="cursor:default"><i style="background:var(--amber)"></i>CAPEX</span><span class="chip" style="cursor:default"><i style="background:var(--accent)"></i>OPEX</span>${noMonth ? `<span class="meta">Sin mes asignado: ${money(noMonth, finMoneda)}</span>` : ""}</div>
+    </section>
+    <section class="panel card" style="margin-top:16px">${secHead("contract", "Detalle por contrato y mes", "Intensidad del color = monto del mes.")}
+      ${contracts.length ? `<div class="scroll-x"><table class="tbl heat"><thead><tr><th>Contrato</th>${MES.map(m => `<th class="num">${m}</th>`).join("")}<th class="num">Total</th></tr></thead><tbody>
+        ${contracts.map(c => { const rs = rows.filter(r => r.contract === c);
+          return `<tr><td>${chipOf("contract:" + c)}<div class="meta">${esc(M.E.get("app:" + rs[0].app)?.name || "Sin aplicación")}</div></td>${d3.range(12).map(m => { const v = sum(rs.filter(r => r.month === m + 1));
+            return `<td class="num" style="${v ? `background:color-mix(in srgb,var(--accent) ${Math.round(12 + 50 * v / cellMax)}%,transparent)` : ""}">${v ? moneyShort(v, "").trim() : ""}</td>`; }).join("")}<td class="num"><b>${moneyShort(sum(rs), finMoneda)}</b></td></tr>`; }).join("")}
+        <tr class="tot"><td>Total</td>${d3.range(12).map(m => `<td class="num">${(v => v ? moneyShort(v, "").trim() : "")(sum(rows.filter(r => r.month === m + 1)))}</td>`).join("")}<td class="num">${moneyShort(total, finMoneda)}</td></tr></tbody></table></div>`
+        : '<div class="empty-note">No hay montos cargados para este año y filtro.</div>'}
+    </section>
+    <section class="panel card" style="margin-top:16px">${secHead("org", "Reparto entre pagadores", "El porcentaje por año es la referencia; el monto asignado se carga a mano y puede redondearse.")}
+      ${pagadoresTable(finYear)}</section>`;
+  finBar(el, renderPresupuesto, years);
+}
+function pagadoresTable(year) {
+  const cys = M.cyears.filter(y => y.year === year && M.E.get("contract:" + y.contract)?.data.moneda === finMoneda);
+  const rows = cys.map(y => { const pays = M.payers.filter(p => p.cy === y.id), costs = M.costs.filter(c => c.contract === y.contract && c.year === year), tot = sum(costs);
+    const orgs = uniq([...pays.map(p => p.org), ...costs.map(c => c.org)]);
+    return {y, tot, pctSum: sum(pays, p => p.pct), lines: orgs.map(o => { const p = pays.find(x => x.org === o), asig = sum(costs.filter(c => c.org === o)), sug = p ? tot * p.pct / 100 : null; return {o, pct: p?.pct, sug, asig, dif: sug == null ? null : asig - sug}; })}; })
+    .filter(r => r.lines.length || r.tot);
+  if (!rows.length) return '<div class="empty-note">Sin pagadores ni montos para este año.</div>';
+  return `<div class="scroll-x"><table class="tbl"><thead><tr><th>Contrato</th><th>Pagador</th><th class="num">% referencia</th><th class="num">Sugerido</th><th class="num">Asignado</th><th class="num">Diferencia</th></tr></thead><tbody>
+    ${rows.map(r => r.lines.map((l, i) => `<tr>${i ? "<td></td>" : `<td rowspan="1">${chipOf("contract:" + r.y.contract)}${r.pctSum && r.pctSum !== 100 ? `<div><span class="pill warn">pagadores suman ${r.pctSum}%</span></div>` : ""}</td>`}
+      <td>${chipOf("org:" + l.o)}</td><td class="num">${l.pct != null ? l.pct + "%" : '<span class="meta">sin %</span>'}</td><td class="num">${l.sug != null ? money(l.sug, finMoneda) : "—"}</td>
+      <td class="num">${l.asig ? money(l.asig, finMoneda) : '<span class="meta">sin monto</span>'}</td>
+      <td class="num">${l.dif == null || !r.tot ? "—" : Math.abs(l.dif) < 1 ? '<span class="pill good">=</span>' : `<span class="${Math.abs(l.dif) / (r.tot || 1) > .05 ? "down" : "meta"}">${l.dif > 0 ? "+" : ""}${nf.format(l.dif)}</span>`}</td></tr>`).join("")).join("")}
+  </tbody></table></div>`;
+}
+function renderCompromisos(el) {
+  const years = yearsOf(); const ys = years.filter(y => y >= YEAR - 1);
+  const cons = all("contract").filter(c => M.cyears.some(y => y.contract === c.id)).sort((a, b) => a.name.localeCompare(b.name));
+  const cell = (c, y) => { const has = M.cyears.some(x => x.contract === c.id && x.year === y); if (!has) return '<td class="num"><span class="meta">·</span></td>';
+    const v = sum(M.costs.filter(k => k.contract === c.id && k.year === y)); return v ? `<td class="num">${moneyShort(v, c.data.moneda || "USD")}</td>` : '<td class="num"><span class="pill warn">sin monto</span></td>'; };
+  const gaps = M.cyears.filter(y => y.year >= YEAR && !M.costs.some(c => c.contract === y.contract && c.year === y.year));
+  const lastCost = c => { const ks = M.costs.filter(k => k.contract === c.id); if (!ks.length) return null; const ly = d3.max(ks, k => k.year); return {year: ly, v: sum(ks.filter(k => k.year === ly))}; };
+  const renew = all("contract").map(c => ({c, s: contractStatus(c)})).filter(x => x.s.days >= 0 && x.s.days <= 365).sort((a, b) => a.s.days - b.s.days);
+  el.innerHTML = `${kpis([{l:"Años-contrato sin monto", v: String(gaps.length), s: `desde ${YEAR}`, cls: gaps.length ? "warn" : ""}, {l:"Renovaciones en 12 meses", v: String(renew.length), cls: renew.length ? "warn" : ""},
+      {l:`Cargado ${YEAR + 1}`, v: byMoneda(M.costs.filter(c => c.year === YEAR + 1))}])}
+    <section class="panel card" style="margin-top:16px">${secHead("contract", "Mapa de compromisos", "Cada fila es un contrato; cada columna, un año de vigencia. «sin monto» = año activo del contrato sin costos cargados.")}
+      <div class="scroll-x"><table class="tbl"><thead><tr><th>Contrato</th><th>Aplicación</th>${ys.map(y => `<th class="num ${y === YEAR ? "cur" : ""}">${y}</th>`).join("")}</tr></thead><tbody>
+        ${cons.map(c => `<tr><td>${chipOf(c.key)}</td><td>${chipOf(parentOf(c.key, "app"))}</td>${ys.map(y => cell(c, y)).join("")}</tr>`).join("")}</tbody></table></div></section>
+    <section class="panel card" style="margin-top:16px">${secHead("contract", "Renovaciones que impactan el presupuesto", "Referencia de forecast: último año con montos cargados de ese contrato.")}
+      ${renew.length ? `<div class="list">${renew.map(({c, s}) => { const lc = lastCost(c); return `<div class="row" data-open="${c.key}"><span class="pill ${s.k}">${s.days} d</span>
+        <span><span class="rt">${esc(c.name)}</span><br><span class="rs">${esc(M.E.get(parentOf(c.key, "app"))?.name || "")} · vence ${fmtDate(c.end)}</span></span>
+        <span class="rv">${lc ? `${moneyShort(lc.v, c.data.moneda || "USD")} <small class="meta">ref. ${lc.year}</small>` : '<span class="pill mute">sin referencia</span>'}</span></div>`; }).join("")}</div>` : '<div class="empty-note">No hay renovaciones en los próximos 12 meses.</div>'}</section>`;
+}
+
+/* ---------- Negocio: mi área ---------- */
+let areaSel = null;
+try { areaSel = localStorage.getItem("agileea.area"); } catch (e) {}
+function renderMiArea(el) {
+  const orgs = all("org"); if (!orgs.length) { el.innerHTML = '<div class="empty-note">No hay organizaciones cargadas.</div>'; return; }
+  if (!M.E.has(areaSel)) areaSel = (orgs.find(o => /exploraci/i.test(o.name) && +o.data.habilita_imputacion) || orgs[0]).key;
+  const roots = orgs.filter(o => !o.data.parent_id || !M.E.has("org:" + o.data.parent_id));
+  const tree = (o, depth) => `<button type="button" class="onode" data-area="${o.key}" aria-current="${o.key === areaSel}" style="padding-left:${10 + depth * 16}px">${lx("org")}<span>${esc(o.name)}</span>${+o.data.habilita_imputacion ? `<span class="paytag" title="Habilita imputación (pagador)">${lx("cc")}</span>` : ""}</button>`
+    + orgChildren(o.id).sort((a, b) => a.name.localeCompare(b.name)).map(c => tree(c, depth + 1)).join("");
+  const area = M.E.get(areaSel), S = orgSubtree(area.id), inS = id => S.has(String(id));
+  const apps = uniq(all("app").filter(a => nbrs(a.key, "org").some(l => inS(M.E.get(l.to).id))).map(a => a.key)).map(k => M.E.get(k));
+  const paid = M.costs.filter(c => inS(c.org));
+  const payYears = d3.rollups(paid, v => v, c => c.year).sort((a, b) => a[0] - b[0]);
+  const conKeys = uniq([...paid.map(c => "contract:" + c.contract), ...M.payers.filter(p => inS(p.org)).map(p => "contract:" + p.contract), ...apps.flatMap(a => nbrs(a.key, "contract").map(l => l.to))]);
+  const venc = conKeys.map(k => M.E.get(k)).filter(Boolean).map(c => ({c, s: contractStatus(c)})).filter(x => x.s.days >= 0).sort((a, b) => a.s.days - b.s.days);
+  // Capacidades: dominios cuya área responsable está en el área elegida o por encima de ella
+  const anc = new Set(pathOf(area).map(k => M.E.get(k).id));
+  const doms = all("n1").filter(n => { const o = parentOf(n.key, "org"); return o && (inS(M.E.get(o).id) || anc.has(M.E.get(o).id)); });
+  const children = orgChildren(area.id);
+  const bySub = children.map(ch => { const sub = orgSubtree(ch.id); return {ch, v: sum(paid.filter(c => sub.has(String(c.org)) && c.year === YEAR))}; }).filter(x => x.v);
+  el.innerHTML = `<div class="a360">
+    <aside class="alist panel"><span class="eyebrow">Árbol de organizaciones</span><p class="meta" style="margin:0">${lx("cc")} = habilita imputación (pagador)</p><div class="otree">${roots.map(r => tree(r, 0)).join("")}</div></aside>
+    <div class="a360body">
+      <section class="panel ahead">${lx("org", "lg")}<div class="ahtext"><div class="eyebrow">${esc(area.data.tipo_organizacion || "Organización")}${pathOf(area).length ? " · " + pathOf(area).map(k => esc(M.E.get(k).name)).join(" › ") : ""}</div>
+        <h2>${esc(area.name)}</h2><div class="pills">${+area.data.habilita_imputacion ? '<span class="pill good">Pagador</span>' : '<span class="pill mute">No imputa costos</span>'}<span class="pill mute">${S.size - 1} áreas dependientes</span></div></div>
+        <button type="button" class="chip" data-open="${area.key}">Ficha rápida</button></section>
+      ${kpis([{l:"Aplicaciones que usa", v: String(apps.length)}, {l:`Paga en ${YEAR}`, v: byMoneda(paid.filter(c => c.year === YEAR))}, {l:"Contratos vinculados", v: String(conKeys.length)},
+        venc[0] ? {l:"Próximo vencimiento", v: `${venc[0].s.days}<small>días</small>`, s: venc[0].c.name, cls: venc[0].s.k === "good" ? "" : venc[0].s.k} : {l:"Próximo vencimiento", v: "—"}])}
+      <div class="agrid">
+        <section class="panel card wide">${secHead("app", "Aplicaciones", "Las que usa esta área o alguna área dependiente.")}
+          ${apps.length ? `<div class="appcards">${apps.map(a => { const n = nbrs(a.key, "contract").map(l => contractStatus(M.E.get(l.to))).filter(s => s.days >= 0).sort((x, y) => x.days - y.days)[0];
+            const own = nbrs(a.key, "person")[0];
+            return `<button type="button" class="appcard panel" data-app360="${a.key}">${lx("app", "md")}<span><b>${esc(a.name)}</b><small>${esc(M.E.get(parentOf(a.key, "vendor"))?.name || "")}${own ? ` · ${esc(M.E.get(own.to).name)} (${esc(own.note)})` : ""}</small></span>
+              <span class="pills">${pill(a.data.lifecycle || "—", lifeColor(a.data.lifecycle))}${n ? `<span class="pill ${n.k}">${n.days} d</span>` : ""}</span></button>`; }).join("")}</div>` : '<div class="empty-note">No hay aplicaciones asociadas a esta área.</div>'}</section>
+        <section class="panel card">${secHead("cc", "Lo que paga", "Montos certificados donde el área (o una dependiente) es pagadora.")}
+          ${payYears.length ? `<div class="list">${payYears.map(([y, rs]) => `<div class="row" style="cursor:default"><span class="pill mute num">${y}</span><span class="rt">${uniq(rs.map(r => M.E.get("app:" + r.app)?.name || "Sin aplicación")).join(", ")}</span><span class="rv">${byMoneda(rs)}</span></div>`).join("")}</div>` : '<div class="empty-note">Esta área no tiene montos como pagadora.</div>'}
+          ${bySub.length ? `<div class="eyebrow" style="margin-top:12px">Por área dependiente · ${YEAR}</div><div class="list">${bySub.map(x => `<div class="row" data-area="${x.ch.key}"><span>${lx("org")}</span><span class="rt">${esc(x.ch.name)}</span><span class="rv">${moneyShort(x.v)}</span></div>`).join("")}</div>` : ""}</section>
+        <section class="panel card">${secHead("contract", "Próximos vencimientos", "Contratos que usa o paga el área.")}
+          ${venc.length ? `<div class="list">${venc.slice(0, 8).map(({c, s}) => `<div class="row" data-open="${c.key}"><span class="pill ${s.k}">${s.days} d</span><span><span class="rt">${esc(c.name)}</span><br><span class="rs">${esc(M.E.get(parentOf(c.key, "app"))?.name || "")} · ${fmtDate(c.end)}</span></span><span></span></div>`).join("")}</div>` : '<div class="empty-note">Sin contratos vigentes vinculados.</div>'}</section>
+        <section class="panel card wide">${secHead("n3", "Capacidades del área", "Dominios de los que el área es responsable, con su estado de evaluación.")}
+          ${doms.length ? doms.map(n1 => { const n2s = nbrs(n1.key, "n2").map(l => M.E.get(l.to));
+            return `<div class="capgrp"><div class="capn1">${chipOf(n1.key)} <button type="button" class="chip" data-mapdom="${n1.key}">Ver en el mapa →</button></div>
+              <div class="scroll-x"><table class="tbl"><thead><tr><th>Capacidad N2</th><th class="num">N3</th><th class="num">Con app</th><th class="num">Evaluadas</th><th>Madurez promedio</th></tr></thead><tbody>${n2s.map(n2 => { const k3 = nbrs(n2.key, "n3").map(l => M.E.get(l.to));
+                const ev = k3.filter(e => MATURITY.some(m => e.data[m] != null)), vals = ev.flatMap(e => MATURITY.map(m => e.data[m]).filter(v => v != null).map(Number)), avg = vals.length ? d3.mean(vals) : null;
+                return `<tr><td>${chipOf(n2.key)}</td><td class="num">${k3.length}</td><td class="num">${k3.filter(e => nbrs(e.key, "app").length).length}</td><td class="num">${ev.length ? `${ev.length}/${k3.length}` : '<span class="meta">0</span>'}</td>
+                  <td>${avg != null ? `<span class="gauge" style="display:inline-block;width:90px;vertical-align:middle"><i style="width:${avg / 5 * 100}%;background:var(--accent)"></i></span> <b class="num">${avg.toFixed(1)}</b>` : '<span class="meta hatch" style="padding:2px 8px;border-radius:4px">sin evaluar</span>'}</td></tr>`; }).join("")}</tbody></table></div></div>`; }).join("")
+            : '<div class="empty-note">Esta área no es responsable de ningún dominio de capacidades. Los dominios se asignan en capacidad N1 → organización.</div>'}</section>
+      </div></div></div>`;
+  el.querySelectorAll("[data-area]").forEach(b => b.onclick = () => { areaSel = b.dataset.area; try { localStorage.setItem("agileea.area", areaSel); } catch (e) {} renderMiArea(el); });
+  el.querySelectorAll("[data-mapdom]").forEach(b => b.onclick = () => { domOn = new Set([b.dataset.mapdom]); mapHi = null; setPersp("arq", "mapa"); });
 }
 
 /* ---------- Pulso ---------- */
@@ -763,7 +1203,7 @@ function renderRed(el) {
   const typesPresent = uniq([...keep].map(k => M.E.get(k).type));
   el.innerHTML = `<div class="graph-wrap" id="gw"><svg id="gsvg"></svg>
     <div class="hint-box">Arrastrá · rueda para zoom · tocá un nodo</div>
-    <div class="overlay">${typesPresent.map(t => `<button type="button" class="chip" data-gt="${t}" aria-pressed="${!graphTypesOff.has(t)}"><i style="background:${tvar(t)};border-radius:50%"></i>${TYPES[t].plural}</button>`).join("")}</div></div>`;
+    <div class="overlay">${typesPresent.map(t => `<button type="button" class="chip" data-gt="${t}" aria-pressed="${!graphTypesOff.has(t)}">${lx(t)}${TYPES[t].plural}</button>`).join("")}</div></div>`;
   el.querySelectorAll("[data-gt]").forEach(b => b.onclick = () => { const t = b.dataset.gt; graphTypesOff.has(t) ? graphTypesOff.delete(t) : graphTypesOff.add(t); renderRed(el); });
   const wrap = el.querySelector("#gw"), W = wrap.clientWidth, H = wrap.clientHeight;
   const r = n => ({app: 13, vendor: 11, n1: 10, contract: 9}[n.e.type] || 5) + Math.min(6, n.deg * .6);
@@ -777,6 +1217,7 @@ function renderRed(el) {
   const major = new Set(["app", "vendor", "contract", "n1"]);
   const nodeG = g.append("g").selectAll("g").data(ns).join("g").attr("class", d => "node " + (major.has(d.e.type) || (d.e.type === "org" && d.deg > 3) ? "" : "minor"));
   nodeG.append("circle").attr("r", r).style("fill", d => tvar(d.e.type));
+  nodeG.filter(d => r(d) >= 9).append("text").attr("class", "nl").attr("text-anchor", "middle").attr("dy", "0.36em").text(d => TYPES[d.e.type].letter);
   nodeG.append("text").attr("x", d => r(d) + 5).attr("dy", "0.35em").text(d => d.e.type === "cc" ? d.e.data.codigo : d.e.name.length > 34 ? d.e.name.slice(0, 32) + "…" : d.e.name);
   const draw = () => { link.attr("x1", d => d.source.x).attr("y1", d => d.source.y).attr("x2", d => d.target.x).attr("y2", d => d.target.y); nodeG.attr("transform", d => `translate(${d.x},${d.y})`); };
   draw();
@@ -1008,7 +1449,7 @@ function askSuggestions() {
 }
 function renderAnswer(text) {
   let t = text.replace(/\n?RESALTAR:[^\n]*\s*$/, "").replace(/\[\[[^\]]*$/, "");
-  const chip = k => { const e = M.E.get(k.trim()); return e ? `<button type="button" class="ref" data-open="${e.key}" style="--tc:${tvar(e.type)}"><i></i>${esc(e.name)}</button>` : esc(k); };
+  const chip = k => { const e = M.E.get(k.trim()); return e ? `<button type="button" class="ref" data-open="${e.key}" style="--tc:${tvar(e.type)}">${lx(e.type)}${esc(e.name)}</button>` : esc(k); };
   const inline = s => esc(s).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/\[\[([a-z0-9]+:[0-9]+)\]\]/g, (_, k) => chip(k));
   const out = []; let list = null;
   t.split("\n").forEach(line => {
@@ -1158,7 +1599,7 @@ function openEntity(key, push = true) {
   const groups = d3.group(M.adj.get(key).filter(l => !(e.type === "n1" && M.E.get(l.to).type === "n2" && false)), l => M.E.get(l.to).type);
   const order = ["n1","n2","n3","app","vendor","contract","lic","org","cc","disc","person"];
   const rel = order.filter(t => groups.has(t)).map(t => { const ls = groups.get(t); const u = new Map(); ls.forEach(l => { const p = u.get(l.to); u.set(l.to, p ? (l.note && !p.includes(l.note) ? p + " · " + l.note : p) : l.note); });
-    return `<section><div class="eyebrow">${TYPES[t].plural} · ${u.size}</div><div class="rel">${[...u].map(([k, note]) => `<button type="button" data-open="${k}" style="--tc:${tvar(t)}"><i></i>${esc(M.E.get(k).name)}${note ? ` <small>${esc(note)}</small>` : ""}</button>`).join("")}</div></section>`; }).join("");
+    return `<section><div class="eyebrow">${TYPES[t].plural} · ${u.size}</div><div class="rel">${[...u].map(([k, note]) => `<button type="button" data-open="${k}" style="--tc:${tvar(t)}">${lx(t)}${esc(M.E.get(k).name)}${note ? ` <small>${esc(note)}</small>` : ""}</button>`).join("")}</div></section>`; }).join("");
   let extra = "";
   if (e.type === "app") extra += `<section><div class="eyebrow">Ajuste</div>${[["Funcional", e.data.functional_fit], ["Técnico", e.data.technical_fit]].map(([l, v]) => `<div class="fit"><span>${l}</span><span class="dots">${[1,2,3,4].map(i => `<i class="${v && i <= +v ? "on" : ""}"></i>`).join("")}</span><b class="num">${v ?? "—"}</b></div>`).join("")}</section>`;
   if (e.type === "n3") {
@@ -1174,7 +1615,8 @@ function openEntity(key, push = true) {
   d.innerHTML = `<div class="d-head" style="--tc:${tvar(e.type)}">
       <button class="x" type="button" data-close aria-label="Cerrar">×</button>
       ${history_.length > 1 ? `<button type="button" data-back class="chip" style="align-self:flex-start">← ${esc(M.E.get(history_[history_.length - 2]).name.slice(0, 40))}</button>` : ""}
-      <span class="typechip"><i></i>${TYPES[e.type].label}</span>
+      <span class="typechip">${lx(e.type, "md")}${TYPES[e.type].label}</span>
+      ${e.type === "app" ? `<button type="button" class="chip" data-app360="${e.key}" style="align-self:flex-start">Abrir ficha 360° →</button>` : ""}
       <h2>${esc(e.name)}</h2>
       ${path.length ? `<div class="crumbs">${path.map(k => `<a data-open="${k}">${esc(M.E.get(k).name)}</a>`).join("<span>›</span>")}</div>` : ""}
     </div>
@@ -1210,7 +1652,7 @@ function filterPal(q) {
 function palPick(it) { closePal(); if (it.ask) askQuestion(it.ask); else openEntity(it.key); }
 function drawPal() {
   document.getElementById("palList").innerHTML = palItems.map((e, i) => e.ask ? `<li role="option" data-i="${i}" aria-selected="${i === palSel}" class="pal-ask" style="--tc:var(--accent)"><i></i><span>Preguntar al modelo: “${esc(e.ask)}”</span><small>Consultar</small></li>`
-    : `<li role="option" data-i="${i}" aria-selected="${i === palSel}" style="--tc:${tvar(e.type)}"><i></i><span>${esc(e.name)}</span><small>${TYPES[e.type].label}</small></li>`).join("") || `<li><span style="color:var(--muted)">Sin resultados</span></li>`;
+    : `<li role="option" data-i="${i}" aria-selected="${i === palSel}" style="--tc:${tvar(e.type)}">${lx(e.type)}<span>${esc(e.name)}</span><small>${TYPES[e.type].label}</small></li>`).join("") || `<li><span style="color:var(--muted)">Sin resultados</span></li>`;
   document.querySelector(`#palList [aria-selected="true"]`)?.scrollIntoView({block: "nearest"});
 }
 
@@ -1228,12 +1670,16 @@ function drawPal() {
     document.querySelector("main").insertBefore(b, document.getElementById("pulse"));
   }
   renderPulse();
-  go((location.hash || "").slice(1) || "mapa");
+  goHash((location.hash || "").slice(1));
 
   document.addEventListener("click", ev => {
-    const t = ev.target.closest("[data-open],[data-go],[data-v],[data-close],[data-back]");
+    const t = ev.target.closest("[data-open],[data-go],[data-v],[data-close],[data-back],[data-persp],[data-app360],[data-copy]");
     if (!t) return;
-    if (t.dataset.v) go(t.dataset.v);
+    if (t.dataset.copy) { const txt = t.dataset.copy; const ok = () => { t.classList.add("done"); setTimeout(() => t.classList.remove("done"), 1200); };
+      try { navigator.clipboard.writeText(txt).then(ok, () => { const r = document.createRange(); r.selectNodeContents(t); getSelection().removeAllRanges(); getSelection().addRange(r); }); } catch (e) {} return; }
+    if (t.dataset.persp) setPersp(t.dataset.persp);
+    else if (t.dataset.app360) { appSel = t.dataset.app360; closeDrawer(); go("aplicaciones"); }
+    else if (t.dataset.v) go(t.dataset.v);
     else if (t.dataset.go) go(t.dataset.go);
     else if (t.hasAttribute("data-close")) closeDrawer();
     else if (t.hasAttribute("data-back")) { history_.pop(); openEntity(history_[history_.length - 1], false); }
@@ -1253,7 +1699,8 @@ function drawPal() {
     if (ev.key === "ArrowUp") { palSel = Math.max(0, palSel - 1); drawPal(); ev.preventDefault(); }
     if (ev.key === "Enter" && palItems[palSel]) palPick(palItems[palSel]);
   });
-  window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (VIEWS[v] && v !== current) go(v); });
+  window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (h !== `${persp}.${current}`) goHash(h); });
+  document.getElementById("perspSel").onchange = ev => setPersp(ev.target.value);
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (["red", "flujo", "horizonte"].includes(current)) go(current); }, 250); });
 })();
 </script>
