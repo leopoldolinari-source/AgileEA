@@ -337,6 +337,13 @@ svg text{fill:var(--ink)}
 .appcard:hover{border-color:var(--accent)}
 @media (max-width:980px){.a360{grid-template-columns:1fr}.alist{position:static;max-height:260px}.agrid,.twocol{grid-template-columns:1fr}}
 @media (max-width:820px){.persp{display:none}.persp-sel{display:block}}
+
+/* ——— Tooltips de definiciones ——— */
+[data-tip]{cursor:help}
+span[data-tip],dd[data-tip],th[data-tip],text[data-tip]{text-decoration:underline dotted color-mix(in srgb,var(--muted) 70%,transparent);text-underline-offset:3px}
+text[data-tip]{pointer-events:all}
+.tip{position:fixed;z-index:40;max-width:340px;padding:10px 12px;border-radius:10px;background:var(--ink);color:var(--surface);box-shadow:var(--shadow);font-size:12.5px;line-height:1.5;display:flex;flex-direction:column;gap:3px;pointer-events:none}
+.tip b{font:700 12px var(--display);letter-spacing:.02em}
 /* ——— Consultar ——— */
 .ask{padding:18px;display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
 .askrow{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
@@ -401,6 +408,9 @@ svg text{fill:var(--ink)}
 .fit .dots{display:flex;gap:4px}
 .fit .dots i{flex:1;height:8px;border-radius:2px;background:var(--line-2)}
 .fit .dots i.on{background:var(--accent)}
+.fit .dots i.gap{background:repeating-linear-gradient(135deg,var(--warn) 0 2px,transparent 2px 5px);outline:1px solid var(--warn);outline-offset:-1px}
+.brecha{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;padding:8px 10px;border-radius:8px;background:var(--surface-2)}
+.madlist{display:flex;flex-direction:column;gap:5px}
 .empty-note{padding:12px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px}
 
 /* ——— Paleta de comandos ——— */
@@ -464,6 +474,7 @@ svg text{fill:var(--ink)}
   </main>
 </div>
 <div class="scrim" id="scrim" hidden></div>
+<div class="tip" id="tip" role="tooltip" hidden></div>
 <aside class="drawer" id="drawer" hidden aria-label="Ficha"></aside>
 <div class="palette" id="palette" hidden>
   <div class="pal" role="dialog" aria-label="Buscar en el modelo">
@@ -647,6 +658,24 @@ function nextActions() {
   return acts;
 }
 
+
+/* ---------- Glosario (tabla `glosario`) y tooltips ---------- */
+const GLOS = {};
+function buildGlosario(rows) {
+  (rows || []).forEach(r => { const g = GLOS[r.categoria] ||= {label: r.categoria, concept: "", items: {}};
+    if (!r.valor) { g.label = r.etiqueta || r.categoria; g.concept = r.descripcion; } else g.items[r.valor] = {label: r.etiqueta || r.valor, desc: r.descripcion}; });
+}
+const tipAttr = (cat, val = "") => (val === "" ? GLOS[cat]?.concept : GLOS[cat]?.items[String(val)]) ? ` data-tip="${esc(cat)}|${esc(String(val))}" tabindex="0"` : "";
+function tipContent(spec) {
+  const i = spec.indexOf("|"), cat = spec.slice(0, i), val = spec.slice(i + 1), g = GLOS[cat]; if (!g) return null;
+  if (!val) return g.concept ? {t: g.label, d: g.concept} : null;
+  const it = g.items[val]; return it ? {t: `${g.label} · ${it.label}`, d: it.desc} : null;
+}
+/* Brecha de madurez: objetivo (columna madurez_objetivo) − promedio de las 5 dimensiones. Sin objetivo cargado no hay brecha. */
+const madPromedio = e => { const v = MATURITY.map(m => e.data[m]).filter(x => x != null && x !== "").map(Number); return v.length ? d3.mean(v) : null; };
+const madObjetivo = e => { const o = e.data.madurez_objetivo; return o == null || o === "" ? null : +o; };
+const madBrecha = e => { const p = madPromedio(e), o = madObjetivo(e); return p == null || o == null ? null : o - p; };
+
 /* ---------- Vistas ---------- */
 const ICONS = {
   mapa:'<svg viewBox="0 0 24 24"><path d="M3 5h18M3 10h18M3 15h18M3 20h18"/><path d="M8 5v5M15 10v5M6 15v5M17 15v5"/></svg>',
@@ -745,7 +774,7 @@ const money = (v, mon = "USD") => `${mon} ${nf.format(v)}`;
 const moneyShort = (v, mon = "USD") => usdK(v).replace(/^USD/, mon);
 const byMoneda = rows => [...d3.rollup(rows, v => sum(v), r => r.moneda)].map(([m, v]) => moneyShort(v, m)).join(" · ") || "—";
 const lifeColor = l => ({"Plan":"var(--q3)", "Phase In":"var(--q4)", "Active":"var(--good)", "Phase Out":"var(--warn)", "End of Life":"var(--crit)"})[l] || "var(--muted)";
-const pill = (txt, color) => `<span class="pill" style="background:color-mix(in srgb,${color} 18%,transparent);color:${color}">${esc(txt)}</span>`;
+const pill = (txt, color, cat) => `<span class="pill" style="background:color-mix(in srgb,${color} 18%,transparent);color:${color}"${cat ? tipAttr(cat, txt) : ""}>${esc(txt)}</span>`;
 const chipOf = key => { const e = M.E.get(key); return e ? `<button type="button" class="ref" data-open="${e.key}" style="--tc:${tvar(e.type)}">${lx(e.type)}${esc(e.name)}</button>` : ""; };
 const copyBtn = (txt, label = "Copiar") => txt ? `<button type="button" class="copy" data-copy="${esc(txt)}" title="${label}">${esc(txt)}</button>` : "";
 const kpis = items => `<div class="kpis">${items.map(k => `<div class="kpi ${k.cls || ""}"><span class="l">${k.l}</span><span class="v">${k.v}</span>${k.s ? `<span class="s">${esc(k.s)}</span>` : ""}</div>`).join("")}</div>`;
@@ -803,8 +832,9 @@ function renderApp360(box, a) {
       <div class="ahtext">
         <div class="eyebrow">Aplicación${vendor ? ` · ${esc(vendor.name)}` : ""}</div>
         <h2>${esc(a.name)}</h2>
-        <div class="pills">${pill(d.lifecycle || "Sin ciclo de vida", lifeColor(d.lifecycle))}${d.business_criticality ? pill(d.business_criticality, "var(--warn)") : '<span class="pill mute">Sin criticidad</span>'}
-          ${d.tipo_aplicacion ? `<span class="pill mute">${esc(d.tipo_aplicacion)}</span>` : ""}${d.deployment ? `<span class="pill mute">${esc(d.deployment)}</span>` : ""}</div>
+        <div class="pills">${pill(d.lifecycle || "Sin ciclo de vida", lifeColor(d.lifecycle), "lifecycle")}${d.business_criticality ? pill(d.business_criticality, "var(--warn)", "business_criticality") : '<span class="pill mute">Sin criticidad</span>'}
+          ${d.tipo_aplicacion ? `<span class="pill mute"${tipAttr("tipo_aplicacion", d.tipo_aplicacion)}>${esc(d.tipo_aplicacion)}</span>` : ""}${d.deployment ? `<span class="pill mute"${tipAttr("deployment", d.deployment)}>${esc(d.deployment)}</span>` : ""}
+          ${d.functional_fit ? `<span class="pill mute"${tipAttr("functional_fit", d.functional_fit)}>Funcional ${esc(d.functional_fit)}/4</span>` : ""}${d.technical_fit ? `<span class="pill mute"${tipAttr("technical_fit", d.technical_fit)}>Técnico ${esc(d.technical_fit)}/4</span>` : ""}</div>
         ${d.descripcion ? `<p class="adesc">${esc(d.descripcion)}</p>` : ""}
       </div>
       <button type="button" class="chip" data-open="${a.key}">Ficha rápida</button>
@@ -830,27 +860,27 @@ function renderApp360(box, a) {
       <section class="panel card wide" id="s-con">${secHead("contract", "Contratos", "Vigencia, modelo comercial y pagadores por año (% de referencia).")}
         ${cons.length ? `<div class="scroll-x"><table class="tbl"><thead><tr><th>Contrato</th><th>Modelo</th><th>Vigencia</th><th>Estado</th><th>Pagadores por año</th></tr></thead><tbody>${cons.map(c => { const s = contractStatus(c);
           const pays = d3.groups(M.payers.filter(p => p.contract === c.id), p => p.year).sort((x, y) => x[0] - y[0]);
-          return `<tr><td>${chipOf(c.key)}</td><td>${esc(c.data.modelo_comercial || "—")} · ${esc(c.data.moneda || "")}${+c.data.renovacion_automatica ? '<br><span class="meta">renovación automática</span>' : ""}</td>
+          return `<tr><td>${chipOf(c.key)}</td><td><span${tipAttr("modelo_comercial", c.data.modelo_comercial)}>${esc(c.data.modelo_comercial || "—")}</span> · ${esc(c.data.moneda || "")}${+c.data.renovacion_automatica ? '<br><span class="meta">renovación automática</span>' : ""}</td>
             <td class="num">${fmtDate(c.start)} – ${fmtDate(c.end)}</td><td><span class="pill ${s.k}">${esc(s.t)}</span></td>
             <td>${pays.length ? pays.map(([y, ps]) => `<div class="payrow"><span class="num">${y}</span> ${ps.map(p => `${esc(M.E.get("org:" + p.org)?.abbr || M.E.get("org:" + p.org)?.name)} ${p.pct}%`).join(" · ")}</div>`).join("") : '<span class="meta">Sin pagadores</span>'}</td></tr>`; }).join("")}</tbody></table></div>`
           : '<div class="empty-note">Sin contratos cargados.</div>'}</section>
       <section class="panel card wide" id="s-lic">${secHead("lic", "Licencias por año", "Cantidad por tipo de licencia. Entre paréntesis, la variación contra el año anterior.")}
         ${licTypes.length ? `<div class="scroll-x"><table class="tbl"><thead><tr><th>Tipo de licencia</th><th>Métrica</th>${years.map(y => `<th class="num ${y === YEAR ? "cur" : ""}">${y}</th>`).join("")}</tr></thead><tbody>
-          ${licTypes.map(l => `<tr><td>${chipOf(l.key)}</td><td class="meta">${esc(l.data.metrica_licencia || "—")}</td>${years.map((y, i) => { const q = sum(ly.filter(r => r.lic === l.id && r.year === y), r => r.qty), prev = i ? sum(ly.filter(r => r.lic === l.id && r.year === years[i - 1]), r => r.qty) : null, dlt = prev == null ? 0 : q - prev;
+          ${licTypes.map(l => `<tr><td>${chipOf(l.key)}</td><td class="meta"><span${tipAttr("metrica_licencia", l.data.metrica_licencia)}>${esc(l.data.metrica_licencia || "—")}</span></td>${years.map((y, i) => { const q = sum(ly.filter(r => r.lic === l.id && r.year === y), r => r.qty), prev = i ? sum(ly.filter(r => r.lic === l.id && r.year === years[i - 1]), r => r.qty) : null, dlt = prev == null ? 0 : q - prev;
             return `<td class="num ${y === YEAR ? "cur" : ""}">${q || '<span class="meta">—</span>'}${dlt ? ` <small class="${dlt > 0 ? "up" : "down"}">(${dlt > 0 ? "+" : ""}${dlt})</small>` : ""}</td>`; }).join("")}</tr>`).join("")}
           <tr class="tot"><td>Total</td><td></td>${years.map(y => `<td class="num ${y === YEAR ? "cur" : ""}">${sum(ly.filter(r => r.year === y), r => r.qty)}</td>`).join("")}</tr></tbody></table></div>`
           : '<div class="empty-note">Sin tipos de licencia.</div>'}</section>
       <section class="panel card wide" id="s-cos">${secHead("cc", "Costos", "Montos certificados por año, tipo de gasto y pagador.")}
         ${costs.length ? `<div class="scroll-x"><table class="tbl"><thead><tr><th>Año</th><th>Mes</th><th>Contrato</th><th>Tipo</th><th>Concepto</th><th>Pagador</th><th>Centro de costo</th><th class="num">Monto</th></tr></thead><tbody>
           ${costs.slice().sort((x, y) => y.year - x.year || (x.month || 0) - (y.month || 0)).map(c => `<tr><td class="num">${c.year}</td><td>${c.month ? MES[c.month - 1] : "—"}</td><td>${chipOf("contract:" + c.contract)}</td>
-            <td><span class="pill ${c.tipo === "CAPEX" ? "warn" : "mute"}">${c.tipo}</span></td><td>${esc(c.concepto)}</td><td>${chipOf("org:" + c.org)}</td><td>${c.cc ? chipOf("cc:" + c.cc) : '<span class="meta">—</span>'}</td><td class="num">${money(c.monto, c.moneda)}</td></tr>`).join("")}
+            <td><span class="pill ${c.tipo === "CAPEX" ? "warn" : "mute"}"${tipAttr("tipo_gasto", c.tipo)}>${c.tipo}</span></td><td>${esc(c.concepto)}</td><td>${chipOf("org:" + c.org)}</td><td>${c.cc ? chipOf("cc:" + c.cc) : '<span class="meta">—</span>'}</td><td class="num">${money(c.monto, c.moneda)}</td></tr>`).join("")}
           </tbody></table></div>` : '<div class="empty-note">Sin costos cargados.</div>'}</section>
     </div>`;
   box.querySelectorAll("[data-scroll]").forEach(b => b.onclick = () => box.querySelector("#" + b.dataset.scroll)?.scrollIntoView({behavior: "smooth", block: "start"}));
 }
 function personRow(p, rol) {
   if (!p) return "";
-  return `<div class="prow">${lx("person")}<div><b><a data-open="${p.key}">${esc(p.name)}</a></b>${rol ? ` <span class="pill mute">${esc(rol)}</span>` : ""}
+  return `<div class="prow">${lx("person")}<div><b><a data-open="${p.key}">${esc(p.name)}</a></b>${rol ? ` <span class="pill mute"${tipAttr("rol_aplicacion", rol) || tipAttr("rol_proveedor", rol)}>${esc(rol)}</span>` : ""}
     ${p.data.cargo ? `<div class="meta">${esc(p.data.cargo)}</div>` : ""}<div class="contact">${copyBtn(p.data.email, "Copiar email")}${copyBtn(p.data.telefono, "Copiar teléfono")}</div></div></div>`;
 }
 
@@ -879,7 +909,7 @@ function renderLicencias(el) {
     <section class="panel card" style="margin-top:16px"><div class="scroll-x"><table class="tbl"><thead><tr><th>Aplicación / tipo de licencia</th><th>Métrica</th><th>Contratos</th>${years.map(y => `<th class="num ${y === YEAR ? "cur" : ""}">${y}</th>`).join("")}</tr></thead><tbody>
     ${apps.map(a => { const lics = nbrs(a.key, "lic").map(l => M.E.get(l.to));
       return `<tr class="grp"><td colspan="${3 + years.length}">${chipOf(a.key)} <span class="meta">${esc(M.E.get(parentOf(a.key, "vendor"))?.name || "")}</span></td></tr>` + lics.map(l => { const rows = M.licYears.filter(r => r.lic === l.id);
-        return `<tr><td class="ind">${lx("lic")} ${esc(l.name)}</td><td class="meta">${esc(l.data.metrica_licencia || "—")}</td><td>${uniq(rows.map(r => r.contract)).map(c => chipOf("contract:" + c)).join("") || '<span class="meta">—</span>'}</td>
+        return `<tr><td class="ind">${lx("lic")} ${esc(l.name)}</td><td class="meta"><span${tipAttr("metrica_licencia", l.data.metrica_licencia)}>${esc(l.data.metrica_licencia || "—")}</span></td><td>${uniq(rows.map(r => r.contract)).map(c => chipOf("contract:" + c)).join("") || '<span class="meta">—</span>'}</td>
           ${years.map(y => { const q = sum(rows.filter(r => r.year === y), r => r.qty); return `<td class="num ${y === YEAR ? "cur" : ""}">${q || '<span class="meta">—</span>'}</td>`; }).join("")}</tr>`; }).join(""); }).join("")}
     </tbody></table></div></section>`;
 }
@@ -1010,7 +1040,7 @@ function renderMiArea(el) {
           ${apps.length ? `<div class="appcards">${apps.map(a => { const n = nbrs(a.key, "contract").map(l => contractStatus(M.E.get(l.to))).filter(s => s.days >= 0).sort((x, y) => x.days - y.days)[0];
             const own = nbrs(a.key, "person")[0];
             return `<button type="button" class="appcard panel" data-app360="${a.key}">${lx("app", "md")}<span><b>${esc(a.name)}</b><small>${esc(M.E.get(parentOf(a.key, "vendor"))?.name || "")}${own ? ` · ${esc(M.E.get(own.to).name)} (${esc(own.note)})` : ""}</small></span>
-              <span class="pills">${pill(a.data.lifecycle || "—", lifeColor(a.data.lifecycle))}${n ? `<span class="pill ${n.k}">${n.days} d</span>` : ""}</span></button>`; }).join("")}</div>` : '<div class="empty-note">No hay aplicaciones asociadas a esta área.</div>'}</section>
+              <span class="pills">${pill(a.data.lifecycle || "—", lifeColor(a.data.lifecycle), "lifecycle")}${n ? `<span class="pill ${n.k}">${n.days} d</span>` : ""}</span></button>`; }).join("")}</div>` : '<div class="empty-note">No hay aplicaciones asociadas a esta área.</div>'}</section>
         <section class="panel card">${secHead("cc", "Lo que paga", "Montos certificados donde el área (o una dependiente) es pagadora.")}
           ${payYears.length ? `<div class="list">${payYears.map(([y, rs]) => `<div class="row" style="cursor:default"><span class="pill mute num">${y}</span><span class="rt">${uniq(rs.map(r => M.E.get("app:" + r.app)?.name || "Sin aplicación")).join(", ")}</span><span class="rv">${byMoneda(rs)}</span></div>`).join("")}</div>` : '<div class="empty-note">Esta área no tiene montos como pagadora.</div>'}
           ${bySub.length ? `<div class="eyebrow" style="margin-top:12px">Por área dependiente · ${YEAR}</div><div class="list">${bySub.map(x => `<div class="row" data-area="${x.ch.key}"><span>${lx("org")}</span><span class="rt">${esc(x.ch.name)}</span><span class="rv">${moneyShort(x.v)}</span></div>`).join("")}</div>` : ""}</section>
@@ -1019,10 +1049,12 @@ function renderMiArea(el) {
         <section class="panel card wide">${secHead("n3", "Capacidades del área", "Dominios de los que el área es responsable, con su estado de evaluación.")}
           ${doms.length ? doms.map(n1 => { const n2s = nbrs(n1.key, "n2").map(l => M.E.get(l.to));
             return `<div class="capgrp"><div class="capn1">${chipOf(n1.key)} <button type="button" class="chip" data-mapdom="${n1.key}">Ver en el mapa →</button></div>
-              <div class="scroll-x"><table class="tbl"><thead><tr><th>Capacidad N2</th><th class="num">N3</th><th class="num">Con app</th><th class="num">Evaluadas</th><th>Madurez promedio</th></tr></thead><tbody>${n2s.map(n2 => { const k3 = nbrs(n2.key, "n3").map(l => M.E.get(l.to));
+              <div class="scroll-x"><table class="tbl"><thead><tr><th>Capacidad N2</th><th class="num">N3</th><th class="num">Con app</th><th class="num">Evaluadas</th><th${tipAttr("madurez")}>Madurez promedio</th><th class="num">Objetivo</th><th class="num"${tipAttr("brecha")}>Brecha</th></tr></thead><tbody>${n2s.map(n2 => { const k3 = nbrs(n2.key, "n3").map(l => M.E.get(l.to));
                 const ev = k3.filter(e => MATURITY.some(m => e.data[m] != null)), vals = ev.flatMap(e => MATURITY.map(m => e.data[m]).filter(v => v != null).map(Number)), avg = vals.length ? d3.mean(vals) : null;
                 return `<tr><td>${chipOf(n2.key)}</td><td class="num">${k3.length}</td><td class="num">${k3.filter(e => nbrs(e.key, "app").length).length}</td><td class="num">${ev.length ? `${ev.length}/${k3.length}` : '<span class="meta">0</span>'}</td>
-                  <td>${avg != null ? `<span class="gauge" style="display:inline-block;width:90px;vertical-align:middle"><i style="width:${avg / 5 * 100}%;background:var(--accent)"></i></span> <b class="num">${avg.toFixed(1)}</b>` : '<span class="meta hatch" style="padding:2px 8px;border-radius:4px">sin evaluar</span>'}</td></tr>`; }).join("")}</tbody></table></div></div>`; }).join("")
+                  <td>${avg != null ? `<span class="gauge" style="display:inline-block;width:90px;vertical-align:middle"><i style="width:${avg / 5 * 100}%;background:var(--accent)"></i></span> <b class="num">${avg.toFixed(1)}</b>` : '<span class="meta hatch" style="padding:2px 8px;border-radius:4px">sin evaluar</span>'}</td>
+                  ${(() => { const objs = k3.map(madObjetivo).filter(v => v != null), brs = k3.map(madBrecha).filter(v => v != null); const o = objs.length ? d3.mean(objs) : null, bm = brs.length ? d3.mean(brs) : null;
+                    return `<td class="num">${o != null ? o.toFixed(1) : '<span class="meta">—</span>'}</td><td class="num">${bm == null ? '<span class="meta">—</span>' : bm > 0 ? `<b class="down">+${bm.toFixed(1)}</b>` : '<span class="pill good">0</span>'}</td>`; })()}</tr>`; }).join("")}</tbody></table></div></div>`; }).join("")
             : '<div class="empty-note">Esta área no es responsable de ningún dominio de capacidades. Los dominios se asignan en capacidad N1 → organización.</div>'}</section>
       </div></div></div>`;
   el.querySelectorAll("[data-area]").forEach(b => b.onclick = () => { areaSel = b.dataset.area; try { localStorage.setItem("agileea.area", areaSel); } catch (e) {} renderMiArea(el); });
@@ -1058,13 +1090,15 @@ const LITHO = [
 ];
 const n2Of = e => M.E.get(parentOf(e.key, "n2"))?.data || {};
 const LENSES = {
-  cadena:{label:"Cadena de valor", get: e => n2Of(e).cadena_de_valor, cats: ["Exploración & Evaluación de Activos","Planificación del Desarrollo de Activos","Desarrollo de Activos","Producción & Transporte"].map((k, i) => ({k, c:`var(--c${i+1})`}))},
-  clasif:{label:"Clasificación", get: e => n2Of(e).clasificacion, cats: ["Estratégica","Operativa","Transversal"].map((k, i) => ({k, c:`var(--c${[5,1,3][i]})`}))},
+  cadena:{tip:"cadena_de_valor", label:"Cadena de valor", get: e => n2Of(e).cadena_de_valor, cats: ["Exploración & Evaluación de Activos","Planificación del Desarrollo de Activos","Desarrollo de Activos","Producción & Transporte"].map((k, i) => ({k, c:`var(--c${i+1})`}))},
+  clasif:{tip:"clasificacion", label:"Clasificación", get: e => n2Of(e).clasificacion, cats: ["Estratégica","Operativa","Transversal"].map((k, i) => ({k, c:`var(--c${[5,1,3][i]})`}))},
   cobertura:{label:"Cobertura aplicativa", get: e => { const n = nbrs(e.key, "app").length; return n === 0 ? null : n === 1 ? "1 aplicación" : "2 o más"; }, cats:[{k:"1 aplicación", c:"var(--q3)"}, {k:"2 o más", c:"var(--q5)"}], nullLabel:"Sin aplicación"},
-  criticidad:{label:"Criticidad", get: e => e.data.business_criticality, cats: ["Administrative Service","Business Operational","Business Critical","Mission Critical"].map((k, i) => ({k, c:`var(--w${i+1})`}))},
-  pace:{label:"Pace layering", get: e => e.data.pace_layering, cats: ["Commodity","Differentiation","Innovation"].map((k, i) => ({k, c:`var(--q${[2,3,5][i]})`}))},
+  criticidad:{tip:"business_criticality", label:"Criticidad", get: e => e.data.business_criticality, cats: ["Administrative Service","Business Operational","Business Critical","Mission Critical"].map((k, i) => ({k, c:`var(--w${i+1})`}))},
+  pace:{tip:"pace_layering", label:"Pace layering", get: e => e.data.pace_layering, cats: ["Commodity","Differentiation","Innovation"].map((k, i) => ({k, c:`var(--q${[2,3,5][i]})`}))},
   madurez:{label:"Madurez", get: e => { const v = MATURITY.map(m => e.data[m]).filter(x => x != null).map(Number); if (!v.length) return null; return "Nivel " + Math.min(5, Math.max(1, Math.round(v.reduce((a, b) => a + b) / v.length))); }, cats:[1,2,3,4,5].map(i => ({k:"Nivel " + i, c:`var(--q${i})`}))},
-  regulatorio:{label:"Impacto regulatorio", get: e => e.data.regulatory_impact, cats:["Low","Medium","High"].map((k, i) => ({k, c:`var(--w${i+2})`}))},
+  brecha:{label:"Brecha", get: e => { const b = madBrecha(e); return b == null ? null : b <= 0 ? "Sin brecha" : b < 1 ? "Brecha menor a 1" : b < 2 ? "Brecha de 1 a 2" : "Brecha de 2 o más"; },
+    cats:[{k:"Sin brecha", c:"var(--good)"}, {k:"Brecha menor a 1", c:"var(--w2)"}, {k:"Brecha de 1 a 2", c:"var(--w3)"}, {k:"Brecha de 2 o más", c:"var(--w4)"}], nullLabel:"Sin objetivo o sin evaluar"},
+  regulatorio:{tip:"regulatory_impact", label:"Impacto regulatorio", get: e => e.data.regulatory_impact, cats:["Low","Medium","High"].map((k, i) => ({k, c:`var(--w${i+2})`}))},
 };
 const n1Index = key => all("n1").findIndex(e => e.key === key);
 const n1OfN3 = e => { const n2 = parentOf(e.key, "n2"); return n2 && parentOf(n2, "n1"); };
@@ -1113,7 +1147,7 @@ function renderMapa(el) {
       <button type="button" data-level="n2" aria-pressed="${!n3AllOpen}">N2</button><button type="button" data-level="n3" aria-pressed="${n3AllOpen}">N3 · desplegar todo</button></div></div>`;
   const layoutSeg = `<div class="seg" role="group" aria-label="Disposición"><button type="button" data-layout="matriz" aria-pressed="${mapLayout === "matriz"}">Matriz</button><button type="button" data-layout="estratos" aria-pressed="${mapLayout === "estratos"}">Por dominio</button></div>`;
   const lensSeg = `<div class="lensbar"><span class="eyebrow">Color por</span><div class="seg" role="group" aria-label="Lente">${lensesHere.map(([k, v]) => `<button type="button" data-lens="${k}" aria-pressed="${k === lens}">${v.label}</button>`).join("")}</div></div>`;
-  const legend = `<div class="legend">${L.cats.filter(c => counts[c.k] || lens !== "dominio").map(c => `<button type="button" class="chip" data-cat="${esc(c.k)}" aria-pressed="${!lensOff.has(c.k)}"><i style="background:${c.c}"></i>${esc(c.k)} <b class="num">${counts[c.k] || 0}</b></button>`).join("")}
+  const legend = `<div class="legend">${L.cats.filter(c => counts[c.k] || lens !== "dominio").map(c => `<button type="button" class="chip" data-cat="${esc(c.k)}" aria-pressed="${!lensOff.has(c.k)}"${L.tip ? tipAttr(L.tip, c.k) : ""}><i style="background:${c.c}"></i>${esc(c.k)} <b class="num">${counts[c.k] || 0}</b></button>`).join("")}
       ${counts["∅"] ? `<button type="button" class="chip" data-cat="∅" aria-pressed="${!lensOff.has("∅")}"><i class="hatch" style="border:1px dashed var(--muted)"></i>${L.nullLabel || "Sin evaluar"} <b class="num">${counts["∅"]}</b></button>` : ""}</div>
       ${n3vis.length && counts["∅"] === n3vis.length && lens !== "cobertura" ? `<span class="pill warn">Ninguna subcapacidad visible tiene este atributo cargado</span>` : ""}`;
   const hiBanner = mapHi ? `<div class="hibanner"><span><b>Resaltando ${mapHi.keys.length} resultado${mapHi.keys.length === 1 ? "" : "s"}</b> de la consulta: “${esc(mapHi.label)}”</span><button type="button" class="chip" data-unhi>Quitar resaltado</button></div>` : "";
@@ -1144,10 +1178,10 @@ function renderMapa(el) {
     body = `<div class="mx-scroll"><div class="mx" style="grid-template-columns:132px ${cols}">
       <div class="mx-corner"><span>Clasificación ↓</span><span>Cadena de valor →</span></div>
       ${chains.map((ch, j) => { const arr = n2all.filter(n => (n.data.cadena_de_valor || "Sin cadena") === ch);
-        return `<button type="button" class="chev ${j ? "" : "first"} ${chainOff.has(ch) ? "off" : ""}" style="background:color-mix(in srgb,var(--accent) ${12 + j * 7}%,var(--surface-2))" data-chain="${esc(ch)}" aria-pressed="${!chainOff.has(ch)}" title="${chainOff.has(ch) ? "Mostrar" : "Ocultar"} etapa">
+        return `<button type="button" class="chev ${j ? "" : "first"} ${chainOff.has(ch) ? "off" : ""}"${tipAttr("cadena_de_valor", ch)} style="background:color-mix(in srgb,var(--accent) ${12 + j * 7}%,var(--surface-2))" data-chain="${esc(ch)}" aria-pressed="${!chainOff.has(ch)}" title="${chainOff.has(ch) ? "Mostrar" : "Ocultar"} etapa">
           <span class="step">Etapa ${j + 1}</span><b>${esc(ch)}</b><span class="cnt">${arr.length} N2 · ${n3count(arr)} N3</span></button>`; }).join("")}
       ${classes.map(cl => { const rowOff = clsOff.has(cl), arr = n2all.filter(n => (n.data.clasificacion || "Sin clasificación") === cl);
-        return `<button type="button" class="mx-row ${rowOff ? "off" : ""}" data-cls="${esc(cl)}" aria-pressed="${!rowOff}" title="${rowOff ? "Mostrar" : "Ocultar"} clasificación">
+        return `<button type="button" class="mx-row ${rowOff ? "off" : ""}"${tipAttr("clasificacion", cl)} data-cls="${esc(cl)}" aria-pressed="${!rowOff}" title="${rowOff ? "Mostrar" : "Ocultar"} clasificación">
             <b>${esc(cl)}</b><span class="cnt">${arr.length} N2 · ${n3count(arr)} N3</span></button>
           ${chains.map(ch => { const c = inCell(cl, ch);
             return `<div class="mx-cell ${rowOff || chainOff.has(ch) ? "off" : ""}">${rowOff || chainOff.has(ch) ? "" : c.map(card).join("") || '<span class="mx-empty">—</span>'}</div>`; }).join("")}`; }).join("")}
@@ -1258,7 +1292,7 @@ function renderPortafolio(el) {
           <g class="axis"><text x="${x(v)}" y="${H - m.b + 18}" text-anchor="middle">${v}</text><text x="${m.l - 12}" y="${y(v) + 4}" text-anchor="end">${v}</text></g>`).join("")}
         <line x1="${x(2.5)}" x2="${x(2.5)}" y1="${m.t}" y2="${H - m.b}" style="stroke:var(--muted);stroke-dasharray:4 4"/>
         <line y1="${y(2.5)}" y2="${y(2.5)}" x1="${m.l}" x2="${W - m.r}" style="stroke:var(--muted);stroke-dasharray:4 4"/>
-        ${quad.map(([t, qx, qy]) => `<text class="quad-label" x="${x(qx)}" y="${y(qy)}" text-anchor="middle">${t}</text>`).join("")}
+        ${quad.map(([t, qx, qy]) => `<text class="quad-label" x="${x(qx)}" y="${y(qy)}" text-anchor="middle"${tipAttr("time", t)}>${t}</text>`).join("")}
         <g class="axis"><text x="${(m.l + W - m.r) / 2}" y="${H - 8}" text-anchor="middle">AJUSTE FUNCIONAL →</text>
         <text transform="translate(16,${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle">AJUSTE TÉCNICO →</text></g>
         ${pts.filter(p => p.x).map(p => `<g class="bubble" data-open="${p.e.key}" transform="translate(${p.x},${p.y})">
@@ -1406,8 +1440,8 @@ function modelContext() {
   all("n1").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "org"))}`));
   L.push("\n## CAPACIDADES N2 (clave | nombre | N1 | clasificación | cadena de valor)");
   all("n2").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "n1"))} | ${v(e.data.clasificacion)} | ${v(e.data.cadena_de_valor)}`));
-  L.push("\n## SUBCAPACIDADES N3 (clave | nombre | N2 | criticidad | pace layering | impacto regulatorio | madurez proc/tec/datos/org/desemp 1-5 | aplicaciones | descripción)");
-  all("n3").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "n2"))} | ${v(e.data.business_criticality)} | ${v(e.data.pace_layering)} | ${v(e.data.regulatory_impact)} | ${MATURITY.map(m => v(e.data[m])).join("/")} | ${nbrs(e.key, "app").map(l => l.to).join(" ") || "-"} | ${cut(e.data.descripcion, 150)}`));
+  L.push("\n## SUBCAPACIDADES N3 (clave | nombre | N2 | criticidad | pace layering | impacto regulatorio | madurez proc/tec/datos/org/desemp 1-5 | madurez objetivo | brecha (objetivo − promedio) | aplicaciones | descripción)");
+  all("n3").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "n2"))} | ${v(e.data.business_criticality)} | ${v(e.data.pace_layering)} | ${v(e.data.regulatory_impact)} | ${MATURITY.map(m => v(e.data[m])).join("/")} | ${v(madObjetivo(e))} | ${madBrecha(e) == null ? "-" : madBrecha(e).toFixed(1)} | ${nbrs(e.key, "app").map(l => l.to).join(" ") || "-"} | ${cut(e.data.descripcion, 150)}`));
   L.push("\n## APLICACIONES (clave | nombre | proveedor | tipo | despliegue | ciclo de vida | criticidad | ajuste funcional | ajuste técnico | disciplinas | organizaciones usuarias | personas y rol | descripción)");
   all("app").forEach(e => L.push(`${e.key} | ${e.name} | ${v(parentOf(e.key, "vendor"))} | ${v(e.data.tipo_aplicacion)} | ${v(e.data.deployment)} | ${v(e.data.lifecycle)} | ${v(e.data.business_criticality)} | ${v(e.data.functional_fit)} | ${v(e.data.technical_fit)} | ${nbrs(e.key, "disc").map(l => M.E.get(l.to).name).join(", ") || "-"} | ${nbrs(e.key, "org").map(l => l.to).join(" ") || "-"} | ${nbrs(e.key, "person").map(l => `${l.to} (${l.note})`).join(", ") || "-"} | ${cut(e.data.descripcion, 300)}`));
   L.push("\n## ORGANIZACIONES (clave | nombre | tipo | abreviatura | depende de | imputa costos)");
@@ -1581,7 +1615,7 @@ function drawQA() {
 /* ---------- Ficha lateral ---------- */
 const ATTRS = {
   app: [["tipo_aplicacion","Tipo"],["deployment","Despliegue"],["lifecycle","Ciclo de vida"],["business_criticality","Criticidad"]],
-  n3: [["business_criticality","Criticidad"],["pace_layering","Pace layering"],["regulatory_impact","Impacto regulatorio"]],
+  n3: [["business_criticality","Criticidad"],["pace_layering","Pace layering"],["regulatory_impact","Impacto regulatorio"],["madurez_objetivo","Madurez objetivo"]],
   n2: [["clasificacion","Clasificación"],["cadena_de_valor","Cadena de valor"]],
   org: [["tipo_organizacion","Tipo"],["abreviatura","Abreviatura"],["habilita_imputacion","Imputa costos", v => +v ? "Sí" : "No"]],
   contract: [["modelo_comercial","Modelo comercial"],["moneda","Moneda"],["fecha_inicio","Inicio", v => fmtDate(parseDate(v))],["fecha_fin","Fin", v => fmtDate(parseDate(v))],["renovacion_automatica","Renovación automática", v => +v ? "Sí" : "No"]],
@@ -1595,17 +1629,24 @@ function openEntity(key, push = true) {
   const e = M.E.get(key); if (!e) return;
   if (push) history_.push(key);
   const d = document.getElementById("drawer"), path = pathOf(e);
-  const attrs = (ATTRS[e.type] || []).map(([k, l, f]) => { const v = e.data[k]; return `<div><dt>${l}</dt><dd class="${v == null || v === "" ? "empty" : ""}">${v == null || v === "" ? "sin dato" : esc(f ? f(v) : v)}</dd></div>`; }).join("");
+  const attrs = (ATTRS[e.type] || []).map(([k, l, f]) => { const v = e.data[k]; return `<div><dt${tipAttr(k)}>${l}</dt><dd class="${v == null || v === "" ? "empty" : ""}"${v == null || v === "" ? "" : tipAttr(k, v)}>${v == null || v === "" ? "sin dato" : esc(f ? f(v) : v)}</dd></div>`; }).join("");
   const groups = d3.group(M.adj.get(key).filter(l => !(e.type === "n1" && M.E.get(l.to).type === "n2" && false)), l => M.E.get(l.to).type);
   const order = ["n1","n2","n3","app","vendor","contract","lic","org","cc","disc","person"];
   const rel = order.filter(t => groups.has(t)).map(t => { const ls = groups.get(t); const u = new Map(); ls.forEach(l => { const p = u.get(l.to); u.set(l.to, p ? (l.note && !p.includes(l.note) ? p + " · " + l.note : p) : l.note); });
     return `<section><div class="eyebrow">${TYPES[t].plural} · ${u.size}</div><div class="rel">${[...u].map(([k, note]) => `<button type="button" data-open="${k}" style="--tc:${tvar(t)}">${lx(t)}${esc(M.E.get(k).name)}${note ? ` <small>${esc(note)}</small>` : ""}</button>`).join("")}</div></section>`; }).join("");
   let extra = "";
-  if (e.type === "app") extra += `<section><div class="eyebrow">Ajuste</div>${[["Funcional", e.data.functional_fit], ["Técnico", e.data.technical_fit]].map(([l, v]) => `<div class="fit"><span>${l}</span><span class="dots">${[1,2,3,4].map(i => `<i class="${v && i <= +v ? "on" : ""}"></i>`).join("")}</span><b class="num">${v ?? "—"}</b></div>`).join("")}</section>`;
+  if (e.type === "app") extra += `<section><div class="eyebrow">Ajuste</div>${[["Funcional", e.data.functional_fit], ["Técnico", e.data.technical_fit]].map(([l, v]) => `<div class="fit"><span${tipAttr(l === "Funcional" ? "functional_fit" : "technical_fit")}>${l}</span><span class="dots">${[1,2,3,4].map(i => `<i class="${v && i <= +v ? "on" : ""}"></i>`).join("")}</span><b class="num"${v ? tipAttr(l === "Funcional" ? "functional_fit" : "technical_fit", v) : ""}>${v ?? "—"}</b></div>`).join("")}</section>`;
   if (e.type === "n3") {
-    const vals = MATURITY.map(m => e.data[m]);
-    extra += `<section><div class="eyebrow">Madurez</div>${vals.some(v => v != null) ? radar(vals) + MATURITY.filter(m => e.data[m + "_justification"]).map(m => `<p class="desc"><b>${MAT_LBL[m]}:</b> ${esc(e.data[m + "_justification"])}</p>`).join("")
-      : `<div class="empty-note hatch">Sin evaluación de madurez. Cargá procesos, tecnología, datos, organización y desempeño (1 a 5) para ver el radar.</div>`}</section>`;
+    const vals = MATURITY.map(m => e.data[m]), obj = madObjetivo(e), prom = madPromedio(e), br = madBrecha(e);
+    extra += `<section><div class="eyebrow"><span${tipAttr("madurez")}>Madurez</span>${obj ? ` · objetivo ${obj}` : ""}</div>
+      ${vals.some(v => v != null) ? radar(vals, obj) + `<div class="madlist">${MATURITY.map(m => { const v = e.data[m]; return `<div class="fit" style="grid-template-columns:100px 1fr auto">
+          <span>${MAT_LBL[m]}</span><span class="dots">${[1,2,3,4,5].map(i => `<i class="${v && i <= +v ? "on" : ""} ${obj && i > (+v || 0) && i <= obj ? "gap" : ""}"></i>`).join("")}</span>
+          <b class="num"${v != null ? tipAttr("nivel_" + m, v) : ""}>${v ?? "—"}${obj && v != null && obj > v ? ` <small class="down">+${obj - v}</small>` : ""}</b></div>`; }).join("")}</div>
+        <div class="brecha"><span>Promedio <b class="num">${prom != null ? prom.toFixed(1) : "—"}</b></span><span>Objetivo <b class="num">${obj ?? "—"}</b></span>
+          <span${tipAttr("brecha")}>Brecha <b class="num ${br > 0 ? "down" : ""}">${br == null ? "—" : br > 0 ? "+" + br.toFixed(1) : "0"}</b></span></div>
+        ${obj == null ? '<div class="meta">Sin objetivo cargado: completá «madurez_objetivo» en la subcapacidad para ver la brecha.</div>' : ""}`
+        + MATURITY.filter(m => e.data[m + "_justification"]).map(m => `<p class="desc"><b>${MAT_LBL[m]}:</b> ${esc(e.data[m + "_justification"])}</p>`).join("")
+      : `<div class="empty-note hatch">Sin evaluación de madurez. Cargá procesos, tecnología, datos, organización y desempeño (1 a 5) para ver el radar${obj ? ` y la brecha contra el objetivo ${obj}` : ""}.</div>`}</section>`;
   }
   const cs = costsFor(e);
   if (cs.length) { const by = d3.rollups(cs, v => sum(v), c => c.year).sort((a, b) => a[0] - b[0]), mx = d3.max(by, b => b[1]);
@@ -1629,10 +1670,11 @@ function openEntity(key, push = true) {
   d.querySelector("[data-close]").focus({preventScroll: true});
 }
 function closeDrawer() { document.getElementById("drawer").hidden = true; document.getElementById("scrim").hidden = true; history_.length = 0; }
-function radar(vals) {
+function radar(vals, target) {
   const S = 220, c = S / 2, R = 78, n = vals.length, pt = (i, v) => { const a = -Math.PI / 2 + i * 2 * Math.PI / n; return [c + Math.cos(a) * R * v / 5, c + Math.sin(a) * R * v / 5]; };
-  return `<svg viewBox="0 0 ${S} ${S}" style="width:220px;max-width:100%;align-self:center">
+  return `<svg viewBox="-40 0 ${S + 80} ${S}" style="width:300px;max-width:100%;align-self:center">
     ${[1,2,3,4,5].map(l => `<polygon points="${vals.map((_, i) => pt(i, l).join(",")).join(" ")}" style="fill:none;stroke:var(--line)"/>`).join("")}
+    ${target ? `<polygon points="${vals.map((_, i) => pt(i, target).join(",")).join(" ")}" style="fill:none;stroke:var(--warn);stroke-width:1.6;stroke-dasharray:5 4"/>` : ""}
     <polygon points="${vals.map((v, i) => pt(i, +v || 0).join(",")).join(" ")}" style="fill:var(--accent);fill-opacity:.25;stroke:var(--accent);stroke-width:2"/>
     ${MATURITY.map((m, i) => { const [x, y] = pt(i, 6.3); return `<text x="${x}" y="${y}" text-anchor="middle" dy="0.35em" style="font:500 10px var(--mono);fill:var(--muted)">${MAT_LBL[m]} ${vals[i] ?? "–"}</text>`; }).join("")}</svg>`;
 }
@@ -1659,7 +1701,7 @@ function drawPal() {
 /* ---------- Arranque ---------- */
 (async function start() {
   const {raw, src, meta, error} = await loadData();
-  build(raw);
+  build(raw); buildGlosario(raw.glosario);
   const srcTxt = src === "live" ? `Base: ${meta.db || "?"} · ${meta.entorno || ""}` : src === "demo" ? "Backup de demostración (data.json)" : src;
   document.getElementById("src").innerHTML = `<span>${esc(srcTxt)}</span><span>${nf.format(M.E.size)} entidades</span><span>${nf.format(sum([...M.adj.values()], a => a.length) / 2)} relaciones</span>`;
   if (error || src === "demo") {
@@ -1686,6 +1728,18 @@ function drawPal() {
     else if (t.dataset.open && !t.closest("#gsvg")) openEntity(t.dataset.open);
   });
   document.getElementById("scrim").onclick = closeDrawer;
+  // Tooltips de definiciones (glosario): mouse y teclado
+  const tip = document.getElementById("tip"); let tipFor = null;
+  const showTip = el => { const c = tipContent(el.getAttribute("data-tip") || ""); if (!c) return;
+    tip.innerHTML = `<b>${esc(c.t)}</b><span>${esc(c.d)}</span>`; tip.hidden = false; tipFor = el;
+    const r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    let x = Math.min(Math.max(8, r.left + r.width / 2 - tw / 2), innerWidth - tw - 8), y = r.bottom + 8;
+    if (y + th > innerHeight - 8) y = r.top - th - 8;
+    tip.style.left = x + "px"; tip.style.top = Math.max(8, y) + "px"; };
+  const hideTip = () => { tip.hidden = true; tipFor = null; };
+  document.addEventListener("mouseover", ev => { const el = ev.target.closest?.("[data-tip]"); if (el && el !== tipFor) showTip(el); else if (!el && tipFor) hideTip(); });
+  document.addEventListener("focusin", ev => { const el = ev.target.closest?.("[data-tip]"); el ? showTip(el) : hideTip(); });
+  document.addEventListener("scroll", hideTip, true);
   document.getElementById("openPal").onclick = openPal;
   document.getElementById("palette").onclick = ev => { if (ev.target.id === "palette") closePal(); };
   document.getElementById("palInput").oninput = ev => filterPal(ev.target.value);
@@ -1693,7 +1747,7 @@ function drawPal() {
   document.addEventListener("keydown", ev => {
     const palOpen = !document.getElementById("palette").hidden;
     if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "k" || (ev.key === "/" && !palOpen && !/INPUT|TEXTAREA/.test(document.activeElement.tagName))) { ev.preventDefault(); openPal(); return; }
-    if (ev.key === "Escape") { palOpen ? closePal() : closeDrawer(); return; }
+    if (ev.key === "Escape") { document.getElementById("tip").hidden = true; palOpen ? closePal() : closeDrawer(); return; }
     if (!palOpen) return;
     if (ev.key === "ArrowDown") { palSel = Math.min(palItems.length - 1, palSel + 1); drawPal(); ev.preventDefault(); }
     if (ev.key === "ArrowUp") { palSel = Math.max(0, palSel - 1); drawPal(); ev.preventDefault(); }

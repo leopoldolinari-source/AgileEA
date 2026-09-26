@@ -21,6 +21,7 @@ const TABLAS = [
     'centro_costo', 'licencia', 'licencia_anual',
     'contrato', 'contrato_anio', 'contrato_anio_pagador', 'contrato_licencia',
     'contrato_costo_cabecera', 'contrato_costo_detalle',
+    'glosario',
 ];
 
 header('Content-Type: application/json; charset=utf-8');
